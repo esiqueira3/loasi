@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/style.css">
+	
     <style>.ie-panel{display: none;background: #212121;padding: 10px 0;box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3);clear: both;text-align:center;position: relative;z-index: 1;} html.ie-10 .ie-panel, html.lt-ie-10 .ie-panel {display: block;}</style>
   </head>
   <body>
@@ -454,59 +455,185 @@
           <h2 class="wow fadeScale">Cosa Dice La Gente</h2>
           <!-- Owl Carousel-->
           <div class="owl-carousel owl-style-12 owl-dots-styles-1" data-items="1" data-sm-items="2" data-lg-items="3" data-margin="30" data-dots="true" data-autoplay="5000">
-            <!-- Quote Creative-->
-            <article class="quote-creative">
-              <div class="quote-creative-text">
-                <div class="q">"Grazie Signore per avermi guarito, perdonato e rinnovato in questo luogo! Tu Gesù mi hai aspettato con tanto amore! E mi hai dato una famiglia... La Famiglia dell' Oasi."</div>
-              </div>
-              <div class="quote-creative-rating"><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span></div>
-              <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
-                <div class="unit-left">
-                  <div class="quote-creative-figure"><img src="images/Martin-user-6-62x62.png" alt="" width="62" height="62"/>
-                  </div>
-                </div>
-                <div class="unit-body">
-                  <div class="quote-creative-author">Martin Zuniga</div>
-                </div>
-              </div>
-            </article>
-            <!-- Quote Creative-->
-            <article class="quote-creative">
-              <div class="quote-creative-text">
-                <div class="q">"Sono cresciuta in questa chiesa fin da bambina e ringrazio Dio per avermi dato una famiglia spirituale così importante e preziosa  ma ancora di più per avermi fatto conoscere il suo amore grande"</div>
-              </div>
-              <div class="quote-creative-rating"><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span></div>
-              <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
-                <div class="unit-left">
-                  <div class="quote-creative-figure"><img src="images/Eleonora-user-6-62x62.png" alt="" width="62" height="62"/>
-                  </div>
-                </div>
-                <div class="unit-body">
-                  <div class="quote-creative-author">Eleonora Lemma</div>
-                </div>
-              </div>
-            </article>
-            <!-- Quote Creative-->
-            <article class="quote-creative">
-              <div class="quote-creative-text">
-                <div class="q">"Grazie, Signore, per le tue meraviglie, ti amo Gesù."</div>
-              </div>
-              <div class="quote-creative-rating"><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span><span class="icon mdi mdi-star"></span></div>
-              <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
-                <div class="unit-left">
-                  <div class="quote-creative-figure"><img src="images/Patricia-user-6-62x62.png" alt="" width="62" height="62"/>
-                  </div>
-                </div>
-                <div class="unit-body">
-                  <div class="quote-creative-author">Patty Ronga</div>
-                </div>
-              </div>
-            </article>
-            <!-- Quote Creative-->
             
+					
+			<!-- Martin Zuniga -->
+            <article class="quote-creative">
+  <div class="quote-creative-text">
+    <div class="q depoimento-curto">
+      "Grazie Signore , per avermi guarito,perdonato e rinovato in questo luogo!..."
+      <a href="#" onclick="mostrarTextoCompleto(event, this)">Saiba mais</a>
+    </div>
+    <div class="q depoimento-completo d-none">
+      "Grazie Signore per avermi guarito, perdonato e rinnovato in questo luogo! Tu Gesù mi hai aspettato con tanto amore! E mi hai dato una famiglia... La Famiglia dell' Oasi."
+      <a href="#" onclick="mostrarTextoCurto(event, this)">Menos</a>
+    </div>
+  </div>
+
+  <div class="quote-creative-rating">
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+  </div>
+
+  <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
+    <div class="unit-left">
+      <div class="quote-creative-figure">
+        <img src="images/Martin-user-6-62x62.png" alt="" width="62" height="62" />
+      </div>
+    </div>
+    <div class="unit-body">
+      <div class="quote-creative-author">Martin Zuniga</div>
+
+    </div>
+  </div>
+</article>	
+            
+		<!-- Eleonora Lemma -->
+            <article class="quote-creative">
+  <div class="quote-creative-text">
+    <div class="q depoimento-curto">
+      "Sono cresciuta in questa chiesa fin da bambina e ringrazio Dio per avermi dato..."
+      <a href="#" onclick="mostrarTextoCompleto(event, this)">Saiba mais</a>
+    </div>
+    <div class="q depoimento-completo d-none">
+      "Sono cresciuta in questa chiesa fin da bambina e ringrazio Dio per avermi dato una famiglia spirituale così importante e preziosa ma ancora di più per avermi fatto conoscere il Suo amore, la Sua parola e una guida spirituale che mi aiuta a crescere ogni giorno nella fede."
+      <a href="#" onclick="mostrarTextoCurto(event, this)">Menos</a>
+    </div>
+  </div>
+
+  <div class="quote-creative-rating">
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+  </div>
+
+  <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
+    <div class="unit-left">
+      <div class="quote-creative-figure">
+        <img src="images/Eleonora-user-6-62x62.png" alt="" width="62" height="62" />
+      </div>
+    </div>
+    <div class="unit-body">
+      <div class="quote-creative-author">Eleonora Lemma</div>
+    </div>
+  </div>
+</article>
+
+<!-- Anna Castiello -->
+        <article class="quote-creative">
+  <div class="quote-creative-text">
+    <div class="q depoimento-curto">
+      "Quando mi sono trasferita a Terracina non è stato facile sentirmi a mio agio in una..."
+      <a href="#" onclick="mostrarTextoCompleto(event, this)">Saiba mais</a>
+    </div>
+    <div class="q depoimento-completo d-none">
+      "Quando mi sono trasferita a Terracina non è stato facile sentirmi a mio agio in una chiesa evangelica.  Ma una volta entrata nella chiesa L'Oasi  di Terracina ho sentito subito l'amore e l'accoglienza che solo una famiglia ti sa dare. Una gioia negli  occhi dei fratelli e delle sorelle mi ha contagiata e mi sono sentita subito a casa. Nella chiesa L'Oasi  di Terracina sto continuando  il mio viaggio di crescita spirituale  con la lettura della bibbia, gli incontri di  la preghiera  e le predicazioni pastorali . Il Signore mi aveva guidato lì da loro e posso solo che ringraziarlo per avermi dato questo privilegio.  Gloria a dio ."
+      <a href="#" onclick="mostrarTextoCurto(event, this)">Menos</a>
+    </div>
+  </div>
+
+  <div class="quote-creative-rating">
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+  </div>
+
+  <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
+    <div class="unit-left">
+      <div class="quote-creative-figure">
+        <img src="images/Anna-user-6-62x62.jpg" alt="" width="62" height="62" />
+      </div>
+    </div>
+    <div class="unit-body">
+      <div class="quote-creative-author">Anna Castiello</div>
+    </div>
+  </div>
+</article>
+
+
+<!-- Grazia Caruso -->
+            <article class="quote-creative">
+  <div class="quote-creative-text">
+    <div class="q depoimento-curto">
+      "Ho deciso di frequentare la chiesa oasi di Terracina in primis perché credo..."
+      <a href="#" onclick="mostrarTextoCompleto(event, this)">Saiba mais</a>
+    </div>
+    <div class="q depoimento-completo d-none">
+      "Ho deciso di frequentare la chiesa oasi di Terracina in primis perché credo fortemente nella realtà locale, adoperarsi e lavorare per la propria città credo sia una delle nostre missioni.. in più, in questo contesto di chiesa, vivo pienamente la fratellanza, l’amore, l’unione e la condivisione.. insomma, si vive in una grande famiglia!."
+      <a href="#" onclick="mostrarTextoCurto(event, this)">Menos</a>
+    </div>
+  </div>
+
+  <div class="quote-creative-rating">
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+  </div>
+
+  <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
+    <div class="unit-left">
+      <div class="quote-creative-figure">
+        <img src="images/Caruso-user-6-62x62.png" alt="" width="62" height="62" />
+      </div>
+    </div>
+    <div class="unit-body">
+      <div class="quote-creative-author">Grazia Caruso</div>
+
+    </div>
+  </div>
+</article>
+
+
+<!-- Matteo Gaglione -->
+            <article class="quote-creative">
+  <div class="quote-creative-text">
+    <div class="q depoimento-curto">
+      "Ho deciso di frequentare la chiesa oasi di Terracina perché essere servo..."
+      <a href="#" onclick="mostrarTextoCompleto(event, this)">Saiba mais</a>
+    </div>
+    <div class="q depoimento-completo d-none">
+      "Ho deciso di frequentare la chiesa oasi di Terracina perché essere servo nella città che vivo, é una forte chiamata ed esigenza che avverto. Il pastore é un uomo disposto all’ascolto, alla comprensione e dà tutta la sua disponibilità investendo sulle persone che la compongono; organizza ad esempio incontri e studi  per amore della crescita della chiesa..chiesa che si può sintetizzare nel termine “famiglia”. Perché così ti senti, a casa."
+      <a href="#" onclick="mostrarTextoCurto(event, this)">Menos</a>
+    </div>
+  </div>
+
+  <div class="quote-creative-rating">
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+    <span class="icon mdi mdi-star"></span>
+  </div>
+
+  <div class="unit unit-spacing-sm flex-column flex-md-row align-items-center">
+    <div class="unit-left">
+      <div class="quote-creative-figure">
+        <img src="images/Matteo-user-6-62x62.png" alt="" width="62" height="62" />
+      </div>
+    </div>
+    <div class="unit-body">
+      <div class="quote-creative-author">Matteo Gaglione</div>
+
+    </div>
+  </div>
+</article>
+
+          
           </div>
         </div>
       </section>
+	  
+	  
+ 
 	  
       <!-- Featured Events-->
       <section class="section section-xl section-inset-1 section-bottom-0 context-dark bg-secondary" id="secao-eventi">
@@ -722,6 +849,10 @@
     <div class="snackbars" id="form-output-global"></div>
     <script src="js/core.min.js"></script>
     <script src="js/script.js"></script>
+
+
+
+
 	
 	<!--LIVEDEMO_00 -->
 
@@ -735,5 +866,29 @@
 		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	  })();</script>
 		
-  <!-- Google Tag Manager --><noscript><iframe src="https://www.googletagmanager.com/gtm.js?id=GTM-P9FT69" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-P9FT69');</script><!-- End Google Tag Manager --></body>
+  <!-- Google Tag Manager --><noscript><iframe src="https://www.googletagmanager.com/gtm.js?id=GTM-P9FT69" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-P9FT69');</script><!-- End Google Tag Manager -->
+  
+  
+  
+  
+<script>
+  function mostrarTextoCompleto(event, el) {
+    event.preventDefault();
+    const article = el.closest('.quote-creative');
+    article.querySelector('.depoimento-curto').classList.add('d-none');
+    article.querySelector('.depoimento-completo').classList.remove('d-none');
+  }
+
+  function mostrarTextoCurto(event, el) {
+    event.preventDefault();
+    const article = el.closest('.quote-creative');
+    article.querySelector('.depoimento-completo').classList.add('d-none');
+    article.querySelector('.depoimento-curto').classList.remove('d-none');
+  }
+</script>
+  
+  
+  
+  
+  </body>
 </html>
