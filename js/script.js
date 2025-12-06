@@ -1718,6 +1718,15 @@
 			}
 		}
 
+
+
+
+
+
+
+
+
+
 		// Slick carousel
 		if (plugins.slick.length) {
 			for (var i = 0; i < plugins.slick.length; i++) {
