@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://esiqueira3.github.io/loasi/sitemap.xml
