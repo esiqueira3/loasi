@@ -1,57 +1,133 @@
-# Chiesa Cristiana Evangelica L'Oasi
+# Chiesa Cristiana Evangelica L'Oasi — sito + gestionale
 
-Sito statico delle comunità L'Oasi di **Latina** e **Terracina**.
-HTML/CSS/JS puro, senza build step.
+Sito pubblico delle comunità L'Oasi di **Latina**, **Terracina** e **Gaeta**,
+riscritto in **React + Vite + Tailwind CSS**, con area riservata (gestionale)
+su **Supabase** e immagini su **Cloudflare R2**.
+
+---
+
+## Avvio rapido
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # genera dist/
+npm run preview  # anteprima della build
+```
+
+Serve un file `.env` nella root (vedi `.env.example`):
+
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+VITE_R2_PUBLIC_URL=...
+```
+
+> `.env` è in `.gitignore`: le chiavi non finiscono nel repository.
+> Su Vercel vanno impostate come *Environment Variables* del progetto.
+
+---
 
 ## Struttura
 
 ```
-index.html                  Home
-about-us.html               Chi siamo
-fede.html                   La nostra fede
-chiesa-latina.html          Comunità di Latina
-chiesa-terracina.html       Comunità di Terracina
-argentina.html              Missione Argentina
-cambogia.html               Missione Cambogia
-politica-riservatezza.html  Privacy
-404.html                    Pagina non trovata
+index.html                  Entry point Vite
+src/
+  main.jsx                  Bootstrap React
+  App.jsx                   Rotte + redirect dai vecchi URL
+  index.css                 Tailwind + design system (bottoni, eyebrow, glass…)
+  data/
+    site.js                 TUTTI i contenuti reali del sito (fallback statico)
+    privacy.js              Testo dell'informativa privacy
+  components/               Navbar, Footer, SiteLayout, PageHero, Reveal,
+                            GalleryGrid, Lightbox, TeamGrid, SectionHeading,
+                            Icon, Seo, ScrollManager, ProtectedRoute
+  hooks/
+    useSupabaseTable.js     Lettura tabella pubblica con fallback statico
+  lib/
+    supabase.js  r2.js      Client Supabase e upload immagini
+  pages/
+    Home · About · Faith · ChiesaDetail · Mission · Privacy · NotFound
+    AdminLogin · AdminDashboard        (area riservata)
 
-css/     bootstrap.css · fonts.css · style.css
-js/      core.min.js (librerie) · script.js
-fonts/   FontAwesome · Material Design Icons · lightGallery
-images/  video/
-robots.txt · sitemap.xml · .nojekyll
+public/                     images/ · video/ · robots.txt · sitemap.xml
+_legacy/                    Vecchio sito statico (HTML/CSS/JS) — solo archivio
+tailwind.config.js          Palette, font e token Material 3
+supabase_schema.sql         Schema del database
+supabase_seed_dados_reais.sql  Dati reali delle chiese (da eseguire una volta)
 ```
 
-## Sviluppo locale
+---
 
-Il sito non richiede compilazione, serve solo un server statico:
+## Rotte
 
-```bash
-python3 -m http.server 8000
-# apri http://localhost:8000
-```
+| URL                      | Pagina                                   |
+| ------------------------ | ---------------------------------------- |
+| `/`                      | Home                                     |
+| `/chi-siamo`             | Chi siamo, storia, famiglia pastorale    |
+| `/fede`                  | 14 principi fondamentali di fede         |
+| `/chiese/:slug`          | `latina` · `terracina` · `gaeta`         |
+| `/missioni/:slug`        | `argentina` · `cambogia`                 |
+| `/privacy`               | Politica sulla riservatezza              |
+| `/admin`                 | Login area riservata                     |
+| `/admin/dashboard`       | Gestionale (rotta protetta)              |
 
-Aprire i file direttamente con `file://` non funziona correttamente
-(percorsi relativi e caricamento dei font).
+I vecchi indirizzi (`/about-us.html`, `/chiesa-latina.html`, …) reindirizzano
+automaticamente alle nuove rotte.
 
-## Prima di pubblicare
+---
 
-Sostituire il dominio segnaposto in `robots.txt`, `sitemap.xml` e nei tag
-`<link rel="canonical">` / `og:url` di ogni pagina:
+## Contenuti dinamici vs statici
 
-```bash
-grep -rl "esiqueira3.github.io/loasi" . \
-  --include=*.html --include=*.xml --include=*.txt \
-| xargs sed -i 's|https://esiqueira3.github.io/loasi|https://IL-TUO-DOMINIO|g'
-```
+Ogni sezione gestibile legge da Supabase e, **se non ci sono record**, mostra il
+contenuto curato in `src/data/site.js`. Così il sito è sempre completo, anche
+prima che il pastore inserisca i dati.
 
-## Note di manutenzione
+| Sezione        | Tabella        | Fallback statico          |
+| -------------- | -------------- | ------------------------- |
+| Slider home    | `banners`      | `heroSlides`              |
+| Eventi         | `eventi`       | `fallbackEvents`          |
+| Testimonianze  | `depoimentos`  | `testimonials`            |
+| Scheda chiesa  | `igrejas`      | `churches` (campo x campo)|
+| Collaboratori  | `diretoria`    | `churchContent[slug].team`|
+| Galleria       | `igreja_fotos` | `churches[].gallery`      |
 
-- **Ultimi video YouTube** (`index.html`): usa la playlist automatica dei
-  caricamenti del canale (prefisso `UU` + ID del canale). Si aggiorna da sola
-  a ogni nuovo video e **non richiede nessuna chiave API**.
-- **Immagini**: mantenere larghezza massima 1600 px e qualità JPEG ~82,
-  salvate in modalità progressiva.
-- **Analytics**: attivo solo Google Tag Manager (`GTM-P9FT69`).
-- **Icone**: Material Design Icons (`mdi-*`) e FontAwesome (`fa-*`).
+### Prima configurazione del database
+
+Nel SQL Editor di Supabase, in quest'ordine:
+
+1. `supabase_schema.sql` — tabelle, RLS e policy
+2. `supabase_seed_dados_reais.sql` — indirizzi, telefoni, collaboratori e
+   testimonianze reali (sostituisce i dati di esempio)
+
+---
+
+## Design system
+
+Tutto è centralizzato in `tailwind.config.js` + `src/index.css`.
+
+- **Colori marca**: `gold-*` (oro caldo, `#C8A165`), `ink-*` (inchiostro),
+  `cream-*` (avorio)
+- **Token Material 3**: `primary`, `surface-container-*`, `on-surface`,
+  `outline-variant`… — già pronti per le schermate del gestionale
+- **Font**: `font-headline` (Playfair Display), `font-body` (Inter),
+  `font-script` (Kalam)
+- **Icone**: Material Symbols Outlined via `<Icon name="church" />`
+- **Classi utili**: `.btn-gold`, `.btn-outline`, `.eyebrow`, `.h-display`,
+  `.glass`, `.link-underline`
+- **Animazioni**: `animate-kenburns`, `animate-mirror`, `animate-floaty`,
+  più `tailwindcss-animate` (`animate-in fade-in slide-in-from-*`)
+
+Per le animazioni allo scroll usa `<Reveal from="up" delay={100}>`.
+
+---
+
+## Manutenzione
+
+- **Ultimi video YouTube** (home): usa la playlist automatica dei caricamenti
+  del canale (`UU` + ID canale, in `site.js`). Si aggiorna da sola, senza API key.
+- **Immagini**: max 1600 px di larghezza, JPEG progressivo qualità ~82,
+  in `public/images/`.
+- **Analytics**: Google Tag Manager `GTM-P9FT69` (in `index.html`).
+- **Deploy**: Vercel — `vercel.json` fa il rewrite di tutte le rotte su
+  `index.html` (necessario per il routing lato client).

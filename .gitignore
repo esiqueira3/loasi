@@ -1,0 +1,20 @@
+# Dipendenze
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Variabili d'ambiente (chiavi Supabase e Cloudflare R2 — NON committare)
+.env
+.env.local
+.env.*.local
+
+# Editor / sistema
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.vscode/*
+!.vscode/extensions.json
+.idea/
