@@ -33,6 +33,16 @@ const giornoMese = (iso) => {
   return { mese: Number(m), giorno: Number(g) }
 }
 
+const eta = (iso) => {
+  if (!iso) return null
+  const n = new Date(`${String(iso).slice(0, 10)}T12:00:00`)
+  const oggi = new Date()
+  let a = oggi.getFullYear() - n.getFullYear()
+  const m = oggi.getMonth() - n.getMonth()
+  if (m < 0 || (m === 0 && oggi.getDate() < n.getDate())) a--
+  return a >= 0 ? a : null
+}
+
 const iniziali = (nome = '') =>
   nome
     .trim()
@@ -56,6 +66,7 @@ export default function Dashboard() {
   const [nuovoPromemoria, setNuovoPromemoria] = useState('')
   const [tabelleMancanti, setTabelleMancanti] = useState([])
   const [eventoSelezionato, setEventoSelezionato] = useState(null)
+  const [membroCompleanno, setMembroCompleanno] = useState(null)
 
   useEffect(() => {
     let annullato = false
@@ -454,13 +465,16 @@ export default function Dashboard() {
                   return (
                     <div
                       key={m.id}
-                      className={`flex items-center justify-between gap-3 p-3.5 lg:px-5 transition-colors ${
-                        eOggi ? 'bg-gradient-to-r from-pink-500/10 via-rose-500/5 to-transparent' : 'hover:bg-surface-pearl'
+                      onClick={() => setMembroCompleanno(m)}
+                      className={`group flex items-center justify-between gap-3 p-3.5 lg:px-5 cursor-pointer transition-all ${
+                        eOggi
+                          ? 'bg-gradient-to-r from-pink-500/10 via-rose-500/5 to-transparent hover:from-pink-500/15'
+                          : 'hover:bg-surface-pearl'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
                         <span
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-bold shadow-xs ${
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-bold shadow-xs transition-transform group-hover:scale-105 ${
                             eOggi
                               ? 'bg-gradient-to-tr from-pink-500 to-rose-400 text-white ring-2 ring-pink-400/40 ring-offset-1'
                               : 'bg-pink-500/12 text-pink-700'
@@ -471,7 +485,9 @@ export default function Dashboard() {
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <p className="truncate text-[13.5px] font-bold text-ink">{m.nome_completo}</p>
+                            <p className="truncate text-[13.5px] font-bold text-ink group-hover:text-pink-600 transition-colors">
+                              {m.nome_completo}
+                            </p>
                             {eOggi && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-pink-500 px-2 py-0.5 text-[9.5px] font-black uppercase tracking-widest text-white shadow-xs animate-pulse">
                                 🎉 OGGI!
@@ -500,6 +516,7 @@ export default function Dashboard() {
                             href={waUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
                             title={`Invia auguri su WhatsApp a ${m.nome_completo}`}
                             className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 transition-all hover:bg-emerald-500 hover:text-white active:scale-95 border border-emerald-500/20"
                           >
@@ -699,6 +716,152 @@ export default function Dashboard() {
                 Gestisci eventi
               </Link>
               <BtnGhost type="button" onClick={() => setEventoSelezionato(null)}>
+                Chiudi
+              </BtnGhost>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* --- Modal Dettagli Compleanno Membro --- */}
+      {membroCompleanno && (
+        <Modal
+          onClose={() => setMembroCompleanno(null)}
+          titolo={membroCompleanno.nome_completo}
+          sottotitolo="Scheda compleanno e contatti del membro"
+          icona="cake"
+          accent="#EC4899"
+          larghezza="max-w-lg"
+        >
+          <div className="flex flex-col gap-4">
+            {/* Header del Membro */}
+            <div className="flex items-center gap-4 rounded-2xl border border-pink-500/20 bg-gradient-to-r from-pink-500/10 via-rose-500/5 to-amber-500/10 p-4">
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-pink-500 to-rose-400 font-headline text-xl font-bold text-white shadow-md">
+                {iniziali(membroCompleanno.nome_completo)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="font-headline text-lg font-bold text-ink">{membroCompleanno.nome_completo}</h4>
+                  {giornoMese(membroCompleanno.data_nascita)?.giorno === OGGI.getDate() &&
+                    giornoMese(membroCompleanno.data_nascita)?.mese === (OGGI.getMonth() + 1) && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-pink-500 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-white shadow-xs animate-pulse">
+                        🎉 OGGI!
+                      </span>
+                    )}
+                </div>
+                <p className="mt-0.5 text-[13px] font-semibold text-pink-700">
+                  {membroCompleanno.ruolo || 'Membro della chiesa'}
+                </p>
+                {membroCompleanno.fascia_eta && (
+                  <span className="mt-1.5 inline-block rounded-md bg-white/75 px-2 py-0.5 text-[11px] font-bold text-ink-muted-80">
+                    Fascia: {membroCompleanno.fascia_eta}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Dettagli in Griglia */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-start gap-3 rounded-xl border border-hairline bg-surface-pearl p-3.5 shadow-xs">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-500/15 text-pink-600">
+                  <Icon name="cake" className="text-[20px]" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Data di nascita</div>
+                  <div className="mt-0.5 text-[13.5px] font-bold text-ink">
+                    {membroCompleanno.data_nascita
+                      ? new Date(`${membroCompleanno.data_nascita}T12:00:00`).toLocaleDateString('it-IT', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })
+                      : '—'}
+                  </div>
+                  {membroCompleanno.data_nascita && (
+                    <div className="mt-0.5 text-[11.5px] font-semibold text-pink-600">
+                      Compie {eta(membroCompleanno.data_nascita)} anni
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 rounded-xl border border-hairline bg-surface-pearl p-3.5 shadow-xs">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700">
+                  <Icon name="call" className="text-[20px]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Telefono / WhatsApp</div>
+                  <div className="mt-0.5 text-[13.5px] font-bold text-ink truncate">
+                    {membroCompleanno.telefono || 'Non specificato'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Email & Stato Civile */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {membroCompleanno.email && (
+                <div className="flex items-start gap-3 rounded-xl border border-hairline bg-surface-pearl p-3.5 shadow-xs">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/15 text-blue-600">
+                    <Icon name="mail" className="text-[20px]" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">E-mail</div>
+                    <a href={`mailto:${membroCompleanno.email}`} className="mt-0.5 block text-[13px] font-semibold text-blue-600 hover:underline truncate">
+                      {membroCompleanno.email}
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {membroCompleanno.stato_civile && (
+                <div className="flex items-start gap-3 rounded-xl border border-hairline bg-surface-pearl p-3.5 shadow-xs">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-700">
+                    <Icon name="family_restroom" className="text-[20px]" />
+                  </div>
+                  <div>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Stato Civile</div>
+                    <div className="mt-0.5 text-[13.5px] font-bold text-ink">{membroCompleanno.stato_civile}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {membroCompleanno.note && (
+              <div className="rounded-xl border border-hairline bg-surface-pearl p-3.5 text-[13px] text-ink-muted-80">
+                <span className="font-bold text-ink">Note: </span>
+                {membroCompleanno.note}
+              </div>
+            )}
+
+            {/* Botão WhatsApp di Destaque */}
+            {membroCompleanno.telefono ? (
+              <a
+                href={`https://wa.me/${membroCompleanno.telefono.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                  `Tanti auguri di buon compleanno, ${membroCompleanno.nome_completo}! 🎉🎂 Benedizioni da parte della Chiesa L'Oasi!`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-5 py-3 text-[14px] font-bold text-white transition-all hover:bg-emerald-500 shadow-md active:scale-95"
+              >
+                <Icon name="chat" className="text-[20px]" />
+                Invia auguri su WhatsApp
+              </a>
+            ) : (
+              <div className="rounded-xl border border-dashed border-hairline p-3 text-center text-[12.5px] text-ink-muted-48">
+                Nessun numero di telefono inserito per questo membro.
+              </div>
+            )}
+
+            <div className="mt-2 flex items-center justify-between border-t border-hairline pt-3">
+              <Link
+                to="/admin/membri"
+                className="flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-muted-80 hover:text-ink transition-colors"
+              >
+                <Icon name="badge" className="text-[16px]" />
+                Gestisci membri
+              </Link>
+              <BtnGhost type="button" onClick={() => setMembroCompleanno(null)}>
                 Chiudi
               </BtnGhost>
             </div>
