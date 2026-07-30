@@ -178,6 +178,20 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
           className="pointer-events-none absolute -top-24 left-1/2 h-56 w-72 -translate-x-1/2 rounded-full bg-gold-400/10 blur-[90px]"
         />
 
+        {/* Maniglia per comprimere / espandere, sul bordo della sidebar */}
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? 'Espandi il menu' : 'Comprimi il menu'}
+          title={collapsed ? 'Espandi il menu' : 'Comprimi il menu'}
+          className="group absolute -right-3.5 top-[84px] z-50 hidden h-7 w-7 items-center justify-center rounded-full border border-hairline bg-surface-pearl text-ink-muted-48 shadow-md transition-all duration-300 hover:border-gold-400 hover:text-gold-600 hover:shadow-lg lg:flex"
+        >
+          <Icon
+            name="chevron_left"
+            className={`text-[18px] transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
+          />
+        </button>
+
         {/* --- Marchio --- */}
         <div
           className={`relative flex h-[72px] shrink-0 items-center border-b border-white/[0.07] ${
@@ -277,21 +291,6 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
             </button>
           )}
 
-          {/* comprimi / espandi — solo desktop */}
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            aria-label={collapsed ? 'Espandi il menu' : 'Comprimi il menu'}
-            className={`hidden w-full items-center gap-3 rounded-xl py-2.5 text-cream-100/35 transition-colors hover:bg-white/[0.04] hover:text-cream-50 lg:flex ${
-              collapsed ? 'justify-center px-0' : 'px-3'
-            }`}
-          >
-            <Icon
-              name={collapsed ? 'chevron_right' : 'chevron_left'}
-              className="text-[19px] shrink-0"
-            />
-            {!collapsed && <span className="text-[12px] font-semibold">Comprimi</span>}
-          </button>
         </div>
       </aside>
     </>

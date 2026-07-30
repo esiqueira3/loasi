@@ -56,14 +56,17 @@ src/
       AdminLayout.jsx       Guscio: sidebar + header + area di contenuto
       Sidebar.jsx           Menu laterale (comprimibile, con sottomenu)
       ui.jsx                Kpi · Panel · Segmented · CustomSelect · Modal
-                            Pagination · Loading · EmptyState · bottoni
+                            ControlBar · Table · StatusToggle · Pagination
+                            Loading · EmptyState · bottoni
       Toast.jsx             Notifiche       Confirm.jsx  Dialoghi di conferma
     hooks/useFinanze.js     Titoli, rate, stati e piano di rateizzazione
     pages/
       Dashboard.jsx         Home del pastore
       Finanze.jsx           + finanze/viste.jsx · finanze/modali.jsx
       Categorie.jsx         Categorie di entrate e uscite
-      InPreparazione.jsx    Segnaposto per le sezioni non ancora sviluppate
+      Chiese.jsx            Comunità (scrive sulle tabelle del sito pubblico)
+      Dipartimenti.jsx      Gruppi e ministeri
+      Membri.jsx            Anagrafica dei membri
 
 public/                     images/ · video/ · robots.txt · sitemap.xml
 _legacy/                    Vecchio sito statico (HTML/CSS/JS) — solo archivio
@@ -93,9 +96,9 @@ Rotte del gestionale (tutte protette da `ProtectedRoute`):
 | URL                        | Schermata                                |
 | -------------------------- | ---------------------------------------- |
 | `/admin/dashboard`         | Home — panoramica della chiesa           |
-| `/admin/chiese`            | Chiese *(in preparazione)*               |
-| `/admin/dipartimenti`      | Dipartimenti *(in preparazione)*         |
-| `/admin/membri`            | Membri *(in preparazione)*               |
+| `/admin/chiese`            | Chiese — anagrafica pubblicata sul sito  |
+| `/admin/dipartimenti`      | Dipartimenti — gruppi e ministeri        |
+| `/admin/membri`            | Membri — anagrafica e appartenenze       |
 | `/admin/finanze`           | Finanze — flusso, movimenti, agenda, uscite |
 | `/admin/finanze/categorie` | Categorie di entrate e uscite            |
 

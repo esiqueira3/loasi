@@ -18,7 +18,9 @@ const AdminLogin = lazy(() => import('./pages/AdminLogin'))
 const Dashboard = lazy(() => import('./admin/pages/Dashboard'))
 const Finanze = lazy(() => import('./admin/pages/Finanze'))
 const Categorie = lazy(() => import('./admin/pages/Categorie'))
-const InPreparazione = lazy(() => import('./admin/pages/InPreparazione'))
+const Chiese = lazy(() => import('./admin/pages/Chiese'))
+const Dipartimenti = lazy(() => import('./admin/pages/Dipartimenti'))
+const Membri = lazy(() => import('./admin/pages/Membri'))
 
 function AdminFallback() {
   return (
@@ -48,42 +50,14 @@ const legacyRedirects = [
   ['/politica-riservatezza.html', '/privacy'],
 ]
 
-/* Rotte protette del gestionale. Le sezioni non ancora sviluppate mostrano un
-   segnaposto invece di rompere la navigazione. */
+/* Rotte protette del gestionale. */
 const adminRoutes = [
   ['/admin/dashboard', <Dashboard key="dash" />],
+  ['/admin/chiese', <Chiese key="chiese" />],
+  ['/admin/dipartimenti', <Dipartimenti key="dip" />],
+  ['/admin/membri', <Membri key="membri" />],
   ['/admin/finanze', <Finanze key="fin" />],
   ['/admin/finanze/categorie', <Categorie key="cat" />],
-  [
-    '/admin/chiese',
-    <InPreparazione
-      key="chiese"
-      titolo="Chiese"
-      icona="church"
-      accent="#0891B2"
-      descrizione="Anagrafica delle comunità: indirizzi, contatti, orari dei culti e galleria."
-    />,
-  ],
-  [
-    '/admin/dipartimenti',
-    <InPreparazione
-      key="dip"
-      titolo="Dipartimenti"
-      icona="diversity_3"
-      accent="#7C3AED"
-      descrizione="Gruppi e ministeri della chiesa, con i rispettivi responsabili."
-    />,
-  ],
-  [
-    '/admin/membri',
-    <InPreparazione
-      key="membri"
-      titolo="Membri"
-      icona="badge"
-      accent="#2563EB"
-      descrizione="Anagrafica dei membri, dati di contatto e appartenenza ai dipartimenti."
-    />,
-  ],
 ]
 
 export default function App() {

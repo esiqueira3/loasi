@@ -24,9 +24,13 @@ CREATE TABLE IF NOT EXISTS public.dipartimenti (
     descrizione   TEXT,
     responsabile  VARCHAR(150),
     colore        VARCHAR(9) DEFAULT '#7C3AED',
+    attivo        BOOLEAN DEFAULT TRUE,
     created_at    TIMESTAMPTZ DEFAULT NOW(),
     updated_at    TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Aggiunta per chi ha già creato la tabella con una versione precedente.
+ALTER TABLE public.dipartimenti ADD COLUMN IF NOT EXISTS attivo BOOLEAN DEFAULT TRUE;
 
 -- ============================================================================
 -- 2. MEMBRI

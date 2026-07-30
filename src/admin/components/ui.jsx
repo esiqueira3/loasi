@@ -417,6 +417,172 @@ export function BtnDanger({ children, className = '', ...rest }) {
 }
 
 /* ================================================================== */
+/* Barra di controllo: ricerca · vista · conteggio                     */
+/* ================================================================== */
+
+export function ControlBar({
+  valore,
+  onCerca,
+  placeholder = 'Cerca…',
+  vista,
+  onVista,
+  conteggio,
+  etichettaConteggio,
+  accent = '#107C42',
+  children,
+}) {
+  return (
+    <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center">
+      <div className="relative flex-1">
+        <Icon
+          name="search"
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[19px] text-ink-muted-48"
+        />
+        <input
+          type="search"
+          value={valore}
+          onChange={(e) => onCerca(e.target.value)}
+          placeholder={placeholder}
+          className="w-full rounded-xl border border-hairline bg-surface-pearl py-2.5 pl-11 pr-3 text-[13.5px] text-ink shadow-sm outline-none transition-colors focus:border-[color:var(--accent)]"
+          style={{ '--accent': accent }}
+        />
+      </div>
+
+      <div className="flex items-center gap-2">
+        {children}
+
+        {conteggio !== undefined && (
+          <span
+            className="whitespace-nowrap rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest"
+            style={{ color: accent, backgroundColor: `${accent}12`, borderColor: `${accent}33` }}
+          >
+            {conteggio} {etichettaConteggio}
+          </span>
+        )}
+
+        {vista && (
+          <div className="flex rounded-xl border border-hairline bg-surface-pearl p-1 shadow-sm">
+            {[
+              { v: 'lista', icona: 'view_list', label: 'Vista elenco' },
+              { v: 'griglia', icona: 'grid_view', label: 'Vista schede' },
+            ].map((o) => (
+              <button
+                key={o.v}
+                type="button"
+                onClick={() => onVista(o.v)}
+                aria-label={o.label}
+                title={o.label}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${
+                  vista === o.v ? 'text-white' : 'text-ink-muted-48 hover:text-ink'
+                }`}
+                style={vista === o.v ? { backgroundColor: accent } : undefined}
+              >
+                <Icon name={o.icona} className="text-[18px]" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ================================================================== */
+/* Tabella                                                             */
+/* ================================================================== */
+
+export function Table({ colonne, righe, onModifica, onElimina, chiave = 'id' }) {
+  return (
+    <Panel padding={false}>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[640px] border-collapse">
+          <thead>
+            <tr className="border-b border-hairline bg-canvas-parchment/60">
+              {colonne.map((c) => (
+                <th
+                  key={c.key}
+                  className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-widest text-ink-muted-48"
+                >
+                  {c.label}
+                </th>
+              ))}
+              {(onModifica || onElimina) && (
+                <th className="w-px px-5 py-3 text-right text-[10px] font-black uppercase tracking-widest text-ink-muted-48">
+                  Azioni
+                </th>
+              )}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-hairline">
+            {righe.map((r) => (
+              <tr key={r[chiave]} className="transition-colors hover:bg-canvas-parchment/50">
+                {colonne.map((c) => (
+                  <td key={c.key} className="px-5 py-3.5 align-middle text-[13.5px] text-ink">
+                    {c.render ? c.render(r) : (r[c.key] ?? '—')}
+                  </td>
+                ))}
+                {(onModifica || onElimina) && (
+                  <td className="px-5 py-3.5">
+                    <div className="flex justify-end gap-2">
+                      {onModifica && (
+                        <button
+                          type="button"
+                          onClick={() => onModifica(r)}
+                          aria-label="Modifica"
+                          title="Modifica"
+                          className="rounded-lg border border-hairline p-2 text-ink-muted-80 transition-all hover:bg-canvas-parchment hover:text-ink"
+                        >
+                          <Icon name="edit" className="text-[16px]" />
+                        </button>
+                      )}
+                      {onElimina && (
+                        <button
+                          type="button"
+                          onClick={() => onElimina(r)}
+                          aria-label="Elimina"
+                          title="Elimina"
+                          className="rounded-lg border border-red-500/30 p-2 text-red-500 transition-all hover:bg-red-500/10"
+                        >
+                          <Icon name="delete" className="text-[16px]" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Panel>
+  )
+}
+
+/* ================================================================== */
+/* Interruttore di stato attivo / non attivo                           */
+/* ================================================================== */
+
+export function StatusToggle({ attivo, onToggle, etichette = ['Attivo', 'Non attivo'] }) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation()
+        onToggle()
+      }}
+      className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[9.5px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 ${
+        attivo
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+          : 'border-red-200 bg-red-50 text-red-600'
+      }`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${attivo ? 'animate-pulse bg-emerald-500' : 'bg-red-500'}`} />
+      {attivo ? etichette[0] : etichette[1]}
+    </button>
+  )
+}
+
+/* ================================================================== */
 /* Etichetta di stato                                                  */
 /* ================================================================== */
 
