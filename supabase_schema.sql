@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS public.igrejas (
     link_maps TEXT,
     horarios_culto TEXT,
     foto_capa_url TEXT,
+    referente TEXT,
+    responsavel TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

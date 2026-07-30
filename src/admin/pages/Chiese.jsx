@@ -118,9 +118,25 @@ export default function Chiese() {
       updated_at: new Date().toISOString(),
     }
 
-    const { error } = inModifica
+    let { error } = inModifica
       ? await supabase.from('igrejas').update(payload).eq('id', inModifica.id)
       : await supabase.from('igrejas').insert([payload])
+
+    // Fallback automatico se a coluna referente/responsavel ainda não existir no Supabase
+    if (error && (error.message?.includes('referente') || error.message?.includes('responsavel') || error.message?.includes('column') || error.code === 'PGRST204')) {
+      const fallbackPayload = { ...payload }
+      delete fallbackPayload.referente
+      delete fallbackPayload.responsavel
+
+      const resFallback = inModifica
+        ? await supabase.from('igrejas').update(fallbackPayload).eq('id', inModifica.id)
+        : await supabase.from('igrejas').insert([fallbackPayload])
+
+      if (!resFallback.error) {
+        toast.warning('Modifiche salvate! Esegui lo script SQL nel Supabase Editor per abilitare il campo Referente.')
+        error = null
+      }
+    }
 
     setSalvando(false)
 

@@ -173,7 +173,7 @@ export default function Finanze() {
           sottotitolo="Entrate, uscite, scadenze e flusso di cassa della chiesa in un unico pannello."
         >
           {!setupNeeded && !loading && (
-            <BtnPrimary accent={VERDE} onClick={() => setCreando(true)}>
+            <BtnPrimary onClick={() => setCreando(true)}>
               <Icon name="add" className="text-[18px]" />
               Nuovo movimento
             </BtnPrimary>

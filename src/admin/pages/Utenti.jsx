@@ -288,8 +288,8 @@ export default function Utenti() {
           sottotitolo="Le persone abilitate al gestionale e il profilo di accesso di ciascuna."
         >
           {!setupNeeded && !loading && (
-            <BtnPrimary accent={ROSA} onClick={apriNuovo}>
-              <Icon name="person_add" className="text-[18px]" />
+            <BtnPrimary onClick={apriNuovo}>
+              <Icon name="add" className="text-[18px]" />
               Nuovo utente
             </BtnPrimary>
           )}
@@ -339,8 +339,8 @@ export default function Utenti() {
                   }
                 >
                   {!cerca && (
-                    <BtnPrimary accent={ROSA} onClick={apriNuovo}>
-                      <Icon name="person_add" className="text-[18px]" />
+                    <BtnPrimary onClick={apriNuovo}>
+                      <Icon name="add" className="text-[18px]" />
                       Registra utente
                     </BtnPrimary>
                   )}

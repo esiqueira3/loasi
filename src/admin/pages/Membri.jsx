@@ -292,8 +292,8 @@ export default function Membri() {
           sottotitolo="Anagrafica dei membri, contatti e appartenenza ai dipartimenti."
         >
           {!setupNeeded && !loading && (
-            <BtnPrimary accent={BLU} onClick={apriNuovo}>
-              <Icon name="person_add" className="text-[18px]" />
+            <BtnPrimary onClick={apriNuovo}>
+              <Icon name="add" className="text-[18px]" />
               Nuovo membro
             </BtnPrimary>
           )}
@@ -399,8 +399,8 @@ export default function Membri() {
                   }
                 >
                   {!cerca && !filtriAttivi && (
-                    <BtnPrimary accent={BLU} onClick={apriNuovo}>
-                      <Icon name="person_add" className="text-[18px]" />
+                    <BtnPrimary onClick={apriNuovo}>
+                      <Icon name="add" className="text-[18px]" />
                       Registra membro
                     </BtnPrimary>
                   )}
