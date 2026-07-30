@@ -179,16 +179,18 @@ export default function Eventi() {
       </PageTitle>
 
       <ControlBar
-        cerca={cerca}
-        onCercaChange={setCerca}
+        valore={cerca}
+        onCerca={setCerca}
         placeholder="Cerca evento per titolo o luogo…"
         vista={vista}
-        onVistaChange={setVista}
-        totale={filtrate.length}
+        onVista={setVista}
+        conteggio={filtrate.length}
+        etichettaConteggio={filtrate.length === 1 ? 'evento' : 'eventi'}
+        accent={ORO}
       />
 
       {loading ? (
-        <Loading testo="Caricamento eventi in corso…" />
+        <Loading testo="Caricamento eventi in corso…" accent={ORO} />
       ) : filtrate.length === 0 ? (
         <EmptyState
           icona="event_busy"
@@ -227,24 +229,25 @@ export default function Eventi() {
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-transparent to-transparent" />
 
                   {valid && (
-                    <div className="absolute left-4 top-4 flex h-14 w-14 flex-col items-center justify-center rounded-xl bg-gold-400 font-headline text-ink-950 shadow-md">
+                    <div className="absolute left-3.5 top-3.5 flex h-14 w-14 flex-col items-center justify-center rounded-xl bg-[#C8A165] font-headline text-ink-950 shadow-md">
                       <span className="text-[9px] font-black uppercase tracking-widest">{MONTHS_IT[d.getMonth()]}</span>
                       <span className="text-xl font-bold leading-none">{d.getDate()}</span>
                       <span className="text-[8px] font-bold opacity-75">{d.getFullYear()}</span>
                     </div>
                   )}
 
-                  <div className="absolute right-4 top-4">
+                  <div className="absolute right-3.5 top-3.5">
                     <button
                       type="button"
                       onClick={() => toggleAtivo(r)}
                       title={r.ativo ? 'Disattiva (nascondi dal sito)' : 'Attiva (mostra sul sito)'}
-                      className={`rounded-full px-3 py-1 text-[11px] font-bold tracking-wider uppercase transition-colors ${
+                      className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider backdrop-blur-md transition-all shadow-md active:scale-95 ${
                         r.ativo
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          ? 'bg-emerald-950/85 text-emerald-300 border border-emerald-500/50 hover:bg-emerald-900'
+                          : 'bg-amber-950/85 text-amber-300 border border-amber-500/50 hover:bg-amber-900'
                       }`}
                     >
+                      <span className={`h-1.5 w-1.5 rounded-full ${r.ativo ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
                       {r.ativo ? 'Pubblicato' : 'Bozza'}
                     </button>
                   </div>
