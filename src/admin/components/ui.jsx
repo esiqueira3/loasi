@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Icon from '../../components/Icon'
 
 /* ================================================================== */
@@ -332,16 +333,21 @@ export function Modal({ children, onClose, larghezza = 'max-w-md', titolo, sotto
     }
   }, [onClose])
 
-  return (
+  /* Il modale viene montato in fondo al <body>.
+     Dentro l'albero del gestionale ci sono antenati con animazioni di
+     `transform` (la classe .fade-in): un antenato trasformato diventa il blocco
+     di contenimento dei figli `position: fixed`, e il modale finirebbe
+     ancorato a quello invece che alla finestra — tagliato in alto e in basso. */
+  return createPortal(
     <div
-      className="fade-in fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fade-in fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain bg-black/60 p-4 backdrop-blur-sm sm:items-center sm:p-6"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full ${larghezza} max-h-[92vh] overflow-y-auto rounded-2xl border border-hairline bg-surface-pearl p-6 shadow-2xl`}
+        className={`my-auto w-full ${larghezza} rounded-2xl border border-hairline bg-surface-pearl p-6 font-body text-ink shadow-2xl`}
       >
         {titolo && (
           <div className="mb-5 flex items-start justify-between gap-3">
@@ -371,7 +377,8 @@ export function Modal({ children, onClose, larghezza = 'max-w-md', titolo, sotto
         )}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
