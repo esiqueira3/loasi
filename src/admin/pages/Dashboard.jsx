@@ -417,28 +417,96 @@ export default function Dashboard() {
           </Panel>
 
           {/* --- Compleanni --- */}
-          <Panel padding={false}>
-            <div className="p-4 lg:p-6">
-              <PanelTitle titolo="Compleanni" nota={`Da oggi a fine ${MESI[OGGI.getMonth()].toLowerCase()}`} />
+          <Panel padding={false} className="overflow-hidden border border-hairline bg-surface-card shadow-soft">
+            <div className="flex items-center justify-between border-b border-hairline bg-gradient-to-r from-pink-500/5 via-rose-500/5 to-amber-500/5 p-4 lg:p-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500/15 text-pink-600 shadow-xs">
+                  <Icon name="cake" className="text-[20px]" />
+                </div>
+                <div>
+                  <h3 className="font-headline text-[15px] font-bold text-ink">Compleanni</h3>
+                  <p className="text-[11px] font-medium text-ink-muted-48">
+                    Fino a fine {MESI[OGGI.getMonth()].toLowerCase()}
+                  </p>
+                </div>
+              </div>
+              {compleanni.length > 0 && (
+                <span className="rounded-full bg-pink-500/15 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-pink-700 border border-pink-500/20">
+                  {compleanni.length} {compleanni.length === 1 ? 'membro' : 'membri'}
+                </span>
+              )}
             </div>
+
             {compleanni.length === 0 ? (
-              <EmptyState icona="cake" titolo="Nessun compleanno" testo="Nessun compleanno nei prossimi giorni." />
+              <div className="py-10 text-center text-ink-muted-48">
+                <Icon name="cake" className="mx-auto text-[32px] opacity-30 mb-1 text-pink-500" />
+                <p className="text-[13px] font-medium">Nessun compleanno in arrivo questo mese.</p>
+              </div>
             ) : (
               <div className="divide-y divide-hairline">
                 {compleanni.map((m) => {
                   const d = giornoMese(m.data_nascita)
+                  const eOggi = d && d.giorno === OGGI.getDate() && d.mese === (OGGI.getMonth() + 1)
+                  const waPhone = m.telefono ? m.telefono.replace(/[^0-9]/g, '') : null
+                  const waText = encodeURIComponent(`Tanti auguri di buon compleanno, ${m.nome_completo}! 🎉🎂 Dio ti benedica. Chiesa L'Oasi.`)
+                  const waUrl = waPhone ? `https://wa.me/${waPhone}?text=${waText}` : null
+
                   return (
-                    <div key={m.id} className="flex items-center gap-3 px-4 py-3 lg:px-6">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-500/12 text-[12px] font-bold text-pink-600">
-                        {iniziali(m.nome_completo)}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13.5px] font-semibold text-ink">{m.nome_completo}</p>
-                        {m.telefono && <p className="text-[12px] text-ink-muted-48">{m.telefono}</p>}
+                    <div
+                      key={m.id}
+                      className={`flex items-center justify-between gap-3 p-3.5 lg:px-5 transition-colors ${
+                        eOggi ? 'bg-gradient-to-r from-pink-500/10 via-rose-500/5 to-transparent' : 'hover:bg-surface-pearl'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-bold shadow-xs ${
+                            eOggi
+                              ? 'bg-gradient-to-tr from-pink-500 to-rose-400 text-white ring-2 ring-pink-400/40 ring-offset-1'
+                              : 'bg-pink-500/12 text-pink-700'
+                          }`}
+                        >
+                          {iniziali(m.nome_completo)}
+                        </span>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <p className="truncate text-[13.5px] font-bold text-ink">{m.nome_completo}</p>
+                            {eOggi && (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-pink-500 px-2 py-0.5 text-[9.5px] font-black uppercase tracking-widest text-white shadow-xs animate-pulse">
+                                🎉 OGGI!
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[12px] text-ink-muted-48 truncate">
+                            {m.telefono ? m.telefono : m.ruolo || 'Membro'}
+                          </p>
+                        </div>
                       </div>
-                      <span className="shrink-0 rounded-full bg-canvas-parchment px-2.5 py-1 text-[12px] font-bold text-ink-muted-80">
-                        {d.giorno}/{String(d.mese).padStart(2, '0')}
-                      </span>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className={`rounded-xl px-2.5 py-1 text-[11.5px] font-bold tracking-tight border ${
+                            eOggi
+                              ? 'bg-pink-500 text-white border-pink-400 shadow-xs'
+                              : 'bg-surface-pearl text-ink-muted-80 border-hairline'
+                          }`}
+                        >
+                          {d.giorno}/{String(d.mese).padStart(2, '0')}
+                        </span>
+
+                        {waUrl && (
+                          <a
+                            href={waUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={`Invia auguri su WhatsApp a ${m.nome_completo}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 transition-all hover:bg-emerald-500 hover:text-white active:scale-95 border border-emerald-500/20"
+                          >
+                            <Icon name="chat" className="text-[16px]" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   )
                 })}
