@@ -12,6 +12,7 @@ import Privacy from './pages/Privacy'
 import NotFound from './pages/NotFound'
 
 import ProtectedRoute from './components/ProtectedRoute'
+import AdminProviders from './admin/components/AdminProviders'
 
 /* Helper per gestire il caricamento dinamico con auto-reload se la versione sul server è cambiata */
 const lazyLoad = (fn) =>
@@ -124,7 +125,9 @@ export default function App() {
             path={path}
             element={
               <ProtectedRoute>
-                <Suspense fallback={<AdminFallback />}>{element}</Suspense>
+                <AdminProviders>
+                  <Suspense fallback={<AdminFallback />}>{element}</Suspense>
+                </AdminProviders>
               </ProtectedRoute>
             }
           />

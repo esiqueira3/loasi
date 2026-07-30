@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import Sidebar from './Sidebar'
 import Icon from '../../components/Icon'
-import { ToastHost } from './Toast'
-import { ConfirmProvider } from './Confirm'
 import { Link } from 'react-router-dom'
-import { PermessiProvider, usePermessi } from '../hooks/usePermessi'
+import { usePermessi } from '../hooks/usePermessi'
 
 const STORAGE_KEY = 'loasi.admin.sidebarCollapsed'
 
@@ -80,8 +78,6 @@ export default function AdminLayout({
   }, [mobileOpen])
 
   return (
-    <PermessiProvider>
-    <ConfirmProvider>
     <div className="min-h-screen bg-canvas-parchment font-body text-ink">
       <Sidebar
         collapsed={collapsed}
@@ -124,10 +120,7 @@ export default function AdminLayout({
         </main>
       </div>
 
-      <ToastHost />
     </div>
-    </ConfirmProvider>
-    </PermessiProvider>
   )
 }
 

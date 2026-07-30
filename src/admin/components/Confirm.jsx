@@ -9,9 +9,26 @@ import { BtnGhost, Modal } from './ui'
  *   if (await confirm({ titolo: 'Eliminare?', messaggio: '…', intent: 'danger' })) { … }
  */
 
-const ConfirmContext = createContext(() => Promise.resolve(false))
+const ConfirmContext = createContext(null)
 
-export const useConfirm = () => useContext(ConfirmContext)
+export function useConfirm() {
+  const confirm = useContext(ConfirmContext)
+
+  /* Fuori dal provider il vecchio valore predefinito rispondeva sempre «no»:
+     ogni eliminazione veniva annullata senza dialogo e senza errore. Meglio
+     un rifiuto rumoroso, che si nota subito. */
+  if (!confirm) {
+    return () => {
+      console.error(
+        '[L’Oasi] useConfirm() usato fuori da <AdminProviders>: la conferma non può funzionare. ' +
+          'Monta i provider sopra le pagine, non dentro AdminLayout.'
+      )
+      return Promise.resolve(false)
+    }
+  }
+
+  return confirm
+}
 
 export function ConfirmProvider({ children }) {
   const [stato, setStato] = useState(null)
