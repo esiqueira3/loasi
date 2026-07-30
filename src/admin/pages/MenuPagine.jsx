@@ -172,9 +172,17 @@ export default function MenuPagine() {
     setVoci((prev) => prev.map((x) => (x.slug === v.slug ? { ...x, ativo: nuovoStato } : x)))
 
     if (v.id) {
-      const { error } = await supabase.from('paginas_menu').update({ ativo: nuovoStato }).eq('id', v.id)
-      if (error) {
-        toast.error(`Errore aggiornamento visibilità: ${error.message}`)
+      const { data, error } = await supabase
+        .from('paginas_menu')
+        .update({ ativo: nuovoStato })
+        .eq('id', v.id)
+        .select()
+      if (error || !data?.length) {
+        toast.error(
+          error
+            ? `Errore aggiornamento visibilità: ${error.message}`
+            : 'Il database ha rifiutato la modifica: esegui supabase_menu_policies.sql.'
+        )
         carica()
       } else {
         toast.success(nuovoStato ? 'Voce attivata nel menu' : 'Voce nascosta dal menu')
@@ -209,6 +217,16 @@ export default function MenuPagine() {
   }
 
   const elimina = async (v) => {
+    /* Le voci di sistema reggono il menu del sito: non si eliminano.
+       Il pulsante è già nascosto, questo è il secondo sbarramento. */
+    if (v.tipo === 'sistema') {
+      return toast.error('Le voci di sistema non si possono eliminare: puoi solo nasconderle.')
+    }
+
+    if (!v.id) {
+      return toast.error('Questa voce non è ancora salvata nel database.')
+    }
+
     const ok = await confirm({
       titolo: 'Eliminare la voce / pagina?',
       messaggio: `Sei sicuro di voler eliminare "${v.label}"? Se è una pagina dinamica, il suo contenuto andrà perso.`,
@@ -217,22 +235,23 @@ export default function MenuPagine() {
     })
     if (!ok) return
 
-    let error = null
-    if (v.id) {
-      const res = await supabase.from('paginas_menu').delete().eq('id', v.id)
-      error = res.error
-    } else if (v.slug) {
-      const res = await supabase.from('paginas_menu').delete().eq('slug', v.slug)
-      error = res.error
-    }
+    /* `.select()` è indispensabile: senza, quando la Row Level Security blocca
+       l'operazione Supabase risponde "nessun errore" con zero righe toccate, e
+       l'interfaccia festeggia un'eliminazione che non è mai avvenuta. */
+    const { data, error } = await supabase.from('paginas_menu').delete().eq('id', v.id).select()
 
     if (error) {
       return toast.error(`Errore durante l'eliminazione: ${error.message}`)
     }
 
+    if (!data || data.length === 0) {
+      return toast.error(
+        "Nessuna riga eliminata: il database ha rifiutato l'operazione. Esegui supabase_menu_policies.sql nel SQL Editor di Supabase."
+      )
+    }
+
     toast.success('Voce eliminata.')
-    setVoci((prev) => prev.filter((x) => (v.id ? x.id !== v.id : x.slug !== v.slug)))
-    carica()
+    setVoci((prev) => prev.filter((x) => x.id !== v.id))
   }
 
   const filtrate = voci.filter(
@@ -242,7 +261,9 @@ export default function MenuPagine() {
   )
 
   return (
-    <AdminLayout modulo="Menu e Pagine" titolo="Gestione Menu & Pagine" icona="menu_open" accent={ORO}>
+    /* Il modulo è "Home", come la voce di menu in theme.js: usare un nome
+       assente da MODULI bloccherebbe la pagina a ogni profilo non di sistema. */
+    <AdminLayout modulo="Home" titolo="Gestione Menu & Pagine" icona="menu_open" accent={ORO}>
       <PageTitle
         titolo="Menu Navigazione & Pagine"
         sottotitolo="Organizza l'ordine del menu superiore e crea pagine dinamiche per il sito."
