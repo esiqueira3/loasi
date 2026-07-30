@@ -19,6 +19,7 @@ const Dashboard = lazy(() => import('./admin/pages/Dashboard'))
 const Finanze = lazy(() => import('./admin/pages/Finanze'))
 const Categorie = lazy(() => import('./admin/pages/Categorie'))
 const Chiese = lazy(() => import('./admin/pages/Chiese'))
+const Eventi = lazy(() => import('./admin/pages/Eventi'))
 const Dipartimenti = lazy(() => import('./admin/pages/Dipartimenti'))
 const Membri = lazy(() => import('./admin/pages/Membri'))
 const Utenti = lazy(() => import('./admin/pages/Utenti'))
@@ -48,6 +49,7 @@ const legacyRedirects = [
   ['/argentina.html', '/missioni/argentina'],
   ['/cambogia', '/missioni/cambogia'],
   ['/cambogia.html', '/missioni/cambogia'],
+  ['/chiese', '/#indirizzi'],
   ['/politica-riservatezza', '/privacy'],
   ['/politica-riservatezza.html', '/privacy'],
 ]
@@ -56,6 +58,7 @@ const legacyRedirects = [
 const adminRoutes = [
   ['/admin/dashboard', <Dashboard key="dash" />],
   ['/admin/chiese', <Chiese key="chiese" />],
+  ['/admin/eventi', <Eventi key="eventi" />],
   ['/admin/dipartimenti', <Dipartimenti key="dip" />],
   ['/admin/membri', <Membri key="membri" />],
   ['/admin/finanze', <Finanze key="fin" />],

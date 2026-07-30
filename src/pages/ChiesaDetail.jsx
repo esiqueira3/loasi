@@ -67,6 +67,7 @@ export default function ChiesaDetail() {
       mapsUrl: pick(row?.link_maps, base.mapsUrl),
       cover: pick(row?.foto_capa_url, base.cover),
       schedule: pick(row?.horarios_culto, null),
+      referente: pick(row?.referente || row?.responsavel, base.referente),
       name: pick(row?.nome, `${base.name} — ${base.city}`),
     }
   }, [base, row])

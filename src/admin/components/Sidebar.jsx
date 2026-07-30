@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { MENU } from '../theme'
+import { MENU_SECTIONS } from '../theme'
 import { usePermessi } from '../hooks/usePermessi'
 import Icon from '../../components/Icon'
 
 /* ------------------------------------------------------------------ */
-/* Voce singola                                                        */
+/* Voce singola (Pillola Dorata quando attiva)                        */
 /* ------------------------------------------------------------------ */
 
 function NavItem({ item, collapsed, onNavigate }) {
@@ -17,30 +17,25 @@ function NavItem({ item, collapsed, onNavigate }) {
       onClick={onNavigate}
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 rounded-xl py-2.5 transition-all duration-200 ${
-          collapsed ? 'justify-center px-0' : 'px-3'
+        `group relative flex items-center gap-3 rounded-xl py-2.5 transition-all duration-300 ${
+          collapsed ? 'justify-center px-0' : 'px-3.5'
         } ${
           isActive
-            ? 'bg-white/[0.07] text-gold-300'
-            : 'text-cream-100/55 hover:bg-white/[0.04] hover:text-cream-50'
+            ? 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-ink-950 font-bold shadow-[0_4px_20px_rgba(212,175,55,0.35)] scale-[1.02]'
+            : 'text-cream-100/70 hover:bg-white/[0.06] hover:text-cream-50 font-medium'
         }`
       }
     >
       {({ isActive }) => (
         <>
-          {/* barretta dorata sull'elemento attivo */}
-          <span
-            aria-hidden="true"
-            className={`absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-gold-400 transition-all duration-300 ${
-              isActive ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
           <Icon
             name={item.icon}
             filled={isActive}
-            className={`text-[21px] shrink-0 transition-colors ${isActive ? 'text-gold-400' : ''}`}
+            className={`text-[20px] shrink-0 transition-colors ${
+              isActive ? 'text-ink-950 font-bold' : 'text-[#C6A052] group-hover:text-gold-300'
+            }`}
           />
-          {!collapsed && <span className="truncate text-[13.5px] font-semibold">{item.label}</span>}
+          {!collapsed && <span className="truncate text-[13.5px] tracking-tight">{item.label}</span>}
 
           {/* tooltip quando la barra è compressa */}
           {collapsed && (
@@ -51,85 +46,6 @@ function NavItem({ item, collapsed, onNavigate }) {
         </>
       )}
     </NavLink>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/* Gruppo con sottovoci (es. Finanze → Panoramica · Categorie)         */
-/* ------------------------------------------------------------------ */
-
-function NavGroup({ item, collapsed, onNavigate }) {
-  const { pathname } = useLocation()
-  const groupActive = item.children.some((c) => pathname === c.to || pathname.startsWith(`${c.to}/`))
-  const [open, setOpen] = useState(groupActive)
-
-  useEffect(() => {
-    if (groupActive) setOpen(true)
-  }, [groupActive])
-
-  /* Compressa: il gruppo diventa una lista di icone singole. */
-  if (collapsed) {
-    return (
-      <div className="space-y-1">
-        <span aria-hidden="true" className="mx-auto block h-px w-6 bg-white/10" />
-        {item.children.map((child) => (
-          <NavItem key={child.key} item={child} collapsed onNavigate={onNavigate} />
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 ${
-          groupActive ? 'text-gold-300' : 'text-cream-100/55 hover:bg-white/[0.04] hover:text-cream-50'
-        }`}
-      >
-        <Icon
-          name={item.icon}
-          filled={groupActive}
-          className={`text-[21px] shrink-0 ${groupActive ? 'text-gold-400' : ''}`}
-        />
-        <span className="flex-1 truncate text-left text-[13.5px] font-semibold">{item.label}</span>
-        <Icon
-          name="expand_more"
-          className={`text-[18px] transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-
-      <div
-        className={`grid transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
-          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-        }`}
-      >
-        <ul className="overflow-hidden">
-          <div className="ml-[22px] space-y-0.5 border-l border-white/10 pl-3 pt-1">
-            {item.children.map((child) => (
-              <li key={child.key}>
-                <NavLink
-                  to={child.to}
-                  onClick={onNavigate}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors ${
-                      isActive
-                        ? 'bg-gold-400/10 font-semibold text-gold-300'
-                        : 'text-cream-100/45 hover:text-cream-50'
-                    }`
-                  }
-                >
-                  <Icon name={child.icon} className="text-[17px] shrink-0" />
-                  <span className="truncate">{child.label}</span>
-                </NavLink>
-              </li>
-            ))}
-          </div>
-        </ul>
-      </div>
-    </div>
   )
 }
 
@@ -146,12 +62,13 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
     supabase.auth.getUser().then(({ data }) => setEmail(data?.user?.email || ''))
   }, [])
 
-  /* Restano solo le voci che il profilo può almeno consultare. */
-  const voci = useMemo(
+  /* Restano solo le sezioni e le voci che il profilo può almeno consultare. */
+  const sezioniFiltrate = useMemo(
     () =>
-      MENU.filter((item) => puo(item.modulo)).map((item) =>
-        item.children ? { ...item, children: item.children.filter((c) => puo(c.modulo)) } : item
-      ),
+      MENU_SECTIONS.map((sec) => ({
+        ...sec,
+        items: sec.items.filter((item) => puo(item.modulo)),
+      })).filter((sec) => sec.items.length > 0),
     [puo]
   )
 
@@ -240,21 +157,24 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
           )}
         </div>
 
-        {/* --- Voci --- */}
-        <nav className="no-scrollbar relative flex-1 space-y-1 overflow-y-auto px-3 py-5">
-          {!collapsed && (
-            <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest2 text-cream-100/25">
-              Gestione
-            </p>
-          )}
+        {/* --- Voci di menu raggruppate con icone --- */}
+        <nav className="no-scrollbar relative flex-1 space-y-4 overflow-y-auto px-3 py-4">
+          {sezioniFiltrate.map((sec, i) => (
+            <div key={sec.key || i} className="space-y-1.5">
+              {!collapsed ? (
+                <div className="flex items-center gap-2 px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-widest text-[#C6A052]">
+                  <Icon name={sec.icon} className="text-[16px] text-[#C6A052] shrink-0" />
+                  <span className="truncate">{sec.group}</span>
+                </div>
+              ) : (
+                i > 0 && <span aria-hidden="true" className="mx-auto my-2 block h-px w-6 bg-white/10" />
+              )}
 
-          {voci.map((item) =>
-            item.children ? (
-              <NavGroup key={item.key} item={item} collapsed={collapsed} onNavigate={onCloseMobile} />
-            ) : (
-              <NavItem key={item.key} item={item} collapsed={collapsed} onNavigate={onCloseMobile} />
-            )
-          )}
+              {sec.items.map((item) => (
+                <NavItem key={item.key} item={item} collapsed={collapsed} onNavigate={onCloseMobile} />
+              ))}
+            </div>
+          ))}
         </nav>
 
         {/* --- Piede: sito, utente, uscita --- */}

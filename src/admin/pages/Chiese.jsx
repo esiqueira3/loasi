@@ -24,6 +24,7 @@ const vuoto = {
   slug: '',
   nome: '',
   cidade: '',
+  referente: '',
   endereco: '',
   telefone: '',
   email: '',
@@ -82,6 +83,7 @@ export default function Chiese() {
       slug: r.slug || '',
       nome: r.nome || '',
       cidade: r.cidade || '',
+      referente: r.referente || r.responsavel || '',
       endereco: r.endereco || '',
       telefone: r.telefone || '',
       email: r.email || '',
@@ -105,6 +107,8 @@ export default function Chiese() {
       slug,
       nome: form.nome.trim(),
       cidade: form.cidade.trim(),
+      referente: form.referente.trim() || null,
+      responsavel: form.referente.trim() || null,
       endereco: form.endereco.trim(),
       telefone: form.telefone.trim() || null,
       email: form.email.trim() || null,
@@ -193,7 +197,7 @@ export default function Chiese() {
           sottotitolo="Anagrafica delle comunità: indirizzi, contatti e orari dei culti."
         >
           {!loading && (
-            <BtnPrimary accent={AZZURRO} onClick={apriNuova}>
+            <BtnPrimary onClick={apriNuova}>
               <Icon name="add" className="text-[18px]" />
               Nuova comunità
             </BtnPrimary>
@@ -237,7 +241,7 @@ export default function Chiese() {
                   }
                 >
                   {!cerca && (
-                    <BtnPrimary accent={AZZURRO} onClick={apriNuova}>
+                    <BtnPrimary onClick={apriNuova}>
                       <Icon name="add" className="text-[18px]" />
                       Aggiungi comunità
                     </BtnPrimary>
@@ -273,6 +277,12 @@ export default function Chiese() {
                     </div>
 
                     <div className="flex flex-1 flex-col gap-2.5 p-5 text-[13px] text-ink-muted-80">
+                      {(r.referente || r.responsavel) && (
+                        <div className="flex items-center gap-2.5">
+                          <Icon name="person" className="shrink-0 text-[16px] text-gold-600" />
+                          <span className="font-semibold text-ink">{r.referente || r.responsavel}</span>
+                        </div>
+                      )}
                       {r.endereco && (
                         <div className="flex items-start gap-2.5">
                           <Icon name="location_on" className="mt-0.5 shrink-0 text-[16px] opacity-60" />
@@ -382,6 +392,16 @@ export default function Chiese() {
                 value={form.nome}
                 onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
                 placeholder="Chiesa Cristiana Evangelica L'Oasi — Terracina"
+                className={inputClass}
+              />
+            </Field>
+
+            <Field label="Referente / Responsabile" hint="Nome della persona referente (es. Stefano Poldi, Patrizia Ronga, Giovanna Smarrazzo)">
+              <input
+                type="text"
+                value={form.referente}
+                onChange={(e) => setForm((f) => ({ ...f, referente: e.target.value }))}
+                placeholder="es. Stefano Poldi"
                 className={inputClass}
               />
             </Field>

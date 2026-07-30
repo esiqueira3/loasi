@@ -188,7 +188,7 @@ export default function Dipartimenti() {
           sottotitolo="Gruppi, ministeri e servizi della chiesa, con i rispettivi responsabili."
         >
           {!setupNeeded && !loading && (
-            <BtnPrimary accent={VIOLA} onClick={apriNuovo}>
+            <BtnPrimary onClick={apriNuovo}>
               <Icon name="add" className="text-[18px]" />
               Nuovo dipartimento
             </BtnPrimary>
@@ -224,7 +224,7 @@ export default function Dipartimenti() {
                   }
                 >
                   {!cerca && (
-                    <BtnPrimary accent={VIOLA} onClick={apriNuovo}>
+                    <BtnPrimary onClick={apriNuovo}>
                       <Icon name="add" className="text-[18px]" />
                       Crea dipartimento
                     </BtnPrimary>

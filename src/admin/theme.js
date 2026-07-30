@@ -11,6 +11,7 @@
 export const ACCENT = {
   dashboard: '#A67C3D', // oro del marchio
   chiese: '#0891B2',
+  eventi: '#EAB308', // oro/ambra per gli eventi
   dipartimenti: '#7C3AED',
   membri: '#2563EB',
   finanze: '#107C42', // verde del modulo finanziario
@@ -24,6 +25,7 @@ export const ACCENT = {
 export const MODULI = [
   { nome: 'Home', icona: 'space_dashboard', descrizione: 'Panoramica della chiesa' },
   { nome: 'Chiese', icona: 'church', descrizione: 'Anagrafica delle comunità, pubblicata sul sito' },
+  { nome: 'Eventi', icona: 'calendar_month', descrizione: 'Agenda e eventi in evidenza sul sito' },
   { nome: 'Dipartimenti', icona: 'diversity_3', descrizione: 'Gruppi, ministeri e responsabili' },
   { nome: 'Membri', icona: 'badge', descrizione: 'Anagrafica dei membri' },
   { nome: 'Finanze', icona: 'payments', descrizione: 'Entrate, uscite, scadenze e categorie' },
@@ -48,13 +50,54 @@ export const COLORI_GRAFICO = [
 ]
 
 /* ---------------------------------------------------------------- */
-/* Menu laterale                                                     */
+/* Menu laterale (strutturato per sezioni con icone)                 */
 /* ---------------------------------------------------------------- */
 
-/** `modulo` collega la voce di menu al permesso del profilo. */
+export const MENU_SECTIONS = [
+  {
+    key: 'panoramica',
+    group: 'PANORAMICA',
+    icon: 'tune',
+    items: [
+      { key: 'dashboard', label: 'Home', modulo: 'Home', icon: 'space_dashboard', to: '/admin/dashboard', accent: ACCENT.dashboard },
+    ],
+  },
+  {
+    key: 'comunita',
+    group: 'GESTIONE CHIESA',
+    icon: 'church',
+    items: [
+      { key: 'chiese', label: 'Chiese', modulo: 'Chiese', icon: 'church', to: '/admin/chiese', accent: ACCENT.chiese },
+      { key: 'eventi', label: 'Eventi', modulo: 'Eventi', icon: 'calendar_month', to: '/admin/eventi', accent: ACCENT.eventi },
+      { key: 'dipartimenti', label: 'Dipartimenti', modulo: 'Dipartimenti', icon: 'diversity_3', to: '/admin/dipartimenti', accent: ACCENT.dipartimenti },
+      { key: 'membri', label: 'Membri', modulo: 'Membri', icon: 'badge', to: '/admin/membri', accent: ACCENT.membri },
+    ],
+  },
+  {
+    key: 'finanze-sec',
+    group: 'FINANZE',
+    icon: 'payments',
+    items: [
+      { key: 'finanze-home', label: 'Panoramica', modulo: 'Finanze', icon: 'account_balance_wallet', to: '/admin/finanze', accent: ACCENT.finanze },
+      { key: 'categorie', label: 'Categorie', modulo: 'Finanze', icon: 'category', to: '/admin/finanze/categorie', accent: ACCENT.finanze },
+    ],
+  },
+  {
+    key: 'sistema',
+    group: 'SISTEMA',
+    icon: 'admin_panel_settings',
+    items: [
+      { key: 'utenti-lista', label: 'Utenti', modulo: 'Utenti', icon: 'group', to: '/admin/utenti', accent: ACCENT.utenti },
+      { key: 'profili', label: 'Profili di accesso', modulo: 'Utenti', icon: 'shield_person', to: '/admin/utenti/profili', accent: ACCENT.utenti },
+    ],
+  },
+]
+
+/** `modulo` collega la voce di menu al permesso del profilo (compatibilità). */
 export const MENU = [
   { key: 'dashboard', label: 'Home', modulo: 'Home', icon: 'space_dashboard', to: '/admin/dashboard', accent: ACCENT.dashboard },
   { key: 'chiese', label: 'Chiese', modulo: 'Chiese', icon: 'church', to: '/admin/chiese', accent: ACCENT.chiese },
+  { key: 'eventi', label: 'Eventi', modulo: 'Eventi', icon: 'calendar_month', to: '/admin/eventi', accent: ACCENT.eventi },
   { key: 'dipartimenti', label: 'Dipartimenti', modulo: 'Dipartimenti', icon: 'diversity_3', to: '/admin/dipartimenti', accent: ACCENT.dipartimenti },
   { key: 'membri', label: 'Membri', modulo: 'Membri', icon: 'badge', to: '/admin/membri', accent: ACCENT.membri },
   {
@@ -80,6 +123,7 @@ export const MENU = [
     ],
   },
 ]
+
 
 /* ---------------------------------------------------------------- */
 /* Formattazione italiana                                            */

@@ -386,13 +386,17 @@ export function Modal({ children, onClose, larghezza = 'max-w-md', titolo, sotto
 /* Bottoni                                                             */
 /* ================================================================== */
 
-export function BtnPrimary({ children, accent = '#107C42', className = '', ...rest }) {
+export function BtnPrimary({ children, accent = '#C8A165', className = '', style, ...rest }) {
+  const bg = style?.backgroundColor || accent
+  const isLightBg = bg === '#C8A165' || bg === '#C6A052' || bg === '#EAB308' || bg === '#A67C3D' || bg === '#F59E0B'
+  const textColor = isLightBg ? 'text-ink-950 font-bold' : 'text-white font-bold'
+
   return (
     <button
       type="button"
       {...rest}
-      style={{ backgroundColor: accent }}
-      className={`flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-bold text-white shadow-md transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 ${className}`}
+      style={{ backgroundColor: bg, ...style }}
+      className={`flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[13.5px] shadow-md transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 ${textColor} ${className}`}
     >
       {children}
     </button>

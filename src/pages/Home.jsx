@@ -235,7 +235,7 @@ function JoinBlock() {
 /* INDIRIZZI                                                           */
 /* ================================================================== */
 
-function Addresses() {
+function Addresses({ items = churches }) {
   return (
     <section id="indirizzi" className="scroll-mt-24 bg-cream-50 py-24 sm:py-32">
       <div className="container">
@@ -248,8 +248,8 @@ function Addresses() {
         />
 
         <div className="grid gap-7 md:grid-cols-3">
-          {churches.map((c, i) => (
-            <Reveal key={c.slug} delay={i * 120} from="up">
+          {items.map((c, i) => (
+            <Reveal key={c.slug || i} delay={i * 120} from="up">
               <article className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-ink-900/8 bg-white shadow-soft transition-all duration-500 hover:-translate-y-1.5 hover:shadow-lift">
                 <Link to={`/chiese/${c.slug}`} className="relative block aspect-[16/11] overflow-hidden">
                   <img
@@ -262,40 +262,48 @@ function Addresses() {
                   <div className="absolute inset-x-0 bottom-0 p-6">
                     <p className="text-[10px] font-bold uppercase tracking-widest2 text-gold-300">{c.name}</p>
                     <h3 className="h-display mt-1.5 text-3xl text-cream-50">
-                      {c.city} <span className="text-lg text-cream-100/50">— {c.province}</span>
+                      {c.city} {c.province && <span className="text-lg text-cream-100/50">— {c.province}</span>}
                     </h3>
                   </div>
                 </Link>
 
                 <div className="flex flex-1 flex-col gap-4 p-6">
                   <ul className="space-y-3 text-[14px] text-ink-700/80">
-                    <li className="flex items-start gap-3">
-                      <Icon name="person" className="mt-0.5 text-[18px] text-gold-600" />
-                      <span>{c.referente}</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Icon name="call" className="mt-0.5 text-[18px] text-gold-600" />
-                      <a href={c.phoneHref} className="link-underline hover:text-ink-900">
-                        {c.phone}
-                      </a>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Icon name="mail" className="mt-0.5 text-[18px] text-gold-600" />
-                      <a href={`mailto:${c.email}`} className="link-underline break-all hover:text-ink-900">
-                        {c.email}
-                      </a>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Icon name="location_on" className="mt-0.5 text-[18px] text-gold-600" />
-                      <a
-                        href={c.mapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="link-underline hover:text-ink-900"
-                      >
-                        {c.address}
-                      </a>
-                    </li>
+                    {c.referente && (
+                      <li className="flex items-start gap-3">
+                        <Icon name="person" className="mt-0.5 text-[18px] text-gold-600" />
+                        <span>{c.referente}</span>
+                      </li>
+                    )}
+                    {c.phone && (
+                      <li className="flex items-start gap-3">
+                        <Icon name="call" className="mt-0.5 text-[18px] text-gold-600" />
+                        <a href={c.phoneHref || `tel:${c.phone}`} className="link-underline hover:text-ink-900">
+                          {c.phone}
+                        </a>
+                      </li>
+                    )}
+                    {c.email && (
+                      <li className="flex items-start gap-3">
+                        <Icon name="mail" className="mt-0.5 text-[18px] text-gold-600" />
+                        <a href={`mailto:${c.email}`} className="link-underline break-all hover:text-ink-900">
+                          {c.email}
+                        </a>
+                      </li>
+                    )}
+                    {c.address && (
+                      <li className="flex items-start gap-3">
+                        <Icon name="location_on" className="mt-0.5 text-[18px] text-gold-600" />
+                        <a
+                          href={c.mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-underline hover:text-ink-900"
+                        >
+                          {c.address}
+                        </a>
+                      </li>
+                    )}
                   </ul>
 
                   <Link
@@ -745,6 +753,32 @@ export default function Home() {
     order: { column: 'created_at', ascending: false },
   })
 
+  const { rows: dbChiese } = useSupabaseTable('igrejas', {
+    order: { column: 'cidade' },
+  })
+
+  const churchesList = useMemo(() => {
+    if (!dbChiese || !dbChiese.length) return churches
+
+    return dbChiese.map((row) => {
+      const base = churches.find((c) => c.slug === row.slug || c.city?.toLowerCase() === row.cidade?.toLowerCase()) || {}
+      return {
+        ...base,
+        slug: row.slug || base.slug,
+        city: row.cidade || base.city || '',
+        province: base.province || 'LT',
+        name: row.nome || base.name || "Chiesa Cristiana Evangelica L'Oasi",
+        referente: row.referente || row.responsavel || base.referente || '',
+        phone: row.telefone || base.phone || '',
+        phoneHref: row.telefone ? `tel:${row.telefone.replace(/\s+/g, '')}` : base.phoneHref || '',
+        email: row.email || base.email || '',
+        address: row.endereco || base.address || '',
+        mapsUrl: row.link_maps || base.mapsUrl || (row.endereco ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row.endereco)}` : '#'),
+        cover: row.foto_capa_url || base.cover || '/images/home-3-610x458.jpg',
+      }
+    })
+  }, [dbChiese])
+
   const slides = useMemo(() => {
     if (!banners.length) return heroSlides
     return banners.map((b) => ({
@@ -776,7 +810,7 @@ export default function Home() {
       <Hero slides={slides} />
       <Pillars />
       <JoinBlock />
-      <Addresses />
+      <Addresses items={churchesList} />
       <VideoBand />
       <Founded />
       <Media />

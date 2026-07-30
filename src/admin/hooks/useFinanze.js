@@ -188,6 +188,10 @@ export function useFinanze() {
 
   const eliminaTitolo = useCallback(
     async (id) => {
+      // Cancella prima le rate associate al titolo per evitare errori di vincolo FK
+      const { error: errRate } = await supabase.from('rate_finanziarie').delete().eq('titolo_id', id)
+      if (errRate) return { error: errRate }
+
       const { error } = await supabase.from('titoli_finanziari').delete().eq('id', id)
       if (error) return { error }
       await carica()
