@@ -178,6 +178,15 @@ export default function Eventi() {
         </BtnPrimary>
       </PageTitle>
 
+      {/* Avviso: qui si modifica il sito pubblico */}
+      <div className="mb-6 flex items-start gap-3 rounded-2xl border border-cyan-500/25 bg-cyan-50 p-4">
+        <Icon name="public" className="mt-0.5 shrink-0 text-[20px] text-cyan-700" />
+        <p className="text-[13px] leading-relaxed text-cyan-900">
+          <strong className="font-bold">Attenzione:</strong> queste informazioni sono pubblicate sul sito. Ogni
+          modifica salvata qui è visibile subito ai visitatori nelle pagine delle comunità.
+        </p>
+      </div>
+
       <ControlBar
         valore={cerca}
         onCerca={setCerca}
