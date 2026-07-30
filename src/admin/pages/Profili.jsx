@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { eliminaPerId } from '../lib/db'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -126,7 +127,7 @@ export default function Profili() {
     })
     if (!ok) return
 
-    const { error } = await supabase.from('profili').delete().eq('id', p.id)
+    const { error } = await eliminaPerId('profili', p.id)
     if (error) return toast.error(`Errore: ${error.message}`)
     toast.success('Profilo eliminato.')
     carica()

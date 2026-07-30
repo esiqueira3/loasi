@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { eliminaPerId } from '../lib/db'
 import { deleteImageFromStorage, uploadImageToStorage } from '../../lib/r2'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
@@ -151,7 +152,7 @@ export default function Eventi() {
     })
     if (!ok) return
 
-    const { error } = await supabase.from('eventos').delete().eq('id', r.id)
+    const { error } = await eliminaPerId('eventos', r.id)
     if (error) return toast.error(`Errore: ${error.message}`)
     toast.success('Evento eliminato.')
     setRighe((prev) => prev.filter((x) => x.id !== r.id))

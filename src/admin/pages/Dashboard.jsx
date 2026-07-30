@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { supabase } from '../../lib/supabase'
+import { eliminaPerId } from '../lib/db'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -193,7 +194,7 @@ export default function Dashboard() {
   }
 
   const eliminaPromemoria = async (p) => {
-    const { error } = await supabase.from('promemoria').delete().eq('id', p.id)
+    const { error } = await eliminaPerId('promemoria', p.id)
     if (error) return toast.error(`Errore: ${error.message}`)
     setPromemoria((prev) => prev.filter((x) => x.id !== p.id))
   }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { eliminaPerColonna, eliminaPerId } from '../lib/db'
 import { OGGI, toDate, toISO, addMonths, tabellaMancante } from '../theme'
 
 /* ------------------------------------------------------------------ */
@@ -188,12 +189,15 @@ export function useFinanze() {
 
   const eliminaTitolo = useCallback(
     async (id) => {
-      // 1. Elimina prima le rate collegate per evitare errori di Foreign Key
-      const { error: errRate } = await supabase.from('rate_finanziarie').delete().eq('titolo_id', id)
+      // 1. Prima le rate collegate, per non urtare la chiave esterna.
+      //    Un titolo può non avere rate: qui lo zero righe è legittimo.
+      const { error: errRate } = await eliminaPerColonna('rate_finanziarie', 'titolo_id', id, {
+        ammettiVuoto: true,
+      })
       if (errRate) return { error: errRate }
 
-      // 2. Elimina il titolo finanziario
-      const { error } = await supabase.from('titoli_finanziari').delete().eq('id', id)
+      // 2. Il titolo. Qui invece zero righe significa rifiuto della RLS.
+      const { error } = await eliminaPerId('titoli_finanziari', id)
       if (error) return { error }
 
       await carica()
@@ -204,7 +208,9 @@ export function useFinanze() {
 
   const riprogrammaTitolo = useCallback(
     async (titolo, { numero_rate, prima_scadenza }) => {
-      const { error: errDel } = await supabase.from('rate_finanziarie').delete().eq('titolo_id', titolo.id)
+      const { error: errDel } = await eliminaPerColonna('rate_finanziarie', 'titolo_id', titolo.id, {
+        ammettiVuoto: true,
+      })
       if (errDel) return { error: errDel }
 
       const rate = costruisciRate({

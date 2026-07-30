@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { eliminaPerId } from '../lib/db'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -103,7 +104,7 @@ export default function Categorie() {
     })
     if (!ok) return
 
-    const { error } = await supabase.from('categorie_finanziarie').delete().eq('id', cat.id)
+    const { error } = await eliminaPerId('categorie_finanziarie', cat.id)
     if (error) toast.error(`Errore: ${error.message}`)
     else {
       toast.success('Categoria rimossa.')

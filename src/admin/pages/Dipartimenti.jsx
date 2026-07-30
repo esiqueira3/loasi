@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { eliminaPerId } from '../lib/db'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -132,7 +133,7 @@ export default function Dipartimenti() {
     })
     if (!ok) return
 
-    const { error } = await supabase.from('dipartimenti').delete().eq('id', r.id)
+    const { error } = await eliminaPerId('dipartimenti', r.id)
     if (error) return toast.error(`Errore: ${error.message}`)
     toast.success('Dipartimento eliminato.')
     setRighe((prev) => prev.filter((x) => x.id !== r.id))

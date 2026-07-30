@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { eliminaPerId } from '../lib/db'
 import { deleteImageFromStorage, uploadImageToStorage } from '../../lib/r2'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
@@ -184,7 +185,7 @@ export default function Chiese() {
     })
     if (!ok) return
 
-    const { error } = await supabase.from('diretoria').delete().eq('id', c.id)
+    const { error } = await eliminaPerId('diretoria', c.id)
     if (error) return toast.error(`Errore: ${error.message}`)
 
     if (c.foto_url) {
@@ -286,7 +287,7 @@ export default function Chiese() {
     })
     if (!ok) return
 
-    const { error } = await supabase.from('igrejas').delete().eq('id', r.id)
+    const { error } = await eliminaPerId('igrejas', r.id)
     if (error) return toast.error(`Errore: ${error.message}`)
 
     if (r.foto_capa_url) {

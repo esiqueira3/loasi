@@ -6,7 +6,7 @@
 -- PRIMA DI ESEGUIRE
 --   Chiudi le altre schede aperte sul gestionale (soprattutto /admin/menu):
 --   questo script prende un lock esclusivo sulla tabella e, se qualcuno la sta
---   leggendo in continuazione, l'attesa può diventare lunga.
+--   leggendo di continuo, l'attesa diventa lunga.
 --
 -- PERCHÉ SERVE
 --   `paginas_menu` è nata dopo `supabase_permessi.sql`, che assegnava le policy
@@ -18,15 +18,13 @@
 --   Le voci di sistema (`tipo = 'sistema'`) reggono il menu del sito e NON si
 --   eliminano: si possono solo nascondere. La cancellazione resta possibile
 --   solo per le voci aggiunte dopo (pagine dinamiche e link esterni).
---   Lo sbarramento è nel database, quindi vale anche per chi chiama l'API
---   direttamente, senza passare dal gestionale.
 --
 -- NOTA SUI LOCK
 --   Tutto avviene in una sola transazione che prende subito il lock esclusivo
 --   e lo tiene fino alla fine. La versione precedente lo prendeva e rilasciava
 --   a ogni DROP, intrecciandosi con le letture del sito: da lì il deadlock.
 --   Se il lock non arriva entro 15 secondi lo script si ferma con un errore
---   chiaro invece di restare appeso: chiudi le schede aperte e rilancia.
+--   leggibile invece di restare appeso: chiudi le schede e rilancia.
 -- ============================================================================
 
 BEGIN;
