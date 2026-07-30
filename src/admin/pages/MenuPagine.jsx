@@ -217,13 +217,22 @@ export default function MenuPagine() {
     })
     if (!ok) return
 
+    let error = null
     if (v.id) {
-      const { error } = await supabase.from('paginas_menu').delete().eq('id', v.id)
-      if (error) return toast.error(`Errore: ${error.message}`)
+      const res = await supabase.from('paginas_menu').delete().eq('id', v.id)
+      error = res.error
+    } else if (v.slug) {
+      const res = await supabase.from('paginas_menu').delete().eq('slug', v.slug)
+      error = res.error
+    }
+
+    if (error) {
+      return toast.error(`Errore durante l'eliminazione: ${error.message}`)
     }
 
     toast.success('Voce eliminata.')
-    setVoci((prev) => prev.filter((x) => x.slug !== v.slug))
+    setVoci((prev) => prev.filter((x) => (v.id ? x.id !== v.id : x.slug !== v.slug)))
+    carica()
   }
 
   const filtrate = voci.filter(
