@@ -373,59 +373,69 @@ export function RataRow({ rata, titolo, onSalda, onStorna, mostraTitolo }) {
   const entrata = isEntrata(titolo)
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-hairline bg-surface-pearl p-3 shadow-sm transition-all hover:border-ink-muted-48/30">
-      <div
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[12px] font-bold"
-        style={{ backgroundColor: `${st.color}15`, color: st.color }}
-      >
-        {rata.numero}/{rata.totale_rate}
-      </div>
+    <div className="flex flex-col gap-2.5 rounded-xl border border-hairline bg-surface-pearl p-3 shadow-sm transition-all sm:flex-row sm:items-center sm:gap-3 hover:border-ink-muted-48/30">
+      <div className="flex items-center justify-between sm:contents">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[12px] font-bold"
+            style={{ backgroundColor: `${st.color}15`, color: st.color }}
+          >
+            {rata.numero}/{rata.totale_rate}
+          </div>
 
-      <div className="min-w-0 flex-1">
-        {mostraTitolo && <div className="truncate text-[13px] font-bold text-ink">{titolo.descrizione}</div>}
-        <div className="flex flex-wrap items-center gap-2 text-[12px] text-ink-muted-48">
-          <span className="flex items-center gap-1">
-            <Icon name="event" className="text-[13px]" /> Scade il {fmtData(rata.scadenza)}
-          </span>
-          {rata.stato === 'saldata' && rata.saldata_il && (
-            <span className="font-bold text-[#107C42]">· saldata il {fmtData(rata.saldata_il)}</span>
-          )}
+          <div className="min-w-0 flex-1">
+            {mostraTitolo && <div className="truncate text-[13px] font-bold text-ink">{titolo.descrizione}</div>}
+            <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-ink-muted-48">
+              <span className="flex items-center gap-1">
+                <Icon name="event" className="text-[13px]" /> {fmtData(rata.scadenza)}
+              </span>
+              {rata.stato === 'saldata' && rata.saldata_il && (
+                <span className="font-bold text-[#107C42]">· {fmtData(rata.saldata_il)}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="sm:hidden">
+          <Pill label={st.label} color={st.color} bg={st.bg} />
         </div>
       </div>
 
-      <Pill label={st.label} color={st.color} bg={st.bg} />
+      <div className="hidden sm:block">
+        <Pill label={st.label} color={st.color} bg={st.bg} />
+      </div>
 
-      <div className="min-w-[96px] text-right">
-        <div className={`text-[14px] font-bold ${entrata ? 'text-ink' : 'text-red-500'}`}>
+      <div className="flex items-center justify-between border-t border-hairline/60 pt-2 sm:border-0 sm:pt-0 sm:ml-auto sm:gap-4">
+        <div className={`text-[15px] sm:text-[14px] font-bold ${entrata ? 'text-ink' : 'text-red-500'}`}>
           {entrata ? '' : '-'}
           {fmtMoney(rata.importo)}
         </div>
-      </div>
 
-      <div className="flex shrink-0 gap-1.5">
-        {rata.stato === 'saldata' ? (
-          <button
-            type="button"
-            onClick={() => onStorna(rata)}
-            title="Annulla il saldo"
-            className="flex items-center gap-1 rounded-lg border border-hairline px-2.5 py-1.5 text-[12px] font-bold text-ink-muted-80 transition-all hover:bg-canvas-parchment hover:text-ink"
-          >
-            <Icon name="undo" className="text-[14px]" /> Storna
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => onSalda(rata, titolo)}
-            title={entrata ? 'Registra incasso' : 'Registra pagamento'}
-            className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[12px] font-bold transition-all"
-            style={{
-              backgroundColor: entrata ? 'rgba(16,124,66,0.15)' : 'rgba(239,68,68,0.15)',
-              color: entrata ? VERDE : ROSSO,
-            }}
-          >
-            <Icon name="check_circle" className="text-[14px]" /> {entrata ? 'Incassa' : 'Paga'}
-          </button>
-        )}
+        <div className="flex shrink-0 gap-1.5">
+          {rata.stato === 'saldata' ? (
+            <button
+              type="button"
+              onClick={() => onStorna(rata)}
+              title="Annulla il saldo"
+              className="flex items-center gap-1 rounded-lg border border-hairline px-3 py-1.5 text-[12px] font-bold text-ink-muted-80 transition-all hover:bg-canvas-parchment hover:text-ink active:scale-95"
+            >
+              <Icon name="undo" className="text-[14px]" /> Storna
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onSalda(rata, titolo)}
+              title={entrata ? 'Registra incasso' : 'Registra pagamento'}
+              className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-[12px] font-bold transition-all active:scale-95"
+              style={{
+                backgroundColor: entrata ? 'rgba(16,124,66,0.15)' : 'rgba(239,68,68,0.15)',
+                color: entrata ? VERDE : ROSSO,
+              }}
+            >
+              <Icon name="check_circle" className="text-[14px]" /> {entrata ? 'Incassa' : 'Paga'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -470,64 +480,77 @@ export function TitoliView({ titoli, onSalda, onStorna, onRiprogramma, onElimina
           >
             <div
               onClick={() => setAperto(espanso ? null : t.id)}
-              className="flex cursor-pointer items-center gap-3.5 p-4 transition-colors hover:bg-canvas-parchment/50 lg:px-6"
+              className="flex cursor-pointer flex-col gap-3 p-4 transition-colors sm:flex-row sm:items-center sm:gap-3.5 hover:bg-canvas-parchment/50 lg:px-6"
             >
-              <div
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                style={{ backgroundColor: `${meta.colore}15`, color: meta.colore }}
-              >
-                <Icon name={meta.icona} className="text-[20px]" />
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-11 sm:w-11"
+                  style={{ backgroundColor: `${meta.colore}15`, color: meta.colore }}
+                >
+                  <Icon name={meta.icona} className="text-[18px] sm:text-[20px]" />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[15px] font-bold text-ink leading-tight">{t.descrizione}</span>
+                    {t.categoria && (
+                      <span
+                        className="flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold"
+                        style={{
+                          color: t.categoria.colore || VERDE,
+                          backgroundColor: `${t.categoria.colore || VERDE}15`,
+                          borderColor: `${t.categoria.colore || VERDE}33`,
+                        }}
+                      >
+                        <Icon name="sell" className="text-[11px]" /> {t.categoria.nome}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 text-[12px] text-ink-muted-48">
+                    <span className="flex items-center gap-1">
+                      <Icon name="church" className="text-[13px]" />
+                      {t.chiesa?.cidade || 'Generale'}
+                    </span>
+                    <span>·</span>
+                    <span>{meta.label}</span>
+                    <span>·</span>
+                    <span>
+                      {rate.length}
+                      {rate.length === 1 ? ' rata' : ' rate'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="sm:hidden">
+                  <Icon
+                    name={espanso ? 'expand_less' : 'chevron_right'}
+                    className="text-[20px] text-ink-muted-48"
+                  />
+                </div>
               </div>
 
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[15px] font-bold text-ink">{t.descrizione}</span>
-                  {t.categoria && (
-                    <span
-                      className="flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold"
-                      style={{
-                        color: t.categoria.colore || VERDE,
-                        backgroundColor: `${t.categoria.colore || VERDE}15`,
-                        borderColor: `${t.categoria.colore || VERDE}33`,
-                      }}
-                    >
-                      <Icon name="sell" className="text-[11px]" /> {t.categoria.nome}
-                    </span>
+              <div className="flex items-center justify-between border-t border-hairline/60 pt-2.5 sm:border-0 sm:pt-0 sm:ml-auto sm:gap-4">
+                <Pill label={st.label} color={st.color} bg={st.bg} />
+
+                <div className="text-right">
+                  <div className={`text-[16px] sm:text-[17px] font-bold ${entrata ? 'text-ink' : 'text-red-500'}`}>
+                    {entrata ? '' : '-'}
+                    {fmtMoney(t.importo_totale)}
+                  </div>
+                  {haSaldi && (
+                    <div className="text-[11px] font-bold text-[#107C42]">
+                      {fmtMoney(saldato)} {entrata ? 'incassato' : 'pagato'}
+                    </div>
                   )}
                 </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12px] text-ink-muted-48">
-                  <span className="flex items-center gap-1">
-                    <Icon name="church" className="text-[13px]" />
-                    {t.chiesa?.cidade || 'Generale'}
-                  </span>
-                  <span>·</span>
-                  <span>{meta.label}</span>
-                  <span>·</span>
-                  <span>
-                    {rate.length}
-                    {rate.length === 1 ? ' rata' : ' rate'}
-                  </span>
+
+                <div className="hidden sm:block">
+                  <Icon
+                    name={espanso ? 'expand_less' : 'chevron_right'}
+                    className="text-[18px] text-ink-muted-48"
+                  />
                 </div>
               </div>
-
-              <Pill label={st.label} color={st.color} bg={st.bg} />
-
-              <div className="min-w-[112px] text-right">
-                <div className={`text-[17px] font-bold ${entrata ? 'text-ink' : 'text-red-500'}`}>
-                  {entrata ? '' : '-'}
-                  {fmtMoney(t.importo_totale)}
-                </div>
-                {haSaldi && (
-                  <div className="text-[11px] font-bold text-[#107C42]">
-                    {fmtMoney(saldato)} {entrata ? 'incassato' : 'pagato'}
-                  </div>
-                )}
-              </div>
-
-              <Icon
-                name={espanso ? 'expand_less' : 'chevron_right'}
-                className="text-[18px] text-ink-muted-48"
-              />
             </div>
 
             {espanso && (

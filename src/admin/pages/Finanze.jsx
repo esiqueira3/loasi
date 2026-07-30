@@ -191,8 +191,8 @@ export default function Finanze() {
           <>
             {/* --- Selettore di comunità --- */}
             <div className="mb-6 overflow-hidden rounded-2xl border border-hairline bg-surface-pearl shadow-sm">
-              <div className="flex flex-wrap items-center gap-2 border-b border-hairline p-3">
-                <span className="mr-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-ink-muted-48">
+              <div className="flex items-center gap-2 overflow-x-auto border-b border-hairline p-3 no-scrollbar">
+                <span className="mr-1 flex shrink-0 items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-ink-muted-48">
                   <Icon name="church" className="text-[16px]" />
                   Comunità
                 </span>
@@ -208,7 +208,7 @@ export default function Finanze() {
                       key={o.key}
                       type="button"
                       onClick={() => setChiesaAttiva(o.key)}
-                      className={`rounded-xl px-4 py-2 text-[12.5px] font-bold transition-all ${
+                      className={`shrink-0 rounded-xl px-3.5 py-1.5 text-[12px] font-bold transition-all sm:px-4 sm:py-2 sm:text-[12.5px] ${
                         attiva ? 'text-white shadow-md' : 'text-ink-muted-80 hover:bg-canvas-parchment hover:text-ink'
                       }`}
                       style={attiva ? { backgroundColor: VERDE } : undefined}
@@ -237,26 +237,26 @@ export default function Finanze() {
                       key={r.key}
                       type="button"
                       onClick={() => setChiesaAttiva(r.key)}
-                      className={`bg-surface-pearl p-4 text-left transition-colors hover:bg-canvas-parchment/60 ${
+                      className={`bg-surface-pearl p-3.5 sm:p-4 text-left transition-colors hover:bg-canvas-parchment/60 ${
                         chiesaAttiva === r.key ? 'bg-canvas-parchment/70' : ''
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[12px] font-bold uppercase tracking-wider text-ink-muted-48">
+                        <span className="truncate text-[11px] sm:text-[12px] font-bold uppercase tracking-wider text-ink-muted-48">
                           {r.label}
                         </span>
-                        <span className="shrink-0 text-[10.5px] font-semibold text-ink-muted-48">
+                        <span className="shrink-0 text-[10px] sm:text-[10.5px] font-semibold text-ink-muted-48">
                           {r.movimenti} mov.
                         </span>
                       </div>
                       <div
-                        className={`mt-1.5 text-[17px] font-bold tracking-tight ${
+                        className={`mt-1 text-[16px] sm:text-[17px] font-bold tracking-tight ${
                           r.saldo >= 0 ? 'text-ink' : 'text-red-500'
                         }`}
                       >
                         {fmtMoney(r.saldo)}
                       </div>
-                      <div className="mt-1 flex items-center gap-3 text-[11px] font-semibold">
+                      <div className="mt-1 flex items-center gap-2.5 text-[10.5px] sm:text-[11px] font-semibold">
                         <span className="text-[#107C42]">+{fmtMoney(r.incassato)}</span>
                         <span className="text-red-500">−{fmtMoney(r.pagato)}</span>
                       </div>
@@ -267,7 +267,7 @@ export default function Finanze() {
             </div>
 
             {/* --- KPI --- */}
-            <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+            <div className="mb-6 grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-6 lg:gap-4">
               <Kpi icona="savings" tint={VERDE} valore={fmtMoney(kpi.daIncassare)} etichetta="Da incassare" nota="Entrate aperte" />
               <Kpi icona="check_circle" tint={VERDE} valore={fmtMoney(kpi.incassato)} etichetta="Incassato" nota="Già in cassa" />
               <Kpi icona="schedule" tint="#0891B2" valore={fmtMoney(kpi.prossimi30)} etichetta="Prossimi 30 giorni" nota="Entrate in scadenza" />
@@ -277,12 +277,14 @@ export default function Finanze() {
             </div>
 
             {/* --- Selettore vista + filtri --- */}
-            <div className="mb-6 flex flex-col items-stretch justify-between gap-3 md:flex-row md:items-center">
-              <Segmented value={vista} onChange={setVista} options={VISTE} accent={VERDE} />
+            <div className="mb-6 flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="w-full overflow-x-auto no-scrollbar md:w-auto">
+                <Segmented value={vista} onChange={setVista} options={VISTE} accent={VERDE} />
+              </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 {vista !== 'spese' && (
-                  <div className="w-40">
+                  <div className="w-full sm:w-40">
                     <CustomSelect
                       value={filtroTipo}
                       onChange={setFiltroTipo}
@@ -296,7 +298,7 @@ export default function Finanze() {
                   </div>
                 )}
                 {vista === 'titoli' && (
-                  <div className="w-44">
+                  <div className="w-full sm:w-44">
                     <CustomSelect
                       value={filtroStato}
                       onChange={setFiltroStato}
