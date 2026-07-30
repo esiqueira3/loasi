@@ -92,7 +92,7 @@ export default function AdminLayout({
 
       <div
         className={`flex min-h-screen flex-col transition-[padding] duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
-          collapsed ? 'lg:pl-[82px]' : 'lg:pl-[268px]'
+          collapsed ? 'lg:pl-[82px]' : 'lg:pl-[238px]'
         }`}
       >
         {/* --- Header --- */}

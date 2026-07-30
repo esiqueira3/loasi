@@ -169,7 +169,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
     navigate('/admin', { replace: true })
   }
 
-  const width = collapsed ? 'lg:w-[82px]' : 'lg:w-[268px]'
+  const width = collapsed ? 'lg:w-[82px] lg:max-w-none' : 'lg:w-[238px] lg:max-w-none'
 
   return (
     <>
@@ -183,7 +183,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-[268px] flex-col border-r border-white/[0.07] bg-ink-950 transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${width} ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[86vw] max-w-[260px] flex-col border-r border-white/[0.07] bg-ink-950 transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${width} ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -210,18 +210,18 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
         {/* --- Marchio --- */}
         <div
           className={`relative flex h-[72px] shrink-0 items-center border-b border-white/[0.07] ${
-            collapsed ? 'justify-center px-2' : 'gap-3 px-5'
+            collapsed ? 'justify-center px-2' : 'gap-2 px-4'
           }`}
         >
-          <Link to="/admin/dashboard" className="flex min-w-0 items-center gap-2.5 overflow-hidden">
+          <Link to="/admin/dashboard" className="flex min-w-0 items-center gap-2 overflow-hidden">
             {collapsed ? (
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-400 font-headline text-lg font-bold text-ink-950">
                 O
               </span>
             ) : (
               <>
-                <img src="/images/logo-default-268x75.png" alt="" className="h-8 w-auto shrink-0" />
-                <span className="min-w-0 truncate font-headline text-[15px] leading-tight text-white">
+                <img src="/images/logo-default-268x75.png" alt="" className="h-7 w-auto shrink-0" />
+                <span className="min-w-0 truncate font-headline text-[14px] leading-tight text-white">
                   Chiesa L’Oasi
                 </span>
               </>
