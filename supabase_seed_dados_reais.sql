@@ -2,10 +2,14 @@
 -- DADOS REAIS DAS IGREJAS L'OASI
 --
 -- O `supabase_schema.sql` inseriu endereços/telefones de exemplo.
--- Rode este script UMA VEZ no SQL Editor do Supabase para substituí-los pelos
--- dados reais publicados no site. A partir daí o pastor edita tudo pelo
--- gestionale — o site lê estes campos e só cai no conteúdo estático quando o
--- registro está vazio.
+-- Rode este script no SQL Editor do Supabase para substituí-los pelos dados
+-- reais. A partir daí o pastor edita tudo pelo gestionale — o site lê estes
+-- campos e só cai no conteúdo estático quando o registro está vazio.
+--
+-- É seguro rodar mais de uma vez:
+--   · igrejas       → ON CONFLICT DO UPDATE (horários já cadastrados são preservados)
+--   · diretoria     → limpa e recria a lista de Latina/Terracina
+--   · depoimentos   → só insere se a tabela estiver vazia
 -- ============================================================================
 
 -- 1. Corrige/insere as três comunidades ---------------------------------------
@@ -20,7 +24,7 @@ VALUES
     '379 132 5360',
     'info.terracina@chieseloasi.it',
     'https://www.google.com/maps/search/?api=1&query=Via%20Ponte%20di%20Ferro%2038%2C%2004019%20Terracina%20LT',
-    NULL,  -- preencher pelo gestionale: ex. 'Domenica: ore 10:30' || chr(10) || 'Mercoledì: ore 19:30'
+    'Domenica: ore 17:30 | Giovedì: ore 19:30',
     '/images/home-3-610x458.jpg'
   ),
   (
@@ -31,7 +35,7 @@ VALUES
     '327 188 6104',
     'info.latina@chieseloasi.it',
     'https://www.google.com/maps/search/?api=1&query=Via%20Villafranca%209M%2C%2004100%20Latina%20LT',
-    NULL,
+    'Domenica: ore 10:30 | Mercoledì: ore 19:30',
     '/images/home-4-610x458.jpg'
   ),
   (
@@ -42,7 +46,7 @@ VALUES
     '380 458 6031',
     'info.gaeta@chieseloasi.it',
     'https://www.google.com/maps/search/?api=1&query=Via%20Peschiera%20Vico%20Orticello%204%2C%2004024%20Gaeta%20LT',
-    NULL,
+    'Domenica: ore 18:00',
     '/images/chiesa-gaeta.jpg'
   )
 ON CONFLICT (slug) DO UPDATE SET
@@ -53,6 +57,8 @@ ON CONFLICT (slug) DO UPDATE SET
   email          = EXCLUDED.email,
   link_maps      = EXCLUDED.link_maps,
   foto_capa_url  = EXCLUDED.foto_capa_url,
+  -- mantém o horário já cadastrado (editado pelo gestionale) e só preenche se estiver vazio
+  horarios_culto = COALESCE(igrejas.horarios_culto, EXCLUDED.horarios_culto),
   updated_at     = NOW();
 
 
