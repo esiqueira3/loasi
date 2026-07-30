@@ -10,20 +10,7 @@ export async function uploadImageToStorage(file, folder = 'general') {
   const safeName = file.name.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_')
   const fileName = `${folder}/${timestamp}_${safeName}.${fileExt}`
 
-  // Tentar upload via Cloudflare R2 direto (se houver endpoint configurado)
-  try {
-    const targetUrl = `${R2_PUBLIC_URL}/${fileName}`
-    const response = await fetch(targetUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file
-    })
-    if (response.ok) return targetUrl
-  } catch (e) {
-    console.warn('Upload direto R2 falhou, tentando Supabase Storage...', e)
-  }
-
-  // Fallback 1: Supabase Storage bucket 'loasi-media'
+  // 1. Tentar Supabase Storage bucket 'loasi-media' (padrão confiável para navegadores)
   try {
     const { data, error } = await supabase.storage
       .from('loasi-media')
@@ -36,10 +23,23 @@ export async function uploadImageToStorage(file, folder = 'general') {
       return publicUrlData.publicUrl
     }
   } catch (err) {
-    console.warn('Fallback Supabase Storage falhou:', err)
+    /* fallback se o bucket não estiver disponível */
   }
 
-  // Fallback 2: Data URL local para preview imediato
+  // 2. Tentar Cloudflare R2 direto se endpoint configurado
+  try {
+    const targetUrl = `${R2_PUBLIC_URL}/${fileName}`
+    const response = await fetch(targetUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file
+    })
+    if (response.ok) return targetUrl
+  } catch {
+    /* ignorar falhas de CORS/rede no Cloudflare */
+  }
+
+  // 3. Fallback Data URL local para preview imediato
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result)

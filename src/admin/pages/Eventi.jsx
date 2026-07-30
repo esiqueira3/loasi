@@ -303,68 +303,67 @@ export default function Eventi() {
           })}
         </div>
       ) : (
-        <Panel className="p-0">
-          <Table>
-            <thead>
-              <tr>
-                <th>Immagine</th>
-                <th>Titolo</th>
-                <th>Data & Ora</th>
-                <th>Luogo</th>
-                <th>Stato</th>
-                <th className="text-right">Azioni</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtrate.map((r) => {
+        <Table
+          colonne={[
+            {
+              key: 'imagem_url',
+              label: 'Immagine',
+              render: (r) => (
+                <img
+                  src={r.imagem_url || '/images/event-1-385x392.jpg'}
+                  alt={r.titulo}
+                  className="h-10 w-14 rounded-lg border border-hairline object-cover"
+                />
+              ),
+            },
+            {
+              key: 'titulo',
+              label: 'Titolo',
+              render: (r) => (
+                <div>
+                  <p className="font-bold text-ink">{r.titulo}</p>
+                  {r.descricao && <p className="truncate text-[12px] text-ink-muted-48 max-w-xs">{r.descricao}</p>}
+                </div>
+              ),
+            },
+            {
+              key: 'data_evento',
+              label: 'Data & Ora',
+              render: (r) => {
                 const d = r.data_evento ? new Date(r.data_evento) : null
                 const dFormatted = d && !Number.isNaN(d.getTime()) ? d.toLocaleDateString('it-IT') : r.data_evento
-
                 return (
-                  <tr key={r.id}>
-                    <td className="w-16">
-                      <img
-                        src={r.imagem_url || '/images/event-1-385x392.jpg'}
-                        alt=""
-                        className="h-10 w-14 rounded-lg object-cover"
-                      />
-                    </td>
-                    <td>
-                      <p className="font-semibold text-ink">{r.titulo}</p>
-                      {r.descricao && <p className="truncate text-[12px] text-ink-muted-48 max-w-xs">{r.descricao}</p>}
-                    </td>
-                    <td>
-                      <p className="text-[13px] font-medium text-ink">{dFormatted}</p>
-                      {r.hora && <p className="text-[11px] text-ink-muted-48">{r.hora}</p>}
-                    </td>
-                    <td>{r.local || '—'}</td>
-                    <td>
-                      <button
-                        type="button"
-                        onClick={() => toggleAtivo(r)}
-                        className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
-                          r.ativo ? 'bg-emerald-500/15 text-emerald-600' : 'bg-amber-500/15 text-amber-600'
-                        }`}
-                      >
-                        {r.ativo ? 'Pubblicato' : 'Bozza'}
-                      </button>
-                    </td>
-                    <td className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <BtnGhost onClick={() => apriModifica(r)} title="Modifica">
-                          <Icon name="edit" className="text-[17px]" />
-                        </BtnGhost>
-                        <BtnGhost onClick={() => elimina(r)} title="Elimina" className="text-red-500 hover:bg-red-500/10">
-                          <Icon name="delete" className="text-[17px]" />
-                        </BtnGhost>
-                      </div>
-                    </td>
-                  </tr>
+                  <div>
+                    <p className="text-[13px] font-bold text-ink">{dFormatted}</p>
+                    {r.hora && <p className="text-[11px] font-semibold text-gold-600">ore {r.hora}</p>}
+                  </div>
                 )
-              })}
-            </tbody>
-          </Table>
-        </Panel>
+              },
+            },
+            { key: 'local', label: 'Luogo', render: (r) => r.local || '—' },
+            {
+              key: 'ativo',
+              label: 'Stato',
+              render: (r) => (
+                <button
+                  type="button"
+                  onClick={() => toggleAtivo(r)}
+                  className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 ${
+                    r.ativo
+                      ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-500/30'
+                      : 'bg-amber-500/15 text-amber-700 border border-amber-500/30'
+                  }`}
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full ${r.ativo ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  {r.ativo ? 'Pubblicato' : 'Bozza'}
+                </button>
+              ),
+            },
+          ]}
+          righe={filtrate}
+          onModifica={apriModifica}
+          onElimina={elimina}
+        />
       )}
 
       {/* Modale per Creazione / Modifica */}
