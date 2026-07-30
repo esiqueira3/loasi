@@ -67,6 +67,9 @@ src/
       Chiese.jsx            Comunità (scrive sulle tabelle del sito pubblico)
       Dipartimenti.jsx      Gruppi e ministeri
       Membri.jsx            Anagrafica dei membri
+      Utenti.jsx            Persone abilitate + invito via e-mail
+      Profili.jsx           Permessi per sezione (nessuno/lettura/completo)
+    hooks/usePermessi.jsx   Permessi dell'utente collegato; filtra il menu
 
 public/                     images/ · video/ · robots.txt · sitemap.xml
 _legacy/                    Vecchio sito statico (HTML/CSS/JS) — solo archivio
@@ -101,6 +104,8 @@ Rotte del gestionale (tutte protette da `ProtectedRoute`):
 | `/admin/membri`            | Membri — anagrafica e appartenenze       |
 | `/admin/finanze`           | Finanze — vista per comunità, flusso, movimenti, agenda, uscite |
 | `/admin/finanze/categorie` | Categorie di entrate e uscite            |
+| `/admin/utenti`            | Utenti — persone abilitate e inviti      |
+| `/admin/utenti/profili`    | Profili — permessi per sezione           |
 
 I vecchi indirizzi (`/about-us.html`, `/chiesa-latina.html`, …) reindirizzano
 automaticamente alle nuove rotte.
@@ -131,6 +136,7 @@ Nel SQL Editor di Supabase, in quest'ordine:
    testimonianze reali (sostituisce i dati di esempio)
 3. `supabase_gestionale.sql` — tabelle del gestionale + categorie e
    dipartimenti iniziali
+4. `supabase_utenti.sql` — utenti, profili di accesso e profili iniziali
 
 > **Sicurezza.** Le tabelle del sito pubblico sono leggibili da chiunque
 > (servono al sito). Quelle del gestionale — `membri`, `dipartimenti`,

@@ -14,7 +14,27 @@ export const ACCENT = {
   dipartimenti: '#7C3AED',
   membri: '#2563EB',
   finanze: '#107C42', // verde del modulo finanziario
+  utenti: '#DB2777',
 }
+
+/**
+ * I moduli su cui si concedono i permessi. Il nome coincide con l'etichetta
+ * della voce di menu: è la chiave usata dentro `profili.permessi`.
+ */
+export const MODULI = [
+  { nome: 'Home', icona: 'space_dashboard', descrizione: 'Panoramica della chiesa' },
+  { nome: 'Chiese', icona: 'church', descrizione: 'Anagrafica delle comunità, pubblicata sul sito' },
+  { nome: 'Dipartimenti', icona: 'diversity_3', descrizione: 'Gruppi, ministeri e responsabili' },
+  { nome: 'Membri', icona: 'badge', descrizione: 'Anagrafica dei membri' },
+  { nome: 'Finanze', icona: 'payments', descrizione: 'Entrate, uscite, scadenze e categorie' },
+  { nome: 'Utenti', icona: 'manage_accounts', descrizione: 'Persone abilitate e profili di accesso' },
+]
+
+export const LIVELLI = [
+  { key: 'nessuno', label: 'Nessun accesso', icona: 'lock', colore: '#DC2626' },
+  { key: 'lettura', label: 'Sola lettura', icona: 'visibility', colore: '#D97706' },
+  { key: 'completo', label: 'Accesso completo', icona: 'check_circle', colore: '#107C42' },
+]
 
 export const PALETTE_CATEGORIE = [
   '#107C42', '#EF4444', '#3B82F6', '#F59E0B', '#8B5CF6', '#06B6D4',
@@ -31,19 +51,32 @@ export const COLORI_GRAFICO = [
 /* Menu laterale                                                     */
 /* ---------------------------------------------------------------- */
 
+/** `modulo` collega la voce di menu al permesso del profilo. */
 export const MENU = [
-  { key: 'dashboard', label: 'Home', icon: 'space_dashboard', to: '/admin/dashboard', accent: ACCENT.dashboard },
-  { key: 'chiese', label: 'Chiese', icon: 'church', to: '/admin/chiese', accent: ACCENT.chiese },
-  { key: 'dipartimenti', label: 'Dipartimenti', icon: 'diversity_3', to: '/admin/dipartimenti', accent: ACCENT.dipartimenti },
-  { key: 'membri', label: 'Membri', icon: 'badge', to: '/admin/membri', accent: ACCENT.membri },
+  { key: 'dashboard', label: 'Home', modulo: 'Home', icon: 'space_dashboard', to: '/admin/dashboard', accent: ACCENT.dashboard },
+  { key: 'chiese', label: 'Chiese', modulo: 'Chiese', icon: 'church', to: '/admin/chiese', accent: ACCENT.chiese },
+  { key: 'dipartimenti', label: 'Dipartimenti', modulo: 'Dipartimenti', icon: 'diversity_3', to: '/admin/dipartimenti', accent: ACCENT.dipartimenti },
+  { key: 'membri', label: 'Membri', modulo: 'Membri', icon: 'badge', to: '/admin/membri', accent: ACCENT.membri },
   {
     key: 'finanze',
     label: 'Finanze',
+    modulo: 'Finanze',
     icon: 'payments',
     accent: ACCENT.finanze,
     children: [
-      { key: 'finanze-home', label: 'Panoramica', icon: 'account_balance_wallet', to: '/admin/finanze' },
-      { key: 'categorie', label: 'Categorie', icon: 'category', to: '/admin/finanze/categorie' },
+      { key: 'finanze-home', label: 'Panoramica', modulo: 'Finanze', icon: 'account_balance_wallet', to: '/admin/finanze' },
+      { key: 'categorie', label: 'Categorie', modulo: 'Finanze', icon: 'category', to: '/admin/finanze/categorie' },
+    ],
+  },
+  {
+    key: 'utenti',
+    label: 'Utenti',
+    modulo: 'Utenti',
+    icon: 'manage_accounts',
+    accent: ACCENT.utenti,
+    children: [
+      { key: 'utenti-lista', label: 'Utenti', modulo: 'Utenti', icon: 'group', to: '/admin/utenti' },
+      { key: 'profili', label: 'Profili di accesso', modulo: 'Utenti', icon: 'shield_person', to: '/admin/utenti/profili' },
     ],
   },
 ]

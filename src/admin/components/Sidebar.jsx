@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { MENU } from '../theme'
+import { usePermessi } from '../hooks/usePermessi'
 import Icon from '../../components/Icon'
 
 /* ------------------------------------------------------------------ */
@@ -139,15 +140,29 @@ function NavGroup({ item, collapsed, onNavigate }) {
 export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMobile }) {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
+  const { puo, utente, profilo } = usePermessi()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data?.user?.email || ''))
   }, [])
 
+  /* Restano solo le voci che il profilo può almeno consultare. */
+  const voci = useMemo(
+    () =>
+      MENU.filter((item) => puo(item.modulo)).map((item) =>
+        item.children ? { ...item, children: item.children.filter((c) => puo(c.modulo)) } : item
+      ),
+    [puo]
+  )
+
+  const nomeVisualizzato = utente?.nome || email
   const iniziali = useMemo(() => {
-    if (!email) return '··'
-    return email.slice(0, 2).toUpperCase()
-  }, [email])
+    const base = utente?.nome || email
+    if (!base) return '··'
+    const parti = base.trim().split(/\s+/)
+    if (parti.length > 1) return (parti[0][0] + parti[1][0]).toUpperCase()
+    return base.slice(0, 2).toUpperCase()
+  }, [utente, email])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -228,7 +243,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
             </p>
           )}
 
-          {MENU.map((item) =>
+          {voci.map((item) =>
             item.children ? (
               <NavGroup key={item.key} item={item} collapsed={collapsed} onNavigate={onCloseMobile} />
             ) : (
@@ -262,8 +277,15 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
             </span>
             {!collapsed && (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[12.5px] font-semibold text-cream-50">{email || 'Utente'}</p>
-                <p className="text-[10.5px] font-bold uppercase tracking-widest text-cream-100/30">Pastore</p>
+                <p className="truncate text-[12.5px] font-semibold text-cream-50" title={email}>
+                  {nomeVisualizzato || 'Utente'}
+                </p>
+                <p
+                  className="truncate text-[10.5px] font-bold uppercase tracking-widest"
+                  style={{ color: profilo?.colore || 'rgba(247,243,236,0.3)' }}
+                >
+                  {profilo?.nome || 'Accesso completo'}
+                </p>
               </div>
             )}
             {!collapsed && (

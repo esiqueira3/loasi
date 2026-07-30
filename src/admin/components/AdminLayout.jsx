@@ -3,6 +3,7 @@ import Sidebar from './Sidebar'
 import Icon from '../../components/Icon'
 import { ToastHost } from './Toast'
 import { ConfirmProvider } from './Confirm'
+import { PermessiProvider } from '../hooks/usePermessi'
 
 const STORAGE_KEY = 'loasi.admin.sidebarCollapsed'
 
@@ -33,6 +34,7 @@ export default function AdminLayout({ children, titolo, icona = 'space_dashboard
   }, [mobileOpen])
 
   return (
+    <PermessiProvider>
     <ConfirmProvider>
     <div className="min-h-screen bg-canvas-parchment font-body text-ink">
       <Sidebar
@@ -75,6 +77,7 @@ export default function AdminLayout({ children, titolo, icona = 'space_dashboard
       <ToastHost />
     </div>
     </ConfirmProvider>
+    </PermessiProvider>
   )
 }
 

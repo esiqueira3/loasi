@@ -21,6 +21,8 @@ const Categorie = lazy(() => import('./admin/pages/Categorie'))
 const Chiese = lazy(() => import('./admin/pages/Chiese'))
 const Dipartimenti = lazy(() => import('./admin/pages/Dipartimenti'))
 const Membri = lazy(() => import('./admin/pages/Membri'))
+const Utenti = lazy(() => import('./admin/pages/Utenti'))
+const Profili = lazy(() => import('./admin/pages/Profili'))
 
 function AdminFallback() {
   return (
@@ -58,6 +60,8 @@ const adminRoutes = [
   ['/admin/membri', <Membri key="membri" />],
   ['/admin/finanze', <Finanze key="fin" />],
   ['/admin/finanze/categorie', <Categorie key="cat" />],
+  ['/admin/utenti', <Utenti key="utenti" />],
+  ['/admin/utenti/profili', <Profili key="profili" />],
 ]
 
 export default function App() {
