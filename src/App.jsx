@@ -13,17 +13,30 @@ import NotFound from './pages/NotFound'
 
 import ProtectedRoute from './components/ProtectedRoute'
 
+/* Helper per gestire il caricamento dinamico con auto-reload se la versione sul server è cambiata */
+const lazyLoad = (fn) =>
+  lazy(() =>
+    fn().catch((err) => {
+      const reloaded = sessionStorage.getItem('loasi_chunk_reloaded')
+      if (!reloaded) {
+        sessionStorage.setItem('loasi_chunk_reloaded', '1')
+        window.location.reload()
+      }
+      throw err
+    })
+  )
+
 /* L'area riservata viene caricata solo quando serve: il sito pubblico resta leggero. */
-const AdminLogin = lazy(() => import('./pages/AdminLogin'))
-const Dashboard = lazy(() => import('./admin/pages/Dashboard'))
-const Finanze = lazy(() => import('./admin/pages/Finanze'))
-const Categorie = lazy(() => import('./admin/pages/Categorie'))
-const Chiese = lazy(() => import('./admin/pages/Chiese'))
-const Eventi = lazy(() => import('./admin/pages/Eventi'))
-const Dipartimenti = lazy(() => import('./admin/pages/Dipartimenti'))
-const Membri = lazy(() => import('./admin/pages/Membri'))
-const Utenti = lazy(() => import('./admin/pages/Utenti'))
-const Profili = lazy(() => import('./admin/pages/Profili'))
+const AdminLogin = lazyLoad(() => import('./pages/AdminLogin'))
+const Dashboard = lazyLoad(() => import('./admin/pages/Dashboard'))
+const Finanze = lazyLoad(() => import('./admin/pages/Finanze'))
+const Categorie = lazyLoad(() => import('./admin/pages/Categorie'))
+const Chiese = lazyLoad(() => import('./admin/pages/Chiese'))
+const Eventi = lazyLoad(() => import('./admin/pages/Eventi'))
+const Dipartimenti = lazyLoad(() => import('./admin/pages/Dipartimenti'))
+const Membri = lazyLoad(() => import('./admin/pages/Membri'))
+const Utenti = lazyLoad(() => import('./admin/pages/Utenti'))
+const Profili = lazyLoad(() => import('./admin/pages/Profili'))
 
 function AdminFallback() {
   return (
