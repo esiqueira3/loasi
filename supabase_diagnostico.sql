@@ -1,41 +1,32 @@
 -- ============================================================================
--- DIAGNOSTICA DEI PERMESSI — sola lettura, non modifica nulla
+-- DIAGNOSTICA — simula la valutazione delle policy con la TUA identità
 --
--- UNA SOLA query, di proposito: il SQL Editor di Supabase mostra soltanto il
--- risultato dell'ultima istruzione, quindi uno script con più SELECT ne
--- nasconderebbe la maggior parte.
---
--- Esegui e incolla il risultato.
+-- Sola lettura: non modifica nulla.
+-- I dati risultano corretti, quindi il problema è nella VALUTAZIONE a runtime.
+-- Qui fingiamo il token di `chiesaloasi@gmail.com` e chiediamo alle funzioni
+-- che cosa rispondono: è esattamente ciò che fa il database quando decide se
+-- lasciarti eliminare una riga.
 --
 -- COME LEGGERLO
---   email_account NULL  → in `utenti` c'è un'e-mail che non corrisponde a
---                         nessun account: `mio_livello()` non ti trova e nega
---                         ogni operazione
---   attivo = false      → accesso revocato
---   profilo_di_sistema  → se true, dovresti avere accesso completo ovunque
---   livello_finanze     → deve essere 'completo' per poter eliminare i
---                         movimenti; 'lettura' li mostra ma non li cancella
+--   email_dal_token NULL → il token simulato non è arrivato alle funzioni:
+--                          il test non è valido (l'editor ha usato più
+--                          transazioni). Dimmelo e cambiamo approccio.
+--   scrittura_finanze    → deve essere true. Se è false, il difetto è dentro
+--                          `mio_livello` e lo correggo.
+--   scrittura_chiese     → riguarda il menu e le pagine.
 -- ============================================================================
 
+SELECT set_config(
+  'request.jwt.claims',
+  '{"email":"chiesaloasi@gmail.com","role":"authenticated"}',
+  true   -- valido solo per questa transazione
+);
+
 SELECT
-  u.nome,
-  u.email                                        AS email_utenti,
-  a.email                                        AS email_account,
-  (u.auth_user_id IS NOT NULL)                   AS account_collegato,
-  u.attivo,
-  COALESCE(p.nome, '— senza profilo —')          AS profilo,
-  COALESCE(p.sistema, FALSE)                     AS profilo_di_sistema,
-  COALESCE(p.permessi ->> 'Finanze', '(assente)') AS livello_finanze,
-  COALESCE(p.permessi ->> 'Chiese',  '(assente)') AS livello_chiese,
-  COALESCE(p.permessi ->> 'Home',    '(assente)') AS livello_home,
-  (SELECT string_agg(pr.proname, ', ' ORDER BY pr.proname)
-     FROM pg_proc pr
-     JOIN pg_namespace n ON n.oid = pr.pronamespace
-    WHERE n.nspname = 'public'
-      AND pr.proname IN ('mio_livello', 'puo_leggere', 'puo_scrivere',
-                         'mio_profilo', 'collega_utente_corrente')
-  )                                              AS funzioni_presenti
-FROM public.utenti u
-LEFT JOIN public.profili p ON p.id = u.profilo_id
-LEFT JOIN auth.users   a ON lower(a.email) = lower(u.email)
-ORDER BY u.created_at;
+  auth.jwt() ->> 'email'          AS email_dal_token,
+  public.mio_livello('Finanze')   AS livello_finanze,
+  public.puo_leggere('Finanze')   AS lettura_finanze,
+  public.puo_scrivere('Finanze')  AS scrittura_finanze,
+  public.mio_livello('Chiese')    AS livello_chiese,
+  public.puo_scrivere('Chiese')   AS scrittura_chiese,
+  (SELECT count(*) FROM public.utenti) AS righe_in_utenti;
