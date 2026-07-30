@@ -31,7 +31,7 @@ export default function ProtectedRoute({ children }) {
         justifyContent: 'center',
         fontFamily: "'Inter', sans-serif"
       }}>
-        <h2>Carregando ambiente seguro...</h2>
+        <h2>Caricamento dell'area riservata…</h2>
       </div>
     )
   }

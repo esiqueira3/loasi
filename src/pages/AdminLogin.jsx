@@ -4,9 +4,9 @@ import { supabase } from '../lib/supabase'
 
 const translateError = (msg) => {
   if (!msg) return null;
-  if (msg.includes("Invalid login credentials")) return "🔒 E-mail ou senha incorretos. Verifique suas credenciais.";
-  if (msg.includes("Email not confirmed")) return "E-mail não confirmado.";
-  if (msg.includes("Too many requests") || msg.includes("Rate limit exceeded")) return "Muitas solicitações! Tente novamente em alguns minutos.";
+  if (msg.includes("Invalid login credentials")) return "E-mail o password non corretti. Controlla le credenziali.";
+  if (msg.includes("Email not confirmed")) return "E-mail non confermata. Conferma l'indirizzo dal pannello Supabase (Authentication → Users).";
+  if (msg.includes("Too many requests") || msg.includes("Rate limit exceeded")) return "Troppi tentativi. Riprova tra qualche minuto.";
   return msg;
 };
 
@@ -254,7 +254,7 @@ export default function AdminLogin() {
                   transition: 'all 0.25s ease'
                 }}
               >
-                {loading ? 'Processando...' : 'Entrar no Ambiente →'}
+                {loading ? 'Accesso in corso…' : 'Accedi al Gestionale →'}
               </button>
             </form>
           </section>
