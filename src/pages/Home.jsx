@@ -350,10 +350,22 @@ function VideoBand() {
             {videoBlock.title}
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-[15px] text-cream-100/70">{videoBlock.text}</p>
-          <Link to="/#eventi" className="btn-gold mt-10">
+          <a
+            href="#eventi"
+            onClick={(e) => {
+              const el = document.getElementById('eventi')
+              if (el) {
+                e.preventDefault()
+                const top = el.getBoundingClientRect().top + window.scrollY - 90
+                window.scrollTo({ top, behavior: 'smooth' })
+                window.history.pushState(null, '', '#eventi')
+              }
+            }}
+            className="btn-gold mt-10 cursor-pointer"
+          >
             Vedi gli eventi
             <Icon name="calendar_month" className="text-[18px]" />
-          </Link>
+          </a>
         </Reveal>
       </div>
     </section>

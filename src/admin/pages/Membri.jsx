@@ -537,7 +537,7 @@ export default function Membri() {
                     accent={BLU}
                     options={[
                       { value: '', label: 'Tutte le età' },
-                      ...FASCIE_ETA.map((f) => ({ value: f, label: f })),
+                      ...FASCE.map((f) => ({ value: f, label: f })),
                     ]}
                   />
                 </Field>
