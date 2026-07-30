@@ -29,6 +29,7 @@ const lazyLoad = (fn) =>
 /* L'area riservata viene caricata solo quando serve: il sito pubblico resta leggero. */
 const AdminLogin = lazyLoad(() => import('./pages/AdminLogin'))
 const Dashboard = lazyLoad(() => import('./admin/pages/Dashboard'))
+const MenuPagine = lazyLoad(() => import('./admin/pages/MenuPagine'))
 const Finanze = lazyLoad(() => import('./admin/pages/Finanze'))
 const Categorie = lazyLoad(() => import('./admin/pages/Categorie'))
 const Chiese = lazyLoad(() => import('./admin/pages/Chiese'))
@@ -37,6 +38,7 @@ const Dipartimenti = lazyLoad(() => import('./admin/pages/Dipartimenti'))
 const Membri = lazyLoad(() => import('./admin/pages/Membri'))
 const Utenti = lazyLoad(() => import('./admin/pages/Utenti'))
 const Profili = lazyLoad(() => import('./admin/pages/Profili'))
+const PaginaDinamica = lazyLoad(() => import('./pages/PaginaDinamica'))
 
 function AdminFallback() {
   return (
@@ -70,6 +72,7 @@ const legacyRedirects = [
 /* Rotte protette del gestionale. */
 const adminRoutes = [
   ['/admin/dashboard', <Dashboard key="dash" />],
+  ['/admin/menu', <MenuPagine key="menu" />],
   ['/admin/chiese', <Chiese key="chiese" />],
   ['/admin/eventi', <Eventi key="eventi" />],
   ['/admin/dipartimenti', <Dipartimenti key="dip" />],
@@ -92,6 +95,14 @@ export default function App() {
         <Route path="/chiese/:slug" element={<ChiesaDetail />} />
         <Route path="/missioni/:slug" element={<Mission />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route
+          path="/pagine/:slug"
+          element={
+            <Suspense fallback={<AdminFallback />}>
+              <PaginaDinamica />
+            </Suspense>
+          }
+        />
 
         {/* --- Compatibilità con i vecchi indirizzi --- */}
         {legacyRedirects.map(([from, to]) => (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { navigation, site, social } from '../data/site'
+import { supabase } from '../lib/supabase'
 import Icon from './Icon'
 
 function SocialRow({ className = '' }) {
@@ -33,7 +34,48 @@ export default function Navbar({ transparent = false }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState(null)
+  const [navItems, setNavItems] = useState(navigation)
   const location = useLocation()
+
+  useEffect(() => {
+    let active = true
+
+    async function caricaMenu() {
+      const { data, error } = await supabase
+        .from('paginas_menu')
+        .select('*')
+        .eq('ativo', true)
+        .order('ordem', { ascending: true })
+
+      if (!error && data && data.length > 0 && active) {
+        const mappati = data.map((v) => {
+          if (v.children) {
+            return {
+              label: v.label,
+              children: typeof v.children === 'string' ? JSON.parse(v.children) : v.children,
+            }
+          }
+          if (v.tipo === 'link' && v.link && v.link.startsWith('http')) {
+            return {
+              label: v.label,
+              href: v.link,
+              external: true,
+            }
+          }
+          return {
+            label: v.label,
+            to: v.link || (v.tipo === 'pagina' ? `/pagine/${v.slug}` : `/${v.slug}`),
+          }
+        })
+        setNavItems(mappati)
+      }
+    }
+
+    caricaMenu()
+    return () => {
+      active = false
+    }
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -98,7 +140,7 @@ export default function Navbar({ transparent = false }) {
 
           {/* Menu desktop */}
           <nav className="hidden items-center gap-1 lg:flex">
-            {navigation.map((item) => {
+            {navItems.map((item) => {
               if (item.children) {
                 return (
                   <div key={item.label} className="group relative">
@@ -205,7 +247,7 @@ export default function Navbar({ transparent = false }) {
           }`}
         >
           <ul className="flex-1 space-y-1 px-5">
-            {navigation.map((item) => {
+            {navItems.map((item) => {
               if (item.children) {
                 const isOpen = openGroup === item.label
                 return (

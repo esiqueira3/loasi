@@ -60,6 +60,7 @@ export const MENU_SECTIONS = [
     icon: 'tune',
     items: [
       { key: 'dashboard', label: 'Home', modulo: 'Home', icon: 'space_dashboard', to: '/admin/dashboard', accent: ACCENT.dashboard },
+      { key: 'menu', label: 'Menu e Pagine', modulo: 'Home', icon: 'menu_open', to: '/admin/menu', accent: '#C8A165' },
     ],
   },
   {
