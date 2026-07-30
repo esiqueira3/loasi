@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
-import { EmptyState, Kpi, Loading, Panel, PanelTitle } from '../components/ui'
+import { BtnGhost, BtnPrimary, EmptyState, Kpi, Loading, Modal, Panel, PanelTitle } from '../components/ui'
 import { ACCENT, MESI, OGGI, monthLabel, saluto, tabellaMancante } from '../theme'
 
 const ORO = ACCENT.dashboard
@@ -14,6 +14,18 @@ const ORO = ACCENT.dashboard
 /* ------------------------------------------------------------------ */
 /* Utilità                                                             */
 /* ------------------------------------------------------------------ */
+
+const fmtDataEstesa = (iso) => {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return '—'
+  return d.toLocaleDateString('it-IT', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
 
 const giornoMese = (iso) => {
   if (!iso) return null
@@ -43,6 +55,7 @@ export default function Dashboard() {
   const [promemoria, setPromemoria] = useState([])
   const [nuovoPromemoria, setNuovoPromemoria] = useState('')
   const [tabelleMancanti, setTabelleMancanti] = useState([])
+  const [eventoSelezionato, setEventoSelezionato] = useState(null)
 
   useEffect(() => {
     let annullato = false
@@ -318,8 +331,8 @@ export default function Dashboard() {
 
           {/* --- Prossimi eventi --- */}
           <Panel className="lg:col-span-2" padding={false}>
-            <div className="p-4 lg:p-6">
-              <PanelTitle titolo="Prossimi eventi" nota="I quattro appuntamenti più vicini" />
+            <div className="p-4 lg:p-6 border-b border-hairline/60">
+              <PanelTitle titolo="Prossimi eventi" nota="Clicca su un evento per vederne i dettagli" />
             </div>
             {eventi.length === 0 ? (
               <EmptyState
@@ -328,35 +341,73 @@ export default function Dashboard() {
                 testo="Gli eventi pubblicati compaiono qui e anche sul sito pubblico."
               />
             ) : (
-              <div className="divide-y divide-hairline">
+              <div className="p-3 space-y-2.5">
                 {eventi.map((ev) => {
                   const d = ev.data_evento ? new Date(ev.data_evento) : null
+                  const orario = ev.hora || (d ? d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '')
+
                   return (
-                    <div key={ev.id} className="flex items-center gap-4 px-4 py-3.5 lg:px-6">
-                      <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-canvas-parchment">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-ink-muted-48">
-                          {d ? MESI[d.getMonth()].slice(0, 3) : '—'}
-                        </span>
-                        <span className="font-display-lg text-[20px] leading-none text-ink">
-                          {d ? d.getDate() : '—'}
-                        </span>
+                    <div
+                      key={ev.id}
+                      onClick={() => setEventoSelezionato(ev)}
+                      className="group flex cursor-pointer items-center justify-between gap-3.5 rounded-2xl border border-hairline/80 bg-surface-pearl p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C8A165]/40 hover:bg-canvas-parchment/80 hover:shadow-md active:scale-[0.99]"
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        {/* Immagine di copertina o Badge Data stilizzato */}
+                        {ev.imagem_url ? (
+                          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-hairline bg-canvas-parchment shadow-inner">
+                            <img
+                              src={ev.imagem_url}
+                              alt={ev.titulo}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none'
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                            <div className="absolute bottom-1 left-1 rounded bg-black/60 px-1 py-0.5 text-[9px] font-bold text-white backdrop-blur-xs">
+                              {d ? d.getDate() : '—'} {d ? MESI[d.getMonth()].slice(0, 3) : ''}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-[#C8A165]/20 bg-gradient-to-br from-[#C8A165]/12 to-[#C8A165]/5 text-center shadow-xs transition-colors group-hover:border-[#C8A165]/40 group-hover:bg-[#C8A165]/20">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-[#C8A165]">
+                              {d ? MESI[d.getMonth()].slice(0, 3) : '—'}
+                            </span>
+                            <span className="font-display-lg text-[20px] font-bold leading-none text-ink">
+                              {d ? d.getDate() : '—'}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="min-w-0 flex-1">
+                          <h4 className="truncate text-[15px] font-bold text-ink transition-colors group-hover:text-[#A67C3D]">
+                            {ev.titulo}
+                          </h4>
+                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-ink-muted-48">
+                            {orario && (
+                              <span className="flex items-center gap-1 font-medium text-ink-muted-80">
+                                <Icon name="schedule" className="text-[13.5px] text-[#C8A165]" />
+                                {orario}
+                              </span>
+                            )}
+                            {ev.local && (
+                              <span className="flex items-center gap-1 truncate font-medium">
+                                <Icon name="location_on" className="text-[13.5px] text-ink-muted-48" />
+                                {ev.local}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[14.5px] font-bold text-ink">{ev.titulo}</p>
-                        <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12px] text-ink-muted-48">
-                          {d && (
-                            <span className="flex items-center gap-1">
-                              <Icon name="schedule" className="text-[13px]" />
-                              {d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          )}
-                          {ev.local && (
-                            <span className="flex items-center gap-1">
-                              <Icon name="location_on" className="text-[13px]" />
-                              {ev.local}
-                            </span>
-                          )}
-                        </p>
+
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-gold-500/20 bg-gold-500/10 px-2.5 py-1 text-[11px] font-bold text-gold-700 opacity-0 transition-opacity group-hover:opacity-100">
+                          Vedi dettagli
+                        </span>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-canvas-parchment text-ink-muted-48 transition-colors group-hover:bg-[#C8A165]/15 group-hover:text-ink">
+                          <Icon name="chevron_right" className="text-[18px] transition-transform group-hover:translate-x-0.5" />
+                        </div>
                       </div>
                     </div>
                   )
@@ -492,6 +543,100 @@ export default function Dashboard() {
           </Panel>
         </div>
       </div>
+
+      {/* --- Modal Dettagli Evento --- */}
+      {eventoSelezionato && (
+        <Modal
+          onClose={() => setEventoSelezionato(null)}
+          titolo={eventoSelezionato.titulo}
+          sottotitolo="Dettagli dell'appuntamento"
+          icona="event"
+          accent="#C8A165"
+          larghezza="max-w-xl"
+        >
+          <div className="flex flex-col gap-4">
+            {eventoSelezionato.imagem_url && (
+              <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-hairline bg-canvas-parchment shadow-sm">
+                <img
+                  src={eventoSelezionato.imagem_url}
+                  alt={eventoSelezionato.titulo}
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-start gap-3 rounded-xl border border-hairline bg-surface-pearl p-3.5 shadow-xs">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#C8A165]/15 text-[#C8A165]">
+                  <Icon name="calendar_month" className="text-[20px]" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Data e ora</div>
+                  <div className="mt-0.5 text-[13.5px] font-bold text-ink capitalize">
+                    {fmtDataEstesa(eventoSelezionato.data_evento)}
+                  </div>
+                  {(eventoSelezionato.hora || eventoSelezionato.data_evento) && (
+                    <div className="mt-0.5 text-[12px] font-semibold text-[#C8A165]">
+                      ore {eventoSelezionato.hora || new Date(eventoSelezionato.data_evento).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 rounded-xl border border-hairline bg-surface-pearl p-3.5 shadow-xs">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-700">
+                  <Icon name="location_on" className="text-[20px]" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Luogo</div>
+                  <div className="mt-0.5 text-[13.5px] font-bold text-ink truncate">
+                    {eventoSelezionato.local || 'Comunità L’Oasi'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {eventoSelezionato.descricao && (
+              <div className="rounded-xl border border-hairline bg-surface-pearl p-4 shadow-xs">
+                <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">
+                  Descrizione dell'evento
+                </div>
+                <p className="whitespace-pre-line text-[13.5px] leading-relaxed text-ink-muted-80">
+                  {eventoSelezionato.descricao}
+                </p>
+              </div>
+            )}
+
+            {eventoSelezionato.link_inscricao && (
+              <a
+                href={eventoSelezionato.link_inscricao}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#C8A165] px-4 py-2.5 text-[13px] font-bold text-ink-950 transition-all hover:brightness-110 shadow-sm"
+              >
+                <Icon name="open_in_new" className="text-[17px]" />
+                Apri link di iscrizione
+              </a>
+            )}
+
+            <div className="mt-2 flex items-center justify-between border-t border-hairline pt-3">
+              <Link
+                to="/admin/eventi"
+                className="flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-muted-80 hover:text-ink transition-colors"
+              >
+                <Icon name="edit" className="text-[16px]" />
+                Gestisci eventi
+              </Link>
+              <BtnGhost type="button" onClick={() => setEventoSelezionato(null)}>
+                Chiudi
+              </BtnGhost>
+            </div>
+          </div>
+        </Modal>
+      )}
     </AdminLayout>
   )
 }
