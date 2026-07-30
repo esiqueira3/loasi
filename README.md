@@ -137,13 +137,19 @@ Nel SQL Editor di Supabase, in quest'ordine:
 3. `supabase_gestionale.sql` — tabelle del gestionale + categorie e
    dipartimenti iniziali
 4. `supabase_utenti.sql` — utenti, profili di accesso e profili iniziali
+5. `supabase_permessi.sql` — policy RLS che applicano i profili anche fuori
+   dal gestionale (da eseguire per ultimo)
 
-> **Sicurezza.** Le tabelle del sito pubblico sono leggibili da chiunque
-> (servono al sito). Quelle del gestionale — `membri`, `dipartimenti`,
-> `titoli_finanziari`, `rate_finanziarie`, `categorie_finanziarie` — sono
-> accessibili **solo agli utenti autenticati**, e i `promemoria` solo al
-> proprietario. Anagrafica e contabilità non devono mai finire nell'API
-> pubblica.
+> **Sicurezza.** Le tabelle del sito pubblico restano leggibili da chiunque
+> (servono al sito), ma la scrittura richiede il modulo *Chiese*. Le tabelle
+> del gestionale sono accessibili solo agli utenti autenticati **e solo
+> secondo il profilo**: `supabase_permessi.sql` installa policy che leggono
+> `profili.permessi`, quindi la restrizione vale anche per chi interroga
+> l'API fuori dal gestionale. I `promemoria` restano privati per utente.
+>
+> Regole: `utenti` vuota → tutto consentito (avvio); autenticato ma non
+> registrato → nessun accesso; `attivo = false` → nessun accesso; registrato
+> senza profilo → accesso completo; profilo di sistema → accesso completo.
 
 > **Nota sui nomi.** Le tabelle del sito pubblico sono in portoghese
 > (`igrejas`, `eventos`, `banners`…) perché già esistenti; quelle del

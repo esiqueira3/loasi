@@ -176,7 +176,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <AdminLayout titolo="Home" icona="space_dashboard" accent={ORO}>
+      <AdminLayout modulo="Home" titolo="Home" icona="space_dashboard" accent={ORO}>
         <Loading testo="Caricamento della panoramica…" accent={ORO} />
       </AdminLayout>
     )

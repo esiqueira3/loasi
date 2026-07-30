@@ -213,13 +213,18 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
             collapsed ? 'justify-center px-2' : 'gap-3 px-5'
           }`}
         >
-          <Link to="/admin/dashboard" className="flex items-center gap-3 overflow-hidden">
+          <Link to="/admin/dashboard" className="flex min-w-0 items-center gap-2.5 overflow-hidden">
             {collapsed ? (
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-400 font-headline text-lg font-bold text-ink-950">
                 O
               </span>
             ) : (
-              <img src="/images/logo-default-268x75.png" alt="L'Oasi" className="h-9 w-auto" />
+              <>
+                <img src="/images/logo-default-268x75.png" alt="" className="h-8 w-auto shrink-0" />
+                <span className="min-w-0 truncate font-headline text-[15px] leading-tight text-white">
+                  Chiesa L’Oasi
+                </span>
+              </>
             )}
           </Link>
 

@@ -285,7 +285,7 @@ export default function Membri() {
   ]
 
   return (
-    <AdminLayout titolo="Membri" icona="badge" accent={BLU}>
+    <AdminLayout modulo="Membri" titolo="Membri" icona="badge" accent={BLU}>
       <div className="mx-auto max-w-[1500px]">
         <PageTitle
           titolo="Membri"

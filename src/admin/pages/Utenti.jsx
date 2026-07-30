@@ -281,7 +281,7 @@ export default function Utenti() {
   ]
 
   return (
-    <AdminLayout titolo="Utenti" icona="manage_accounts" accent={ROSA}>
+    <AdminLayout modulo="Utenti" titolo="Utenti" icona="manage_accounts" accent={ROSA}>
       <div className="mx-auto max-w-[1400px]">
         <PageTitle
           titolo="Utenti"

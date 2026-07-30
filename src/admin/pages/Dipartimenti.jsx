@@ -181,7 +181,7 @@ export default function Dipartimenti() {
   ]
 
   return (
-    <AdminLayout titolo="Dipartimenti" icona="diversity_3" accent={VIOLA}>
+    <AdminLayout modulo="Dipartimenti" titolo="Dipartimenti" icona="diversity_3" accent={VIOLA}>
       <div className="mx-auto max-w-[1400px]">
         <PageTitle
           titolo="Dipartimenti"

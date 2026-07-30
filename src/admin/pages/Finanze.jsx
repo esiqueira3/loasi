@@ -166,7 +166,7 @@ export default function Finanze() {
   }
 
   return (
-    <AdminLayout titolo="Gestione finanziaria" icona="payments" accent={VERDE}>
+    <AdminLayout modulo="Finanze" titolo="Gestione finanziaria" icona="payments" accent={VERDE}>
       <div className="mx-auto max-w-[1600px]">
         <PageTitle
           titolo="Finanze"

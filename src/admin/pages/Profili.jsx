@@ -152,7 +152,7 @@ export default function Profili() {
   }
 
   return (
-    <AdminLayout titolo="Profili di accesso" icona="shield_person" accent={ROSA}>
+    <AdminLayout modulo="Utenti" titolo="Profili di accesso" icona="shield_person" accent={ROSA}>
       <div className="mx-auto max-w-[1200px]">
         <PageTitle
           titolo="Profili di accesso"

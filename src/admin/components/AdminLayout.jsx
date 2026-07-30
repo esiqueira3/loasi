@@ -3,7 +3,8 @@ import Sidebar from './Sidebar'
 import Icon from '../../components/Icon'
 import { ToastHost } from './Toast'
 import { ConfirmProvider } from './Confirm'
-import { PermessiProvider } from '../hooks/usePermessi'
+import { Link } from 'react-router-dom'
+import { PermessiProvider, usePermessi } from '../hooks/usePermessi'
 
 const STORAGE_KEY = 'loasi.admin.sidebarCollapsed'
 
@@ -15,7 +16,52 @@ const STORAGE_KEY = 'loasi.admin.sidebarCollapsed'
  *     …contenuto…
  *   </AdminLayout>
  */
-export default function AdminLayout({ children, titolo, icona = 'space_dashboard', accent = '#A67C3D', azioni }) {
+/**
+ * Blocca chi arriva su una sezione che il suo profilo non prevede,
+ * per esempio digitando l'indirizzo a mano.
+ */
+function Guardia({ modulo, accent, children }) {
+  const { caricamento, puo, profilo } = usePermessi()
+
+  if (!modulo) return children
+  if (caricamento) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center text-ink-muted-48">
+        <Icon name="progress_activity" className="animate-spin text-[30px]" style={{ color: accent }} />
+      </div>
+    )
+  }
+  if (puo(modulo)) return children
+
+  return (
+    <div className="mx-auto max-w-lg py-16 text-center">
+      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10 text-red-500">
+        <Icon name="lock" className="text-[32px]" />
+      </div>
+      <h2 className="font-display-lg mb-3 text-[26px] font-light text-ink">Sezione non consentita</h2>
+      <p className="text-[14px] leading-relaxed text-ink-muted-80">
+        Il profilo <strong className="text-ink">{profilo?.nome || 'assegnato'}</strong> non prevede l'accesso a questa
+        sezione. Se ti serve, chiedi al responsabile del gestionale di aggiornare i permessi.
+      </p>
+      <Link
+        to="/admin/dashboard"
+        className="mt-8 inline-flex items-center gap-2 rounded-xl border border-hairline px-5 py-2.5 text-[13px] font-semibold text-ink-muted-80 transition-all hover:bg-canvas-parchment hover:text-ink"
+      >
+        <Icon name="arrow_back" className="text-[17px]" />
+        Torna alla Home
+      </Link>
+    </div>
+  )
+}
+
+export default function AdminLayout({
+  children,
+  titolo,
+  icona = 'space_dashboard',
+  accent = '#A67C3D',
+  azioni,
+  modulo,
+}) {
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false
     return window.localStorage.getItem(STORAGE_KEY) === '1'
@@ -71,7 +117,11 @@ export default function AdminLayout({ children, titolo, icona = 'space_dashboard
         </header>
 
         {/* --- Contenuto --- */}
-        <main className="fade-in flex-1 bg-canvas-parchment p-4 lg:p-10">{children}</main>
+        <main className="fade-in flex-1 bg-canvas-parchment p-4 lg:p-10">
+          <Guardia modulo={modulo} accent={accent}>
+            {children}
+          </Guardia>
+        </main>
       </div>
 
       <ToastHost />

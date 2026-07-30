@@ -186,7 +186,7 @@ export default function Chiese() {
   ]
 
   return (
-    <AdminLayout titolo="Chiese" icona="church" accent={AZZURRO}>
+    <AdminLayout modulo="Chiese" titolo="Chiese" icona="church" accent={AZZURRO}>
       <div className="mx-auto max-w-[1400px]">
         <PageTitle
           titolo="Chiese"

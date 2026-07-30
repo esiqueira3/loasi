@@ -120,7 +120,7 @@ export default function Categorie() {
   const nEntrate = categorie.filter((c) => c.tipo === 'entrata').length
 
   return (
-    <AdminLayout titolo="Categorie finanziarie" icona="category" accent={VERDE}>
+    <AdminLayout modulo="Finanze" titolo="Categorie finanziarie" icona="category" accent={VERDE}>
       <div className="mx-auto max-w-[1200px]">
         <PageTitle
           titolo="Categorie"
