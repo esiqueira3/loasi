@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { deleteImageFromStorage, uploadImageToStorage } from '../../lib/r2'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -45,6 +46,7 @@ export default function Eventi() {
   const [inModifica, setInModifica] = useState(null)
   const [form, setForm] = useState(vuoto)
   const [salvando, setSalvando] = useState(false)
+  const [caricandoFoto, setCaricandoFoto] = useState(false)
 
   useEffect(() => {
     localStorage.setItem('loasi.eventi.vista', vista)
@@ -62,22 +64,32 @@ export default function Eventi() {
     setLoading(false)
   }
 
+  const handleUploadFoto = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCaricandoFoto(true)
+    try {
+      const url = await uploadImageToStorage(file, 'eventi')
+      setForm((f) => ({ ...f, imagem_url: url }))
+      toast.success('Foto caricata su Cloudflare / Storage!')
+    } catch (err) {
+      toast.error(`Errore caricamento foto: ${err.message}`)
+    } finally {
+      setCaricandoFoto(false)
+    }
+  }
+
   const apriNuova = () => {
     setInModifica(null)
-    const oggiStr = new Date().toISOString().split('T')[0]
-    setForm({ ...vuoto, data_evento: oggiStr })
+    setForm(vuoto)
     setModale(true)
   }
 
   const apriModifica = (r) => {
     setInModifica(r)
-    let dStr = ''
-    if (r.data_evento) {
-      dStr = String(r.data_evento).split('T')[0]
-    }
     setForm({
       titulo: r.titulo || '',
-      data_evento: dStr,
+      data_evento: r.data_evento ? String(r.data_evento).slice(0, 10) : '',
       hora: r.hora || '',
       local: r.local || '',
       imagem_url: r.imagem_url || '',
@@ -90,8 +102,8 @@ export default function Eventi() {
 
   const salva = async (e) => {
     e.preventDefault()
-    if (!form.titulo.trim()) return toast.error("Indica il titolo dell'evento.")
-    if (!form.data_evento) return toast.error("Indica la data dell'evento.")
+    if (!form.titulo.trim()) return toast.error('Indica il titolo dell’evento.')
+    if (!form.data_evento) return toast.error('Indica la data dell’evento.')
 
     setSalvando(true)
     const payload = {
@@ -106,27 +118,17 @@ export default function Eventi() {
       updated_at: new Date().toISOString(),
     }
 
-    let res = inModifica
+    const { error } = inModifica
       ? await supabase.from('eventos').update(payload).eq('id', inModifica.id)
       : await supabase.from('eventos').insert([payload])
 
-    // Fallback se a coluna 'hora' ou 'updated_at' ainda não tiver sido criada no Supabase
-    if (res.error && (res.error.message?.includes("'hora'") || res.error.message?.includes("'updated_at'"))) {
-      const fallbackPayload = { ...payload }
-      delete fallbackPayload.hora
-      delete fallbackPayload.updated_at
-      res = inModifica
-        ? await supabase.from('eventos').update(fallbackPayload).eq('id', inModifica.id)
-        : await supabase.from('eventos').insert([fallbackPayload])
-    }
-
     setSalvando(false)
 
-    if (res.error) {
-      return toast.error(`Errore nel salvataggio: ${res.error.message}`)
+    if (error) {
+      return toast.error(`Errore nel salvataggio: ${error.message}`)
     }
 
-    toast.success(inModifica ? 'Evento aggiornato: la home è allineata.' : 'Evento creato con successo.')
+    toast.success(inModifica ? 'Evento aggiornato.' : 'Evento salvato con successo!')
     setModale(false)
     carica()
   }
@@ -419,15 +421,55 @@ export default function Eventi() {
                 />
               </Field>
 
-              <Field label="URL Immagine di copertina" hint="Immagine mostrata nella scheda dell'evento">
-                <input
-                  type="text"
-                  className={inputClass}
-                  placeholder="https://... o /images/..."
-                  value={form.imagem_url}
-                  onChange={(e) => setForm({ ...form, imagem_url: e.target.value })}
-                />
+              <Field label="Immagine di copertina (URL o Carica su Cloudflare)" hint="Foto dell'evento visibile sul sito e nella scheda">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <input
+                    type="text"
+                    className={inputClass}
+                    placeholder="https://... o /images/..."
+                    value={form.imagem_url}
+                    onChange={(e) => setForm({ ...form, imagem_url: e.target.value })}
+                  />
+                  <label className="flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-[12.5px] font-bold text-amber-900 transition-all hover:bg-amber-500/20 active:scale-95">
+                    <Icon
+                      name={caricandoFoto ? 'progress_activity' : 'cloud_upload'}
+                      className={`text-[17px] ${caricandoFoto ? 'animate-spin' : ''}`}
+                    />
+                    {caricandoFoto ? 'Caricando...' : 'Carica su Cloudflare'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleUploadFoto}
+                      disabled={caricandoFoto}
+                    />
+                  </label>
+                </div>
               </Field>
+
+              {form.imagem_url && (
+                <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-hairline bg-canvas-parchment shadow-xs">
+                  <img
+                    src={form.imagem_url}
+                    alt="Anteprima foto evento"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (form.imagem_url) deleteImageFromStorage(form.imagem_url)
+                      setForm((f) => ({ ...f, imagem_url: '' }))
+                    }}
+                    title="Rimuovi foto"
+                    className="absolute right-2 top-2 rounded-full bg-ink-950/70 p-1.5 text-white backdrop-blur-md transition-all hover:bg-red-600"
+                  >
+                    <Icon name="close" className="text-[16px]" />
+                  </button>
+                </div>
+              )}
 
               <Field label="Link di iscrizione / approfondimento" hint="Link per WhatsApp o modulo d'iscrizione">
                 <input

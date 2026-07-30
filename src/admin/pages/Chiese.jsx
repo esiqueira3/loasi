@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { uploadImageToStorage } from '../../lib/r2'
+import { deleteImageFromStorage, uploadImageToStorage } from '../../lib/r2'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -186,7 +186,12 @@ export default function Chiese() {
 
     const { error } = await supabase.from('diretoria').delete().eq('id', c.id)
     if (error) return toast.error(`Errore: ${error.message}`)
-    toast.success('Collaboratore eliminato.')
+
+    if (c.foto_url) {
+      deleteImageFromStorage(c.foto_url)
+    }
+
+    toast.success('Collaboratore ed eventuale foto eliminati.')
     caricaCollaboratori(chiesaCollaboratori.id)
   }
 
@@ -283,7 +288,12 @@ export default function Chiese() {
 
     const { error } = await supabase.from('igrejas').delete().eq('id', r.id)
     if (error) return toast.error(`Errore: ${error.message}`)
-    toast.success('Comunità eliminata.')
+
+    if (r.foto_capa_url) {
+      deleteImageFromStorage(r.foto_capa_url)
+    }
+
+    toast.success('Comunità ed eventuale foto eliminate.')
     setRighe((prev) => prev.filter((x) => x.id !== r.id))
   }
 

@@ -47,3 +47,29 @@ export async function uploadImageToStorage(file, folder = 'general') {
     reader.readAsDataURL(file)
   })
 }
+
+export async function deleteImageFromStorage(imageUrl) {
+  if (!imageUrl || typeof imageUrl !== 'string') return
+
+  // 1. Tentar deletar do Cloudflare R2 (se for URL R2)
+  if (imageUrl.includes(R2_PUBLIC_URL)) {
+    try {
+      const response = await fetch(imageUrl, { method: 'DELETE' })
+      if (response.ok) return
+    } catch (e) {
+      console.warn('Deleção direta R2 falhou:', e)
+    }
+  }
+
+  // 2. Tentar deletar do Supabase Storage bucket 'loasi-media'
+  if (imageUrl.includes('/storage/v1/object/public/loasi-media/')) {
+    try {
+      const filePath = imageUrl.split('/storage/v1/object/public/loasi-media/')[1]
+      if (filePath) {
+        await supabase.storage.from('loasi-media').remove([filePath])
+      }
+    } catch (err) {
+      console.warn('Deleção Supabase Storage falhou:', err)
+    }
+  }
+}
