@@ -99,7 +99,7 @@ Rotte del gestionale (tutte protette da `ProtectedRoute`):
 | `/admin/chiese`            | Chiese — anagrafica pubblicata sul sito  |
 | `/admin/dipartimenti`      | Dipartimenti — gruppi e ministeri        |
 | `/admin/membri`            | Membri — anagrafica e appartenenze       |
-| `/admin/finanze`           | Finanze — flusso, movimenti, agenda, uscite |
+| `/admin/finanze`           | Finanze — vista per comunità, flusso, movimenti, agenda, uscite |
 | `/admin/finanze/categorie` | Categorie di entrate e uscite            |
 
 I vecchi indirizzi (`/about-us.html`, `/chiesa-latina.html`, …) reindirizzano

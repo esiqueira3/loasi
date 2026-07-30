@@ -495,9 +495,18 @@ export function TitoliView({ titoli, onSalda, onStorna, onRiprogramma, onElimina
                     </span>
                   )}
                 </div>
-                <div className="mt-0.5 text-[12px] text-ink-muted-48">
-                  {meta.label} · {rate.length}
-                  {rate.length === 1 ? ' rata' : ' rate'}
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12px] text-ink-muted-48">
+                  <span className="flex items-center gap-1">
+                    <Icon name="church" className="text-[13px]" />
+                    {t.chiesa?.cidade || 'Generale'}
+                  </span>
+                  <span>·</span>
+                  <span>{meta.label}</span>
+                  <span>·</span>
+                  <span>
+                    {rate.length}
+                    {rate.length === 1 ? ' rata' : ' rate'}
+                  </span>
                 </div>
               </div>
 

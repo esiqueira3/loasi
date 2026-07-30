@@ -28,11 +28,12 @@ function BottoneSalva({ inCorso, children = 'Salva', accent = VERDE }) {
 /* Nuovo movimento                                                     */
 /* ================================================================== */
 
-export function NuovoMovimentoModal({ onClose, onSave, categorie }) {
+export function NuovoMovimentoModal({ onClose, onSave, categorie, chiese = [], chiesaPredefinita = '' }) {
   const [form, setForm] = useState({
     descrizione: '',
     tipo: 'entrata',
     categoria_id: '',
+    igreja_id: chiesaPredefinita,
     importo: '',
     numero_rate: 1,
     prima_scadenza: toISO(OGGI),
@@ -67,11 +68,17 @@ export function NuovoMovimentoModal({ onClose, onSave, categorie }) {
 
     const importo = Number(form.importo)
     if (!form.descrizione.trim()) return setErrore('Indica una descrizione.')
+    if (!form.igreja_id) return setErrore('Indica a quale comunità appartiene il movimento.')
     if (!importo || importo <= 0) return setErrore("Indica un importo maggiore di zero.")
     if (!form.prima_scadenza) return setErrore('Indica la data della prima scadenza.')
 
     setSalvando(true)
-    const res = await onSave({ ...form, importo })
+    // "generale" non è una comunità: in banca dati resta NULL.
+    const res = await onSave({
+      ...form,
+      importo,
+      igreja_id: form.igreja_id === 'generale' ? null : form.igreja_id,
+    })
     setSalvando(false)
 
     if (res?.error) setErrore(res.error.message)
@@ -133,6 +140,19 @@ export function NuovoMovimentoModal({ onClose, onSave, categorie }) {
             onChange={(e) => setForm((f) => ({ ...f, descrizione: e.target.value }))}
             placeholder={form.tipo === 'entrata' ? 'Es.: Offerte del culto domenicale' : 'Es.: Affitto locale — marzo'}
             className={inputClass}
+          />
+        </Field>
+
+        <Field label="Comunità" obbligatorio hint="Serve per la vista per comunità e i totali separati.">
+          <CustomSelect
+            value={form.igreja_id}
+            onChange={(v) => setForm((f) => ({ ...f, igreja_id: v }))}
+            placeholder="Scegli la comunità…"
+            options={[
+              ...chiese.map((c) => ({ value: c.id, label: c.cidade })),
+              { value: 'generale', label: 'Generale — tutte le comunità' },
+            ]}
+            accent={accent}
           />
         </Field>
 

@@ -22,8 +22,8 @@ export default function Finanze() {
   const confirm = useConfirm()
   const {
     titoli,
-    rate,
     categorie,
+    chiese,
     loading,
     setupNeeded,
     creaTitolo,
@@ -33,6 +33,7 @@ export default function Finanze() {
     riprogrammaTitolo,
   } = useFinanze()
 
+  const [chiesaAttiva, setChiesaAttiva] = useState('tutte')
   const [vista, setVista] = useState('flusso')
   const [filtroTipo, setFiltroTipo] = useState('tutti')
   const [filtroStato, setFiltroStato] = useState('tutti')
@@ -41,22 +42,62 @@ export default function Finanze() {
   const [saldando, setSaldando] = useState(null)
   const [riprogrammando, setRiprogrammando] = useState(null)
 
+  /* --- Tutto parte dalla comunità selezionata --- */
+  const titoliChiesa = useMemo(() => {
+    if (chiesaAttiva === 'tutte') return titoli
+    if (chiesaAttiva === 'generale') return titoli.filter((t) => !t.igreja_id)
+    return titoli.filter((t) => t.igreja_id === chiesaAttiva)
+  }, [titoli, chiesaAttiva])
+
+  const rateChiesa = useMemo(
+    () => titoliChiesa.flatMap((t) => (t.rate || []).map((r) => ({ ...r, titolo: t }))),
+    [titoliChiesa]
+  )
+
   /* --- Filtri --- */
   const titoliFiltrati = useMemo(() => {
-    let lista = titoli
+    let lista = titoliChiesa
     if (filtroTipo === 'entrate') lista = lista.filter(isEntrata)
     else if (filtroTipo === 'uscite') lista = lista.filter((t) => !isEntrata(t))
     if (filtroStato !== 'tutti') lista = lista.filter((t) => statoTitolo(t).key === filtroStato)
     return lista
-  }, [titoli, filtroTipo, filtroStato])
+  }, [titoliChiesa, filtroTipo, filtroStato])
 
   const rateFiltrate = useMemo(
     () => titoliFiltrati.flatMap((t) => (t.rate || []).map((r) => ({ ...r, titolo: t }))),
     [titoliFiltrati]
   )
 
-  /* --- KPI --- */
+  /* --- Riepilogo per comunità (saldo realizzato) --- */
+  const riepilogoChiese = useMemo(() => {
+    const saldoDi = (lista) => {
+      const rate = lista.flatMap((t) => (t.rate || []).map((r) => ({ ...r, titolo: t })))
+      const saldate = rate.filter((r) => r.stato === 'saldata')
+      const inc = saldate
+        .filter((r) => isEntrata(r.titolo))
+        .reduce((a, r) => a + (r.importo_saldato ?? r.importo), 0)
+      const pag = saldate
+        .filter((r) => !isEntrata(r.titolo))
+        .reduce((a, r) => a + (r.importo_saldato ?? r.importo), 0)
+      return { incassato: inc, pagato: pag, saldo: inc - pag, movimenti: lista.length }
+    }
+
+    const voci = chiese.map((c) => ({
+      key: c.id,
+      label: c.cidade,
+      ...saldoDi(titoli.filter((t) => t.igreja_id === c.id)),
+    }))
+
+    const generali = titoli.filter((t) => !t.igreja_id)
+    if (generali.length) {
+      voci.push({ key: 'generale', label: 'Generale', ...saldoDi(generali) })
+    }
+    return voci
+  }, [titoli, chiese])
+
+  /* --- KPI (della comunità selezionata) --- */
   const kpi = useMemo(() => {
+    const rate = rateChiesa
     const entrate = rate.filter((r) => isEntrata(r.titolo))
     const uscite = rate.filter((r) => !isEntrata(r.titolo))
     const aperte = (arr) => arr.filter((r) => r.stato === 'aperta')
@@ -77,7 +118,7 @@ export default function Finanze() {
       .reduce((a, r) => a + r.importo, 0)
 
     return { daIncassare, daPagare, incassato, scaduto, prossimi30, saldoPrevisto: daIncassare - daPagare }
-  }, [rate])
+  }, [rateChiesa])
 
   /* --- Azioni --- */
   const handleStorna = async (rata) => {
@@ -148,6 +189,73 @@ export default function Finanze() {
           />
         ) : (
           <>
+            {/* --- Selettore di comunità --- */}
+            <div className="mb-6 overflow-hidden rounded-2xl border border-hairline bg-surface-pearl shadow-sm">
+              <div className="flex flex-wrap items-center gap-2 border-b border-hairline p-3">
+                <span className="mr-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-ink-muted-48">
+                  <Icon name="church" className="text-[16px]" />
+                  Comunità
+                </span>
+
+                {[
+                  { key: 'tutte', label: 'Tutte' },
+                  ...chiese.map((c) => ({ key: c.id, label: c.cidade })),
+                  ...(titoli.some((t) => !t.igreja_id) ? [{ key: 'generale', label: 'Generale' }] : []),
+                ].map((o) => {
+                  const attiva = chiesaAttiva === o.key
+                  return (
+                    <button
+                      key={o.key}
+                      type="button"
+                      onClick={() => setChiesaAttiva(o.key)}
+                      className={`rounded-xl px-4 py-2 text-[12.5px] font-bold transition-all ${
+                        attiva ? 'text-white shadow-md' : 'text-ink-muted-80 hover:bg-canvas-parchment hover:text-ink'
+                      }`}
+                      style={attiva ? { backgroundColor: VERDE } : undefined}
+                    >
+                      {o.label}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Saldo realizzato per comunità */}
+              {riepilogoChiese.length > 0 && (
+                <div className="grid gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+                  {riepilogoChiese.map((r) => (
+                    <button
+                      key={r.key}
+                      type="button"
+                      onClick={() => setChiesaAttiva(r.key)}
+                      className={`bg-surface-pearl p-4 text-left transition-colors hover:bg-canvas-parchment/60 ${
+                        chiesaAttiva === r.key ? 'bg-canvas-parchment/70' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate text-[12px] font-bold uppercase tracking-wider text-ink-muted-48">
+                          {r.label}
+                        </span>
+                        <span className="shrink-0 text-[10.5px] font-semibold text-ink-muted-48">
+                          {r.movimenti} mov.
+                        </span>
+                      </div>
+                      <div
+                        className={`mt-1.5 text-[17px] font-bold tracking-tight ${
+                          r.saldo >= 0 ? 'text-ink' : 'text-red-500'
+                        }`}
+                      >
+                        {fmtMoney(r.saldo)}
+                      </div>
+                      <div className="mt-1 flex items-center gap-3 text-[11px] font-semibold">
+                        <span className="text-[#107C42]">+{fmtMoney(r.incassato)}</span>
+                        <span className="text-red-500">−{fmtMoney(r.pagato)}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* --- KPI --- */}
             <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6 lg:gap-4">
               <Kpi icona="savings" tint={VERDE} valore={fmtMoney(kpi.daIncassare)} etichetta="Da incassare" nota="Entrate aperte" />
@@ -214,13 +322,20 @@ export default function Finanze() {
                 onStorna={handleStorna}
               />
             )}
-            {vista === 'spese' && <SpeseView titoli={titoli} />}
+            {vista === 'spese' && <SpeseView titoli={titoliChiesa} />}
           </>
         )}
       </div>
 
       {creando && (
-        <NuovoMovimentoModal onClose={() => setCreando(false)} onSave={handleCrea} categorie={categorie} />
+        <NuovoMovimentoModal
+          onClose={() => setCreando(false)}
+          onSave={handleCrea}
+          categorie={categorie}
+          chiese={chiese}
+          /* se stai già guardando una comunità, il modulo parte da quella */
+          chiesaPredefinita={chiesaAttiva === 'tutte' ? '' : chiesaAttiva}
+        />
       )}
       {saldando && (
         <SaldaRataModal

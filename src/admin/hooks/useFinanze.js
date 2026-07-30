@@ -76,6 +76,7 @@ export function costruisciRate({ totale, numero, primaScadenza }) {
 export function useFinanze() {
   const [titoli, setTitoli] = useState([])
   const [categorie, setCategorie] = useState([])
+  const [chiese, setChiese] = useState([])
   const [loading, setLoading] = useState(true)
   const [setupNeeded, setSetupNeeded] = useState(false)
 
@@ -84,7 +85,9 @@ export function useFinanze() {
 
     const { data, error } = await supabase
       .from('titoli_finanziari')
-      .select('*, rate:rate_finanziarie(*), categoria:categorie_finanziarie(id, nome, colore)')
+      .select(
+        '*, rate:rate_finanziarie(*), categoria:categorie_finanziarie(id, nome, colore), chiesa:igrejas(id, cidade)'
+      )
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -102,12 +105,12 @@ export function useFinanze() {
       }))
     )
 
-    const { data: cats } = await supabase
-      .from('categorie_finanziarie')
-      .select('*')
-      .order('tipo')
-      .order('nome')
+    const [{ data: cats }, { data: ch }] = await Promise.all([
+      supabase.from('categorie_finanziarie').select('*').order('tipo').order('nome'),
+      supabase.from('igrejas').select('id, cidade').order('cidade'),
+    ])
     setCategorie(cats || [])
+    setChiese(ch || [])
 
     setLoading(false)
   }, [])
@@ -119,7 +122,7 @@ export function useFinanze() {
   /* --- Comandi --- */
 
   const creaTitolo = useCallback(
-    async ({ descrizione, tipo, categoria_id, importo, numero_rate, prima_scadenza, note }) => {
+    async ({ descrizione, tipo, categoria_id, igreja_id, importo, numero_rate, prima_scadenza, note }) => {
       const { data: titolo, error } = await supabase
         .from('titoli_finanziari')
         .insert([
@@ -127,6 +130,7 @@ export function useFinanze() {
             descrizione: descrizione.trim(),
             tipo,
             categoria_id: categoria_id || null,
+            igreja_id: igreja_id || null,
             importo_totale: Number(importo),
             note: note?.trim() || null,
           },
@@ -223,6 +227,7 @@ export function useFinanze() {
     titoli,
     rate,
     categorie,
+    chiese,
     loading,
     setupNeeded,
     ricarica: carica,
