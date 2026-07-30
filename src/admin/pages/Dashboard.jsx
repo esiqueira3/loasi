@@ -67,6 +67,7 @@ export default function Dashboard() {
   const [tabelleMancanti, setTabelleMancanti] = useState([])
   const [eventoSelezionato, setEventoSelezionato] = useState(null)
   const [membroCompleanno, setMembroCompleanno] = useState(null)
+  const [dipartimentoSelezionato, setDipartimentoSelezionato] = useState(null)
 
   useEffect(() => {
     let annullato = false
@@ -157,10 +158,16 @@ export default function Dashboard() {
   /* --- Dipartimenti con conteggio membri --- */
   const dipartimentiConta = useMemo(
     () =>
-      dipartimenti.map((d) => ({
-        ...d,
-        membri: membri.filter((m) => m.dipartimento_id === d.id).length,
-      })),
+      dipartimenti.map((d) => {
+        const membriDip = membri.filter((m) => m.dipartimento_id === d.id)
+        const percentuale = membri.length > 0 ? Math.round((membriDip.length / membri.length) * 100) : 0
+        return {
+          ...d,
+          listaMembri: membriDip,
+          membri: membriDip.length,
+          percentuale,
+        }
+      }),
     [dipartimenti, membri]
   )
 
@@ -532,32 +539,89 @@ export default function Dashboard() {
           </Panel>
 
           {/* --- Dipartimenti --- */}
-          <Panel className="lg:col-span-2" padding={false}>
-            <div className="p-4 lg:p-6">
-              <PanelTitle titolo="Dipartimenti" nota="Membri per dipartimento">
+          <Panel className="lg:col-span-2 overflow-hidden border border-hairline bg-surface-card shadow-soft" padding={false}>
+            <div className="flex items-center justify-between border-b border-hairline bg-gradient-to-r from-violet-500/5 via-purple-500/5 to-indigo-500/5 p-4 lg:p-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/15 text-violet-600 shadow-xs">
+                  <Icon name="diversity_3" className="text-[20px]" />
+                </div>
+                <div>
+                  <h3 className="font-headline text-[15px] font-bold text-ink">Dipartimenti</h3>
+                  <p className="text-[11px] font-medium text-ink-muted-48">Membri e reparti di servizio</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="hidden sm:inline-block rounded-full bg-violet-500/15 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-violet-700 border border-violet-500/20">
+                  {dipartimentiConta.length} {dipartimentiConta.length === 1 ? 'dipartimento' : 'dipartimenti'}
+                </span>
                 <Link
                   to="/admin/dipartimenti"
-                  className="text-[11px] font-bold uppercase tracking-widest text-ink-muted-48 transition-colors hover:text-ink"
+                  className="flex items-center gap-1 rounded-xl border border-hairline bg-surface-pearl px-3 py-1.5 text-[12px] font-bold text-ink-muted-80 transition-all hover:bg-canvas-parchment hover:text-ink active:scale-95 shadow-xs"
                 >
+                  <Icon name="edit" className="text-[14px]" />
                   Gestisci
                 </Link>
-              </PanelTitle>
+              </div>
             </div>
+
             {dipartimentiConta.length === 0 ? (
               <EmptyState icona="diversity_3" titolo="Nessun dipartimento" testo="Crea i dipartimenti della chiesa per organizzare i servizi." />
             ) : (
-              <div className="grid gap-px bg-hairline sm:grid-cols-2">
-                {dipartimentiConta.map((d) => (
-                  <div key={d.id} className="flex items-center gap-3 bg-surface-pearl px-4 py-3.5 lg:px-6">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/12 text-violet-600">
-                      <Icon name="diversity_3" className="text-[18px]" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13.5px] font-semibold text-ink">{d.nome}</p>
+              <div className="grid gap-3.5 p-4 lg:p-5 sm:grid-cols-2">
+                {dipartimentiConta.map((d) => {
+                  const colore = d.colore || '#8B5CF6'
+                  return (
+                    <div
+                      key={d.id}
+                      onClick={() => setDipartimentoSelezionato(d)}
+                      className="group flex flex-col justify-between rounded-2xl border border-hairline bg-surface-pearl p-4 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-400/40 hover:shadow-md"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-xs transition-transform group-hover:scale-105"
+                            style={{ backgroundColor: colore }}
+                          >
+                            <Icon name="diversity_3" className="text-[20px]" />
+                          </span>
+                          <div className="min-w-0">
+                            <h4 className="truncate text-[14px] font-bold text-ink group-hover:text-violet-600 transition-colors">
+                              {d.nome}
+                            </h4>
+                            {d.responsavel ? (
+                              <p className="truncate text-[11.5px] font-medium text-ink-muted-48">
+                                Resp.: {d.responsavel}
+                              </p>
+                            ) : (
+                              <p className="text-[11.5px] font-medium text-ink-muted-48">Clicca per i membri</p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 text-right">
+                          <span className="text-lg font-black text-ink">{d.membri}</span>
+                          <span className="ml-1 text-[11px] font-bold text-ink-muted-48">
+                            {d.membri === 1 ? 'membro' : 'membri'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Barra proporzionale membri */}
+                      <div className="mt-3">
+                        <div className="flex items-center justify-between text-[10.5px] font-bold text-ink-muted-48 mb-1">
+                          <span>Percentuale chiesa</span>
+                          <span>{d.percentuale}%</span>
+                        </div>
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-hairline">
+                          <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ width: `${Math.max(d.percentuale, 4)}%`, backgroundColor: colore }}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <span className="shrink-0 text-[13px] font-bold text-ink-muted-80">{d.membri}</span>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </Panel>
@@ -862,6 +926,121 @@ export default function Dashboard() {
                 Gestisci membri
               </Link>
               <BtnGhost type="button" onClick={() => setMembroCompleanno(null)}>
+                Chiudi
+              </BtnGhost>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* --- Modal Dettagli Dipartimento --- */}
+      {dipartimentoSelezionato && (
+        <Modal
+          onClose={() => setDipartimentoSelezionato(null)}
+          titolo={dipartimentoSelezionato.nome}
+          sottotitolo="Membri afferenti e informazioni del dipartimento"
+          icona="diversity_3"
+          accent={dipartimentoSelezionato.colore || '#8B5CF6'}
+          larghezza="max-w-xl"
+        >
+          <div className="flex flex-col gap-4">
+            {/* Banner Dipartimento */}
+            <div
+              className="flex items-center justify-between rounded-2xl p-5 shadow-sm text-white"
+              style={{
+                backgroundColor: dipartimentoSelezionato.colore || '#8B5CF6',
+              }}
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
+                  <Icon name="diversity_3" className="text-[26px]" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="font-headline text-lg font-bold truncate">{dipartimentoSelezionato.nome}</h4>
+                  {dipartimentoSelezionato.responsavel && (
+                    <p className="text-[12px] opacity-90 truncate">
+                      Responsabile: <span className="font-bold">{dipartimentoSelezionato.responsavel}</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="shrink-0 text-right">
+                <div className="text-2xl font-black">{dipartimentoSelezionato.membri}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">
+                  {dipartimentoSelezionato.membri === 1 ? 'Membro' : 'Membri'}
+                </div>
+              </div>
+            </div>
+
+            {dipartimentoSelezionato.descricao && (
+              <div className="rounded-xl border border-hairline bg-surface-pearl p-3.5 text-[13px] text-ink-muted-80">
+                <span className="font-bold text-ink">Descrizione: </span>
+                {dipartimentoSelezionato.descricao}
+              </div>
+            )}
+
+            {/* Lista Membri del Dipartimento */}
+            <div>
+              <h5 className="mb-2 text-[12px] font-bold uppercase tracking-wider text-ink-muted-48 flex items-center gap-1.5">
+                <Icon name="groups" className="text-[16px]" />
+                Membri del dipartimento ({dipartimentoSelezionato.listaMembri?.length || 0})
+              </h5>
+
+              {!dipartimentoSelezionato.listaMembri || dipartimentoSelezionato.listaMembri.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-hairline p-6 text-center text-ink-muted-48">
+                  <p className="text-[13px]">Nessun membro collegato a questo dipartimento.</p>
+                </div>
+              ) : (
+                <div className="max-h-[260px] space-y-2 overflow-y-auto pr-1">
+                  {dipartimentoSelezionato.listaMembri.map((m) => {
+                    const waPhone = m.telefono ? m.telefono.replace(/[^0-9]/g, '') : null
+                    const waUrl = waPhone ? `https://wa.me/${waPhone}` : null
+
+                    return (
+                      <div
+                        key={m.id}
+                        className="flex items-center justify-between gap-3 rounded-xl border border-hairline bg-surface-pearl p-3 shadow-xs"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-500/15 text-[12px] font-bold text-violet-700">
+                            {iniziali(m.nome_completo)}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="truncate text-[13.5px] font-bold text-ink">{m.nome_completo}</p>
+                            <p className="text-[11.5px] font-medium text-ink-muted-48 truncate">
+                              {m.ruolo || m.telefono || 'Membro'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {waUrl && (
+                          <a
+                            href={waUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 transition-colors hover:bg-emerald-500 hover:text-white"
+                            title={`Contatta ${m.nome_completo} su WhatsApp`}
+                          >
+                            <Icon name="chat" className="text-[16px]" />
+                          </a>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-2 flex items-center justify-between border-t border-hairline pt-3">
+              <Link
+                to="/admin/dipartimenti"
+                className="flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-muted-80 hover:text-ink transition-colors"
+              >
+                <Icon name="edit" className="text-[16px]" />
+                Gestisci dipartimenti
+              </Link>
+              <BtnGhost type="button" onClick={() => setDipartimentoSelezionato(null)}>
                 Chiudi
               </BtnGhost>
             </div>
