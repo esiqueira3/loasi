@@ -24,6 +24,11 @@ export default {
           900: '#4A361A',
         },
         ink: {
+          /* `text-ink` e i due livelli attenuati sono usati dal gestionale */
+          DEFAULT: '#1A1815',
+          'muted-80': 'rgba(26,24,21,0.80)',
+          'muted-48': 'rgba(26,24,21,0.48)',
+          /* la scala numerata è quella del sito pubblico (fondi scuri) */
           950: '#06090B',
           900: '#0B1013',
           800: '#11171B',
@@ -37,6 +42,14 @@ export default {
           200: '#EFE9DE',
           300: '#E2D9C9',
         },
+
+        /* ---- Superfici del gestionale ---- */
+        canvas: {
+          DEFAULT: '#FBFAF7', // fondo della chrome (header, sidebar chiara)
+          parchment: '#F5F2EC', // fondo dell'area di contenuto
+        },
+        'surface-pearl': '#FFFFFF', // card e pannelli
+        hairline: '#E7E2D8', // bordo sottile onnipresente
 
         /* ---- Token Material 3 (usati dalle schermate del gestionale) ---- */
         primary: '#A67C3D',

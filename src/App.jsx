@@ -15,7 +15,10 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 /* L'area riservata viene caricata solo quando serve: il sito pubblico resta leggero. */
 const AdminLogin = lazy(() => import('./pages/AdminLogin'))
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
+const Dashboard = lazy(() => import('./admin/pages/Dashboard'))
+const Finanze = lazy(() => import('./admin/pages/Finanze'))
+const Categorie = lazy(() => import('./admin/pages/Categorie'))
+const InPreparazione = lazy(() => import('./admin/pages/InPreparazione'))
 
 function AdminFallback() {
   return (
@@ -45,6 +48,44 @@ const legacyRedirects = [
   ['/politica-riservatezza.html', '/privacy'],
 ]
 
+/* Rotte protette del gestionale. Le sezioni non ancora sviluppate mostrano un
+   segnaposto invece di rompere la navigazione. */
+const adminRoutes = [
+  ['/admin/dashboard', <Dashboard key="dash" />],
+  ['/admin/finanze', <Finanze key="fin" />],
+  ['/admin/finanze/categorie', <Categorie key="cat" />],
+  [
+    '/admin/chiese',
+    <InPreparazione
+      key="chiese"
+      titolo="Chiese"
+      icona="church"
+      accent="#0891B2"
+      descrizione="Anagrafica delle comunità: indirizzi, contatti, orari dei culti e galleria."
+    />,
+  ],
+  [
+    '/admin/dipartimenti',
+    <InPreparazione
+      key="dip"
+      titolo="Dipartimenti"
+      icona="diversity_3"
+      accent="#7C3AED"
+      descrizione="Gruppi e ministeri della chiesa, con i rispettivi responsabili."
+    />,
+  ],
+  [
+    '/admin/membri',
+    <InPreparazione
+      key="membri"
+      titolo="Membri"
+      icona="badge"
+      accent="#2563EB"
+      descrizione="Anagrafica dei membri, dati di contatto e appartenenza ai dipartimenti."
+    />,
+  ],
+]
+
 export default function App() {
   return (
     <Router>
@@ -72,16 +113,17 @@ export default function App() {
             </Suspense>
           }
         />
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute>
-              <Suspense fallback={<AdminFallback />}>
-                <AdminDashboard />
-              </Suspense>
-            </ProtectedRoute>
-          }
-        />
+        {adminRoutes.map(([path, element]) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<AdminFallback />}>{element}</Suspense>
+              </ProtectedRoute>
+            }
+          />
+        ))}
 
         {/* --- Pagina non trovata --- */}
         <Route path="*" element={<NotFound />} />
