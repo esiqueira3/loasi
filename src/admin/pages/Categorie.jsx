@@ -237,63 +237,65 @@ export default function Categorie() {
           accent={VERDE}
         >
           <form onSubmit={salva} className="flex flex-col gap-4">
-            <Field label="Nome della categoria" obbligatorio>
-              <input
-                type="text"
-                required
-                autoFocus
-                value={form.nome}
-                onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
-                placeholder="Es.: Decime, Offerte, Affitto, Utenze…"
-                className={inputClass}
-              />
-            </Field>
+            <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4">
+              <Field label="Nome della categoria" obbligatorio>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={form.nome}
+                  onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
+                  placeholder="Es.: Decime, Offerte, Affitto, Utenze…"
+                  className={inputClass}
+                />
+              </Field>
 
-            <Field label="Tipo di movimento" obbligatorio>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { tipo: 'uscita', label: 'Uscita', icona: 'arrow_downward', colore: '#EF4444' },
-                  { tipo: 'entrata', label: 'Entrata', icona: 'arrow_upward', colore: VERDE },
-                ].map((o) => {
-                  const attivo = form.tipo === o.tipo
-                  return (
+              <Field label="Tipo di movimento" obbligatorio>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { tipo: 'uscita', label: 'Uscita', icona: 'arrow_downward', colore: '#EF4444' },
+                    { tipo: 'entrata', label: 'Entrata', icona: 'arrow_upward', colore: VERDE },
+                  ].map((o) => {
+                    const attivo = form.tipo === o.tipo
+                    return (
+                      <button
+                        key={o.tipo}
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, tipo: o.tipo }))}
+                        className="flex items-center justify-center gap-1.5 rounded-xl border py-2 text-[13px] font-bold transition-all"
+                        style={
+                          attivo
+                            ? { borderColor: o.colore, backgroundColor: `${o.colore}15`, color: o.colore }
+                            : undefined
+                        }
+                      >
+                        <span className={attivo ? '' : 'text-ink-muted-80'}>
+                          <Icon name={o.icona} className="text-[15px]" />
+                        </span>
+                        <span className={attivo ? '' : 'text-ink-muted-80'}>{o.label}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </Field>
+
+              <Field label="Colore dell'etichetta">
+                <div className="flex flex-wrap items-center gap-2">
+                  {PALETTE_CATEGORIE.map((c) => (
                     <button
-                      key={o.tipo}
+                      key={c}
                       type="button"
-                      onClick={() => setForm((f) => ({ ...f, tipo: o.tipo }))}
-                      className="flex items-center justify-center gap-1.5 rounded-xl border py-2 text-[13px] font-bold transition-all"
-                      style={
-                        attivo
-                          ? { borderColor: o.colore, backgroundColor: `${o.colore}15`, color: o.colore }
-                          : undefined
-                      }
+                      onClick={() => setForm((f) => ({ ...f, colore: c }))}
+                      aria-label={`Colore ${c}`}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg transition-transform hover:scale-110"
+                      style={{ backgroundColor: c }}
                     >
-                      <span className={attivo ? '' : 'text-ink-muted-80'}>
-                        <Icon name={o.icona} className="text-[15px]" />
-                      </span>
-                      <span className={attivo ? '' : 'text-ink-muted-80'}>{o.label}</span>
+                      {form.colore === c && <Icon name="check" className="text-[14px] text-white drop-shadow" />}
                     </button>
-                  )
-                })}
-              </div>
-            </Field>
-
-            <Field label="Colore dell'etichetta">
-              <div className="flex flex-wrap items-center gap-2">
-                {PALETTE_CATEGORIE.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setForm((f) => ({ ...f, colore: c }))}
-                    aria-label={`Colore ${c}`}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg transition-transform hover:scale-110"
-                    style={{ backgroundColor: c }}
-                  >
-                    {form.colore === c && <Icon name="check" className="text-[14px] text-white drop-shadow" />}
-                  </button>
-                ))}
-              </div>
-            </Field>
+                  ))}
+                </div>
+              </Field>
+            </div>
 
             <div className="mt-4 flex justify-end gap-2 border-t border-hairline pt-3">
               <BtnGhost type="button" onClick={() => setModaleAperta(false)}>

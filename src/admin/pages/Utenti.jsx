@@ -440,83 +440,85 @@ export default function Utenti() {
           accent={ROSA}
         >
           <form onSubmit={salva} className="flex flex-col gap-4">
-            <Field label="Nome e cognome" obbligatorio>
-              <input
-                type="text"
-                required
-                autoFocus
-                value={form.nome}
-                onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
-                className={inputClass}
-              />
-            </Field>
+            <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4">
+              <Field label="Nome e cognome" obbligatorio>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={form.nome}
+                  onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
+                  className={inputClass}
+                />
+              </Field>
 
-            <Field
-              label="E-mail"
-              obbligatorio
-              hint={
-                inModifica?.auth_user_id
-                  ? 'Cambiando l’e-mail il collegamento con l’account esistente si perde.'
-                  : 'È con questa e-mail che la persona entrerà nel gestionale.'
-              }
-            >
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                className={inputClass}
-              />
-            </Field>
+              <Field
+                label="E-mail"
+                obbligatorio
+                hint={
+                  inModifica?.auth_user_id
+                    ? 'Cambiando l’e-mail il collegamento con l’account esistente si perde.'
+                    : 'È con questa e-mail che la persona entrerà nel gestionale.'
+                }
+              >
+                <input
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  className={inputClass}
+                />
+              </Field>
 
-            <Field label="Telefono">
-              <input
-                type="tel"
-                value={form.telefono}
-                onChange={(e) => setForm((f) => ({ ...f, telefono: e.target.value }))}
-                className={inputClass}
-              />
-            </Field>
+              <Field label="Telefono">
+                <input
+                  type="tel"
+                  value={form.telefono}
+                  onChange={(e) => setForm((f) => ({ ...f, telefone: e.target.value }))}
+                  className={inputClass}
+                />
+              </Field>
 
-            <Field
-              label="Profilo di accesso"
-              hint={!form.profilo_id ? 'Senza profilo la persona vede tutto il gestionale.' : undefined}
-            >
-              <CustomSelect
-                value={form.profilo_id}
-                onChange={(v) => setForm((f) => ({ ...f, profilo_id: v }))}
-                placeholder="Scegli un profilo…"
-                accent={ROSA}
-                options={[
-                  { value: '', label: 'Senza profilo — accesso completo' },
-                  ...profili.map((p) => ({ value: p.id, label: p.nome, color: p.colore })),
-                ]}
-              />
-            </Field>
+              <Field
+                label="Profilo di accesso"
+                hint={!form.profilo_id ? 'Senza profilo la persona vede tutto il gestionale.' : undefined}
+              >
+                <CustomSelect
+                  value={form.profilo_id}
+                  onChange={(v) => setForm((f) => ({ ...f, profilo_id: v }))}
+                  placeholder="Scegli un profilo…"
+                  accent={ROSA}
+                  options={[
+                    { value: '', label: 'Senza profilo — accesso completo' },
+                    ...profili.map((p) => ({ value: p.id, label: p.nome, color: p.colore })),
+                  ]}
+                />
+              </Field>
 
-            {/* Anteprima di ciò che vedrà */}
-            {form.profilo_id && (
-              <div className="rounded-xl border border-hairline bg-canvas-parchment p-3">
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">
-                  Cosa vedrà nel menu
-                </p>
-                <AnteprimaPermessi profiloId={form.profilo_id} />
-              </div>
-            )}
+              {/* Anteprima di ciò che vedrà */}
+              {form.profilo_id && (
+                <div className="rounded-xl border border-hairline bg-canvas-parchment p-3">
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">
+                    Cosa vedrà nel menu
+                  </p>
+                  <AnteprimaPermessi profiloId={form.profilo_id} />
+                </div>
+              )}
 
-            <label className="flex cursor-pointer items-center gap-2.5">
-              <input
-                type="checkbox"
-                checked={form.attivo}
-                onChange={(e) => setForm((f) => ({ ...f, attivo: e.target.checked }))}
-                className="h-4 w-4 accent-[#DB2777]"
-              />
-              <span className="text-[13px] font-semibold text-ink">Utente attivo</span>
-            </label>
+              <label className="flex cursor-pointer items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  checked={form.attivo}
+                  onChange={(e) => setForm((f) => ({ ...f, attivo: e.target.checked }))}
+                  className="h-4 w-4 accent-[#DB2777]"
+                />
+                <span className="text-[13px] font-semibold text-ink">Utente attivo</span>
+              </label>
 
-            {inModifica?.created_at && (
-              <p className="text-[11px] text-ink-muted-48">Registrato il {fmtData(inModifica.created_at)}</p>
-            )}
+              {inModifica?.created_at && (
+                <p className="text-[11px] text-ink-muted-48">Registrato il {fmtData(inModifica.created_at)}</p>
+              )}
+            </div>
 
             <div className="mt-2 flex justify-end gap-2 border-t border-hairline pt-3">
               <BtnGhost type="button" onClick={() => setModale(false)}>

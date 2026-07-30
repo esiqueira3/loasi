@@ -503,159 +503,183 @@ export default function Membri() {
           accent={BLU}
         >
           <form onSubmit={salva} className="flex flex-col gap-4">
-            <Field label="Nome completo" obbligatorio>
-              <input
-                type="text"
-                required
-                autoFocus
-                value={form.nome_completo}
-                onChange={(e) => setForm((f) => ({ ...f, nome_completo: e.target.value }))}
-                placeholder="Nome e cognome"
-                className={inputClass}
-              />
-            </Field>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Field label="Sesso">
-                <CustomSelect
-                  value={form.sesso}
-                  onChange={(v) => setForm((f) => ({ ...f, sesso: v }))}
-                  accent={BLU}
-                  options={[
-                    { value: '', label: 'Non indicato' },
-                    { value: 'M', label: 'Maschile' },
-                    { value: 'F', label: 'Femminile' },
-                  ]}
-                />
-              </Field>
-              <Field label="Data di nascita">
-                <input
-                  type="date"
-                  value={form.data_nascita}
-                  onChange={(e) => setForm((f) => ({ ...f, data_nascita: e.target.value }))}
-                  className={inputClass}
-                />
-              </Field>
-              <Field label="Fascia d'età">
-                <CustomSelect
-                  value={form.fascia_eta}
-                  onChange={(v) => setForm((f) => ({ ...f, fascia_eta: v }))}
-                  accent={BLU}
-                  options={FASCE.map((f) => ({ value: f, label: f }))}
-                />
-              </Field>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Telefono">
-                <input
-                  type="tel"
-                  value={form.telefono}
-                  onChange={(e) => setForm((f) => ({ ...f, telefono: e.target.value }))}
-                  placeholder="+39 …"
-                  className={inputClass}
-                />
-              </Field>
-              <Field label="E-mail">
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  className={inputClass}
-                />
-              </Field>
-            </div>
-
-            <Field label="Indirizzo">
-              <input
-                type="text"
-                value={form.indirizzo}
-                onChange={(e) => setForm((f) => ({ ...f, indirizzo: e.target.value }))}
-                placeholder="Via, numero, città"
-                className={inputClass}
-              />
-            </Field>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Comunità">
-                <CustomSelect
-                  value={form.igreja_id}
-                  onChange={(v) => setForm((f) => ({ ...f, igreja_id: v }))}
-                  accent={BLU}
-                  options={[
-                    { value: '', label: 'Non assegnata' },
-                    ...chiese.map((c) => ({ value: c.id, label: c.cidade })),
-                  ]}
-                />
-              </Field>
-              <Field label="Dipartimento">
-                <CustomSelect
-                  value={form.dipartimento_id}
-                  onChange={(v) => setForm((f) => ({ ...f, dipartimento_id: v }))}
-                  accent={BLU}
-                  options={[
-                    { value: '', label: 'Nessuno' },
-                    ...dipartimenti.map((d) => ({ value: d.id, label: d.nome, color: d.colore })),
-                  ]}
-                />
-              </Field>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Field label="Stato civile">
-                <CustomSelect
-                  value={form.stato_civile}
-                  onChange={(v) => setForm((f) => ({ ...f, stato_civile: v }))}
-                  accent={BLU}
-                  options={[
-                    { value: '', label: 'Non indicato' },
-                    ...STATI_CIVILI.map((s) => ({ value: s, label: s })),
-                  ]}
-                />
-              </Field>
-              <Field label="Ruolo nella chiesa">
+            <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4">
+              <Field label="Nome completo" obbligatorio>
                 <input
                   type="text"
-                  value={form.ruolo}
-                  onChange={(e) => setForm((f) => ({ ...f, ruolo: e.target.value }))}
-                  placeholder="Es.: Diacono, Anziano…"
+                  required
+                  autoFocus
+                  value={form.nome_completo}
+                  onChange={(e) => setForm((f) => ({ ...f, nome_completo: e.target.value }))}
+                  placeholder="Nome e cognome"
                   className={inputClass}
                 />
               </Field>
-              <Field label="Data del battesimo">
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Field label="Sesso">
+                  <CustomSelect
+                    value={form.sesso}
+                    onChange={(v) => setForm((f) => ({ ...f, sesso: v }))}
+                    accent={BLU}
+                    options={[
+                      { value: '', label: 'Non specificato' },
+                      { value: 'M', label: 'Uomo (M)' },
+                      { value: 'F', label: 'Donna (F)' },
+                    ]}
+                  />
+                </Field>
+
+                <Field label="Fascia d'età">
+                  <CustomSelect
+                    value={form.fascia_eta}
+                    onChange={(v) => setForm((f) => ({ ...f, fascia_eta: v }))}
+                    accent={BLU}
+                    options={[
+                      { value: '', label: 'Tutte le età' },
+                      ...FASCIE_ETA.map((f) => ({ value: f, label: f })),
+                    ]}
+                  />
+                </Field>
+
+                <Field label="Data di nascita">
+                  <input
+                    type="date"
+                    value={form.data_nascita}
+                    onChange={(e) => setForm((f) => ({ ...f, data_nascita: e.target.value }))}
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Comunità">
+                  <CustomSelect
+                    value={form.igreja_id}
+                    onChange={(v) => setForm((f) => ({ ...f, igreja_id: v }))}
+                    accent={BLU}
+                    options={[
+                      { value: '', label: 'Seleziona comunità…' },
+                      ...chiese.map((c) => ({ value: c.id, label: c.cidade })),
+                    ]}
+                  />
+                </Field>
+
+                <Field label="Dipartimento principale">
+                  <CustomSelect
+                    value={form.dipartimento_id}
+                    onChange={(v) => setForm((f) => ({ ...f, dipartimento_id: v }))}
+                    accent={BLU}
+                    options={[
+                      { value: '', label: 'Nessun dipartimento' },
+                      ...dipartimenti.map((d) => ({ value: d.id, label: d.nome, color: d.colore })),
+                    ]}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Telefono">
+                  <input
+                    type="tel"
+                    value={form.telefono}
+                    onChange={(e) => setForm((f) => ({ ...f, telefono: e.target.value }))}
+                    placeholder="+39 347 000 0000"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="E-mail">
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="nome@esempio.it"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <Field label="Indirizzo">
                 <input
-                  type="date"
-                  value={form.data_battesimo}
-                  onChange={(e) => setForm((f) => ({ ...f, data_battesimo: e.target.value }))}
+                  type="text"
+                  value={form.indirizzo}
+                  onChange={(e) => setForm((f) => ({ ...f, indirizzo: e.target.value }))}
+                  placeholder="Via, numero, città"
                   className={inputClass}
                 />
               </Field>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Stato civile">
+                  <CustomSelect
+                    value={form.stato_civile}
+                    onChange={(v) => setForm((f) => ({ ...f, stato_civile: v }))}
+                    accent={BLU}
+                    options={[
+                      { value: '', label: 'Non specificato' },
+                      ...STATI_CIVILI.map((s) => ({ value: s, label: s })),
+                    ]}
+                  />
+                </Field>
+
+                <Field label="Ruolo / Servizio nella chiesa">
+                  <input
+                    type="text"
+                    value={form.ruolo}
+                    onChange={(e) => setForm((f) => ({ ...f, ruolo: e.target.value }))}
+                    placeholder="Es.: Diacono, Musicista, Insegnante…"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Data battesimo in acqua">
+                  <input
+                    type="date"
+                    value={form.data_battesimo}
+                    onChange={(e) => setForm((f) => ({ ...f, data_battesimo: e.target.value }))}
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="URL Foto di profilo">
+                  <input
+                    type="text"
+                    value={form.foto_url}
+                    onChange={(e) => setForm((f) => ({ ...f, foto_url: e.target.value }))}
+                    placeholder="https://… o /images/…"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <Field label="Note e informazioni riservate">
+                <textarea
+                  rows={2}
+                  value={form.note}
+                  onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
+                  placeholder="Visibili solo agli utenti abilitati del gestionale"
+                  className={`${inputClass} resize-none`}
+                />
+              </Field>
+
+              <label className="flex cursor-pointer items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  checked={form.attivo}
+                  onChange={(e) => setForm((f) => ({ ...f, attivo: e.target.checked }))}
+                  className="h-4 w-4 accent-[#2563EB]"
+                />
+                <span className="text-[13px] font-semibold text-ink">Membro attivo</span>
+              </label>
+
+              {inModifica?.created_at && (
+                <p className="text-[11px] text-ink-muted-48">
+                  Registrato il {fmtData(inModifica.created_at)}
+                </p>
+              )}
             </div>
-
-            <Field label="Note">
-              <textarea
-                rows={2}
-                value={form.note}
-                onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-                className={`${inputClass} resize-none`}
-              />
-            </Field>
-
-            <label className="flex cursor-pointer items-center gap-2.5">
-              <input
-                type="checkbox"
-                checked={form.attivo}
-                onChange={(e) => setForm((f) => ({ ...f, attivo: e.target.checked }))}
-                className="h-4 w-4 accent-[#2563EB]"
-              />
-              <span className="text-[13px] font-semibold text-ink">Membro attivo</span>
-            </label>
-
-            {inModifica?.created_at && (
-              <p className="text-[11px] text-ink-muted-48">
-                Registrato il {fmtData(inModifica.created_at)}
-              </p>
-            )}
 
             <div className="mt-2 flex justify-end gap-2 border-t border-hairline pt-3">
               <BtnGhost type="button" onClick={() => setModale(false)}>

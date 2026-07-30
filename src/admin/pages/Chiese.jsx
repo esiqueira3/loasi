@@ -375,125 +375,127 @@ export default function Chiese() {
           accent={AZZURRO}
         >
           <form onSubmit={salva} className="flex flex-col gap-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Città" obbligatorio>
+            <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Città" obbligatorio>
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    value={form.cidade}
+                    onChange={(e) => setForm((f) => ({ ...f, cidade: e.target.value }))}
+                    placeholder="Es.: Terracina"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field
+                  label="Identificativo nell'indirizzo"
+                  hint={`Pagina pubblica: /chiese/${form.slug || slugify(form.cidade) || '…'}`}
+                >
+                  <input
+                    type="text"
+                    value={form.slug}
+                    onChange={(e) => setForm((f) => ({ ...f, slug: slugify(e.target.value) }))}
+                    placeholder={slugify(form.cidade) || 'terracina'}
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <Field label="Nome completo della comunità" obbligatorio>
                 <input
                   type="text"
                   required
-                  autoFocus
-                  value={form.cidade}
-                  onChange={(e) => setForm((f) => ({ ...f, cidade: e.target.value }))}
-                  placeholder="Es.: Terracina"
+                  value={form.nome}
+                  onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
+                  placeholder="Chiesa Cristiana Evangelica L'Oasi — Terracina"
                   className={inputClass}
                 />
               </Field>
-              <Field
-                label="Identificativo nell'indirizzo"
-                hint={`Pagina pubblica: /chiese/${form.slug || slugify(form.cidade) || '…'}`}
-              >
+
+              <Field label="Referente / Responsabile" hint="Nome della persona referente (es. Stefano Poldi, Patrizia Ronga, Giovanna Smarrazzo)">
                 <input
                   type="text"
-                  value={form.slug}
-                  onChange={(e) => setForm((f) => ({ ...f, slug: slugify(e.target.value) }))}
-                  placeholder={slugify(form.cidade) || 'terracina'}
+                  value={form.referente}
+                  onChange={(e) => setForm((f) => ({ ...f, referente: e.target.value }))}
+                  placeholder="es. Stefano Poldi"
                   className={inputClass}
                 />
               </Field>
-            </div>
 
-            <Field label="Nome completo della comunità" obbligatorio>
-              <input
-                type="text"
-                required
-                value={form.nome}
-                onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
-                placeholder="Chiesa Cristiana Evangelica L'Oasi — Terracina"
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Referente / Responsabile" hint="Nome della persona referente (es. Stefano Poldi, Patrizia Ronga, Giovanna Smarrazzo)">
-              <input
-                type="text"
-                value={form.referente}
-                onChange={(e) => setForm((f) => ({ ...f, referente: e.target.value }))}
-                placeholder="es. Stefano Poldi"
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Indirizzo">
-              <input
-                type="text"
-                value={form.endereco}
-                onChange={(e) => setForm((f) => ({ ...f, endereco: e.target.value }))}
-                placeholder="Via, numero — CAP città (provincia)"
-                className={inputClass}
-              />
-            </Field>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Telefono">
+              <Field label="Indirizzo">
                 <input
-                  type="tel"
-                  value={form.telefone}
-                  onChange={(e) => setForm((f) => ({ ...f, telefone: e.target.value }))}
+                  type="text"
+                  value={form.endereco}
+                  onChange={(e) => setForm((f) => ({ ...f, endereco: e.target.value }))}
+                  placeholder="Via, numero — CAP città (provincia)"
                   className={inputClass}
                 />
               </Field>
-              <Field label="E-mail">
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Telefono">
+                  <input
+                    type="tel"
+                    value={form.telefone}
+                    onChange={(e) => setForm((f) => ({ ...f, telefone: e.target.value }))}
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="E-mail">
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <Field
+                label="Orari dei culti"
+                hint="Compare in evidenza sulla pagina della comunità. Vai a capo per separare i giorni."
+              >
+                <textarea
+                  rows={2}
+                  value={form.horarios_culto}
+                  onChange={(e) => setForm((f) => ({ ...f, horarios_culto: e.target.value }))}
+                  placeholder="Domenica: ore 10:30 | Mercoledì: ore 19:30"
+                  className={`${inputClass} resize-none`}
+                />
+              </Field>
+
+              <Field label="Link a Google Maps">
                 <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  type="url"
+                  value={form.link_maps}
+                  onChange={(e) => setForm((f) => ({ ...f, link_maps: e.target.value }))}
+                  placeholder="https://www.google.com/maps/…"
                   className={inputClass}
                 />
               </Field>
+
+              <Field label="Foto di copertina (URL)" hint="Immagine mostrata sul sito e in questa scheda.">
+                <input
+                  type="text"
+                  value={form.foto_capa_url}
+                  onChange={(e) => setForm((f) => ({ ...f, foto_capa_url: e.target.value }))}
+                  placeholder="/images/home-3-610x458.jpg"
+                  className={inputClass}
+                />
+              </Field>
+
+              {form.foto_capa_url && (
+                <img
+                  src={form.foto_capa_url}
+                  alt=""
+                  className="h-32 w-full rounded-xl border border-hairline object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+              )}
             </div>
-
-            <Field
-              label="Orari dei culti"
-              hint="Compare in evidenza sulla pagina della comunità. Vai a capo per separare i giorni."
-            >
-              <textarea
-                rows={2}
-                value={form.horarios_culto}
-                onChange={(e) => setForm((f) => ({ ...f, horarios_culto: e.target.value }))}
-                placeholder="Domenica: ore 10:30 | Mercoledì: ore 19:30"
-                className={`${inputClass} resize-none`}
-              />
-            </Field>
-
-            <Field label="Link a Google Maps">
-              <input
-                type="url"
-                value={form.link_maps}
-                onChange={(e) => setForm((f) => ({ ...f, link_maps: e.target.value }))}
-                placeholder="https://www.google.com/maps/…"
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Foto di copertina (URL)" hint="Immagine mostrata sul sito e in questa scheda.">
-              <input
-                type="text"
-                value={form.foto_capa_url}
-                onChange={(e) => setForm((f) => ({ ...f, foto_capa_url: e.target.value }))}
-                placeholder="/images/home-3-610x458.jpg"
-                className={inputClass}
-              />
-            </Field>
-
-            {form.foto_capa_url && (
-              <img
-                src={form.foto_capa_url}
-                alt=""
-                className="h-32 w-full rounded-xl border border-hairline object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                }}
-              />
-            )}
 
             <div className="mt-2 flex justify-end gap-2 border-t border-hairline pt-3">
               <BtnGhost type="button" onClick={() => setModale(false)}>

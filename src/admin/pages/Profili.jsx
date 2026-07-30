@@ -302,109 +302,111 @@ export default function Profili() {
           accent={ROSA}
         >
           <form onSubmit={salva} className="flex flex-col gap-4">
-            {inModifica?.sistema && (
-              <div className="rounded-xl border-l-4 border-amber-500 bg-amber-50 p-3 text-[12.5px] font-semibold text-amber-800">
-                Questo è il profilo di sistema: vede sempre tutto, indipendentemente da ciò che imposti qui.
-              </div>
-            )}
+            <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4">
+              {inModifica?.sistema && (
+                <div className="rounded-xl border-l-4 border-amber-500 bg-amber-50 p-3 text-[12.5px] font-semibold text-amber-800">
+                  Questo è il profilo di sistema: vede sempre tutto, indipendentemente da ciò che imposti qui.
+                </div>
+              )}
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Nome del profilo" obbligatorio>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Nome del profilo" obbligatorio>
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    value={form.nome}
+                    onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
+                    placeholder="Es.: Segreteria, Tesoriere…"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="Colore">
+                  <div className="flex flex-wrap items-center gap-2 pt-1.5">
+                    {PALETTE_CATEGORIE.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, colore: c }))}
+                        aria-label={`Colore ${c}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg transition-transform hover:scale-110"
+                        style={{ backgroundColor: c }}
+                      >
+                        {form.colore === c && <Icon name="check" className="text-[14px] text-white drop-shadow" />}
+                      </button>
+                    ))}
+                  </div>
+                </Field>
+              </div>
+
+              <Field label="Descrizione">
                 <input
                   type="text"
-                  required
-                  autoFocus
-                  value={form.nome}
-                  onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
-                  placeholder="Es.: Segreteria, Tesoriere…"
+                  value={form.descrizione}
+                  onChange={(e) => setForm((f) => ({ ...f, descrizione: e.target.value }))}
+                  placeholder="A chi è destinato questo profilo"
                   className={inputClass}
                 />
               </Field>
-              <Field label="Colore">
-                <div className="flex flex-wrap items-center gap-2 pt-1.5">
-                  {PALETTE_CATEGORIE.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setForm((f) => ({ ...f, colore: c }))}
-                      aria-label={`Colore ${c}`}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg transition-transform hover:scale-110"
-                      style={{ backgroundColor: c }}
-                    >
-                      {form.colore === c && <Icon name="check" className="text-[14px] text-white drop-shadow" />}
-                    </button>
-                  ))}
+
+              <div>
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <label className="text-[12px] font-bold text-ink-muted-80">Permessi per sezione</label>
+                  <div className="flex gap-1.5">
+                    {LIVELLI.map((l) => (
+                      <button
+                        key={l.key}
+                        type="button"
+                        onClick={() => applicaATutti(l.key)}
+                        className="rounded-lg border border-hairline px-2.5 py-1 text-[10.5px] font-bold text-ink-muted-48 transition-colors hover:text-ink"
+                        title={`Applica "${l.label}" a tutte le sezioni`}
+                      >
+                        Tutto: {l.label.split(' ')[0].toLowerCase()}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </Field>
-            </div>
 
-            <Field label="Descrizione">
-              <input
-                type="text"
-                value={form.descrizione}
-                onChange={(e) => setForm((f) => ({ ...f, descrizione: e.target.value }))}
-                placeholder="A chi è destinato questo profilo"
-                className={inputClass}
-              />
-            </Field>
+                <div className="space-y-2">
+                  {MODULI.map((m) => {
+                    const livello = form.permessi[m.nome] || 'nessuno'
+                    return (
+                      <div
+                        key={m.nome}
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-hairline bg-canvas-parchment p-3"
+                      >
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <Icon name={m.icona} className="shrink-0 text-[19px] text-ink-muted-48" />
+                          <div className="min-w-0">
+                            <div className="text-[13.5px] font-bold text-ink">{m.nome}</div>
+                            <div className="truncate text-[11.5px] text-ink-muted-48">{m.descrizione}</div>
+                          </div>
+                        </div>
 
-            <div>
-              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                <label className="text-[12px] font-bold text-ink-muted-80">Permessi per sezione</label>
-                <div className="flex gap-1.5">
-                  {LIVELLI.map((l) => (
-                    <button
-                      key={l.key}
-                      type="button"
-                      onClick={() => applicaATutti(l.key)}
-                      className="rounded-lg border border-hairline px-2.5 py-1 text-[10.5px] font-bold text-ink-muted-48 transition-colors hover:text-ink"
-                      title={`Applica "${l.label}" a tutte le sezioni`}
-                    >
-                      Tutto: {l.label.split(' ')[0].toLowerCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {MODULI.map((m) => {
-                  const livello = form.permessi[m.nome] || 'nessuno'
-                  return (
-                    <div
-                      key={m.nome}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-hairline bg-canvas-parchment p-3"
-                    >
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        <Icon name={m.icona} className="shrink-0 text-[19px] text-ink-muted-48" />
-                        <div className="min-w-0">
-                          <div className="text-[13.5px] font-bold text-ink">{m.nome}</div>
-                          <div className="truncate text-[11.5px] text-ink-muted-48">{m.descrizione}</div>
+                        <div className="flex rounded-lg border border-hairline bg-surface-pearl p-0.5">
+                          {LIVELLI.map((l) => {
+                            const attivo = livello === l.key
+                            return (
+                              <button
+                                key={l.key}
+                                type="button"
+                                onClick={() => setLivello(m.nome, l.key)}
+                                title={l.label}
+                                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-bold transition-all ${
+                                  attivo ? 'text-white' : 'text-ink-muted-48 hover:text-ink'
+                                }`}
+                                style={attivo ? { backgroundColor: l.colore } : undefined}
+                              >
+                                <Icon name={l.icona} className="text-[14px]" />
+                                <span className="hidden sm:inline">{l.label.split(' ')[0]}</span>
+                              </button>
+                            )
+                          })}
                         </div>
                       </div>
-
-                      <div className="flex rounded-lg border border-hairline bg-surface-pearl p-0.5">
-                        {LIVELLI.map((l) => {
-                          const attivo = livello === l.key
-                          return (
-                            <button
-                              key={l.key}
-                              type="button"
-                              onClick={() => setLivello(m.nome, l.key)}
-                              title={l.label}
-                              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-bold transition-all ${
-                                attivo ? 'text-white' : 'text-ink-muted-48 hover:text-ink'
-                              }`}
-                              style={attivo ? { backgroundColor: l.colore } : undefined}
-                            >
-                              <Icon name={l.icona} className="text-[14px]" />
-                              <span className="hidden sm:inline">{l.label.split(' ')[0]}</span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+                </div>
               </div>
             </div>
 

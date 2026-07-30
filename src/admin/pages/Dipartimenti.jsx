@@ -322,78 +322,80 @@ export default function Dipartimenti() {
           accent={VIOLA}
         >
           <form onSubmit={salva} className="flex flex-col gap-4">
-            <Field label="Nome del dipartimento" obbligatorio>
-              <input
-                type="text"
-                required
-                autoFocus
-                value={form.nome}
-                onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
-                placeholder="Es.: Corale, Scuola domenicale, Gruppo giovani…"
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Descrizione">
-              <textarea
-                rows={2}
-                value={form.descrizione}
-                onChange={(e) => setForm((f) => ({ ...f, descrizione: e.target.value }))}
-                placeholder="A cosa serve questo dipartimento"
-                className={`${inputClass} resize-none`}
-              />
-            </Field>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Responsabile">
+            <div className="max-h-[65vh] overflow-y-auto pr-1 space-y-4">
+              <Field label="Nome del dipartimento" obbligatorio>
                 <input
                   type="text"
-                  value={form.responsabile}
-                  onChange={(e) => setForm((f) => ({ ...f, responsabile: e.target.value }))}
-                  placeholder="Nome e cognome"
+                  required
+                  autoFocus
+                  value={form.nome}
+                  onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
+                  placeholder="Es.: Corale, Scuola domenicale, Gruppo giovani…"
                   className={inputClass}
                 />
               </Field>
 
-              <Field label="Comunità">
-                <CustomSelect
-                  value={form.igreja_id}
-                  onChange={(v) => setForm((f) => ({ ...f, igreja_id: v }))}
-                  accent={VIOLA}
-                  options={[
-                    { value: '', label: 'Tutte le comunità' },
-                    ...chiese.map((c) => ({ value: c.id, label: c.cidade })),
-                  ]}
+              <Field label="Descrizione">
+                <textarea
+                  rows={2}
+                  value={form.descrizione}
+                  onChange={(e) => setForm((f) => ({ ...f, descrizione: e.target.value }))}
+                  placeholder="A cosa serve questo dipartimento"
+                  className={`${inputClass} resize-none`}
                 />
               </Field>
-            </div>
 
-            <Field label="Colore">
-              <div className="flex flex-wrap items-center gap-2">
-                {PALETTE_CATEGORIE.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setForm((f) => ({ ...f, colore: c }))}
-                    aria-label={`Colore ${c}`}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg transition-transform hover:scale-110"
-                    style={{ backgroundColor: c }}
-                  >
-                    {form.colore === c && <Icon name="check" className="text-[14px] text-white drop-shadow" />}
-                  </button>
-                ))}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Responsabile">
+                  <input
+                    type="text"
+                    value={form.responsabile}
+                    onChange={(e) => setForm((f) => ({ ...f, responsabile: e.target.value }))}
+                    placeholder="Nome e cognome"
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label="Comunità">
+                  <CustomSelect
+                    value={form.igreja_id}
+                    onChange={(v) => setForm((f) => ({ ...f, igreja_id: v }))}
+                    accent={VIOLA}
+                    options={[
+                      { value: '', label: 'Tutte le comunità' },
+                      ...chiese.map((c) => ({ value: c.id, label: c.cidade })),
+                    ]}
+                  />
+                </Field>
               </div>
-            </Field>
 
-            <label className="flex cursor-pointer items-center gap-2.5">
-              <input
-                type="checkbox"
-                checked={form.attivo}
-                onChange={(e) => setForm((f) => ({ ...f, attivo: e.target.checked }))}
-                className="h-4 w-4 accent-[#7C3AED]"
-              />
-              <span className="text-[13px] font-semibold text-ink">Dipartimento attivo</span>
-            </label>
+              <Field label="Colore">
+                <div className="flex flex-wrap items-center gap-2">
+                  {PALETTE_CATEGORIE.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, colore: c }))}
+                      aria-label={`Colore ${c}`}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg transition-transform hover:scale-110"
+                      style={{ backgroundColor: c }}
+                    >
+                      {form.colore === c && <Icon name="check" className="text-[14px] text-white drop-shadow" />}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+
+              <label className="flex cursor-pointer items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  checked={form.attivo}
+                  onChange={(e) => setForm((f) => ({ ...f, attivo: e.target.checked }))}
+                  className="h-4 w-4 accent-[#7C3AED]"
+                />
+                <span className="text-[13px] font-semibold text-ink">Dipartimento attivo</span>
+              </label>
+            </div>
 
             <div className="mt-2 flex justify-end gap-2 border-t border-hairline pt-3">
               <BtnGhost type="button" onClick={() => setModale(false)}>
