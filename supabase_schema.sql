@@ -65,11 +65,13 @@ CREATE TABLE IF NOT EXISTS public.eventos (
     titulo VARCHAR(255) NOT NULL,
     descricao TEXT,
     data_evento TIMESTAMP WITH TIME ZONE NOT NULL,
+    hora VARCHAR(50),
     local VARCHAR(255),
     imagem_url TEXT,
     link_inscricao TEXT,
     ativo BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 6. DEPOIMENTOS / TESTEMUNHOS
@@ -143,3 +145,12 @@ CREATE POLICY "Escrita autenticada em eventos" ON public.eventos FOR ALL TO auth
 
 DROP POLICY IF EXISTS "Escrita autenticada em depoimentos" ON public.depoimentos;
 CREATE POLICY "Escrita autenticada em depoimentos" ON public.depoimentos FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- ========================================================
+-- ATUALIZAÇÃO DA TABELA EVENTOS (MIGRAÇÃO DE COLUNAS)
+-- Execute caso sua tabela 'eventos' já tenha sido criada anteriormente:
+-- ========================================================
+ALTER TABLE public.eventos ADD COLUMN IF NOT EXISTS hora VARCHAR(50);
+ALTER TABLE public.eventos ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
+NOTIFY pgrst, 'reload schema';

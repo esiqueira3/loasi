@@ -106,14 +106,24 @@ export default function Eventi() {
       updated_at: new Date().toISOString(),
     }
 
-    const { error } = inModifica
+    let res = inModifica
       ? await supabase.from('eventos').update(payload).eq('id', inModifica.id)
       : await supabase.from('eventos').insert([payload])
 
+    // Fallback se a coluna 'hora' ou 'updated_at' ainda não tiver sido criada no Supabase
+    if (res.error && (res.error.message?.includes("'hora'") || res.error.message?.includes("'updated_at'"))) {
+      const fallbackPayload = { ...payload }
+      delete fallbackPayload.hora
+      delete fallbackPayload.updated_at
+      res = inModifica
+        ? await supabase.from('eventos').update(fallbackPayload).eq('id', inModifica.id)
+        : await supabase.from('eventos').insert([fallbackPayload])
+    }
+
     setSalvando(false)
 
-    if (error) {
-      return toast.error(`Errore nel salvataggio: ${error.message}`)
+    if (res.error) {
+      return toast.error(`Errore nel salvataggio: ${res.error.message}`)
     }
 
     toast.success(inModifica ? 'Evento aggiornato: la home è allineata.' : 'Evento creato con successo.')
