@@ -17,8 +17,8 @@ function NavItem({ item, collapsed, onNavigate }) {
       onClick={onNavigate}
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 rounded-xl py-2.5 transition-all duration-300 ${
-          collapsed ? 'justify-center px-0' : 'px-3.5'
+        `group relative flex items-center gap-3 rounded-xl py-1.5 transition-all duration-300 ${
+          collapsed ? 'justify-center px-0' : 'px-3'
         } ${
           isActive
             ? 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-ink-950 font-bold shadow-[0_4px_20px_rgba(212,175,55,0.35)] scale-[1.02]'
@@ -158,16 +158,16 @@ export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClo
         </div>
 
         {/* --- Voci di menu raggruppate con icone --- */}
-        <nav className="no-scrollbar relative flex-1 space-y-4 overflow-y-auto px-3 py-4">
+        <nav className="no-scrollbar relative flex-1 space-y-2 overflow-y-auto px-3 py-3">
           {sezioniFiltrate.map((sec, i) => (
-            <div key={sec.key || i} className="space-y-1.5">
+            <div key={sec.key || i} className="space-y-0.5">
               {!collapsed ? (
-                <div className="flex items-center gap-2 px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-widest text-[#C6A052]">
+                <div className="flex items-center gap-2 px-3 pt-2 pb-0.5 text-[11px] font-bold uppercase tracking-widest text-[#C6A052]">
                   <Icon name={sec.icon} className="text-[16px] text-[#C6A052] shrink-0" />
                   <span className="truncate">{sec.group}</span>
                 </div>
               ) : (
-                i > 0 && <span aria-hidden="true" className="mx-auto my-2 block h-px w-6 bg-white/10" />
+                i > 0 && <span aria-hidden="true" className="mx-auto my-1.5 block h-px w-6 bg-white/10" />
               )}
 
               {sec.items.map((item) => (

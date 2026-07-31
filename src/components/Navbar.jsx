@@ -255,7 +255,7 @@ export default function Navbar({ transparent = false }) {
                     <button
                       type="button"
                       onClick={() => setOpenGroup(isOpen ? null : item.label)}
-                      className="flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-left text-sm font-bold uppercase tracking-widest text-cream-100 transition-colors hover:bg-white/5"
+                      className="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left text-sm font-bold uppercase tracking-widest text-cream-100 transition-colors hover:bg-white/5"
                     >
                       {item.label}
                       <Icon
@@ -268,7 +268,7 @@ export default function Navbar({ transparent = false }) {
                         <li key={child.to}>
                           <Link
                             to={child.to}
-                            className="block rounded-xl px-4 py-3 text-sm text-cream-100/75 transition-colors hover:text-gold-300"
+                            className="block rounded-xl px-4 py-2 text-sm text-cream-100/75 transition-colors hover:text-gold-300"
                           >
                             {child.label}
                           </Link>
@@ -286,7 +286,7 @@ export default function Navbar({ transparent = false }) {
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block rounded-xl px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-cream-100 transition-colors hover:bg-white/5 hover:text-gold-400"
+                      className="block rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-widest text-cream-100 transition-colors hover:bg-white/5 hover:text-gold-400"
                     >
                       {item.label}
                     </a>
@@ -298,7 +298,7 @@ export default function Navbar({ transparent = false }) {
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className="block rounded-xl px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-cream-100 transition-colors hover:bg-white/5 hover:text-gold-400"
+                    className="block rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-widest text-cream-100 transition-colors hover:bg-white/5 hover:text-gold-400"
                   >
                     {item.label}
                   </Link>
