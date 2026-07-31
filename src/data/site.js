@@ -568,6 +568,7 @@ export const churchContent = {
     chapters: [
       {
         title: 'Storia della comunità',
+        image: 'https://live.staticflickr.com/65535/54416806602_1afbd8aaed_z.jpg',
         body: [
           'Correva l’anno 1975 quando un piccolo gruppo di credenti in Dio, guidati dallo Spirito Santo, si unirono per glorificare il Signore in spirito e verità, e in piena libertà. All’inizio tennero le riunioni nelle abitazioni ma, cominciando a crescere, fu necessario affittare un locale dove potersi riunire. Nello stesso anno Dio scelse e unse come suo servo il Pastore Romano Rossi.',
         ],
