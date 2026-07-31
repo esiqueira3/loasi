@@ -13,7 +13,7 @@ export const site = {
   claim: 'Un luogo dove ricominciare',
   logo: '/images/logo-default-268x75.png',
   logoLight: '/images/logo-inverse-268x75.png',
-  whatsapp: 'https://wa.link/1qw939',
+  whatsapp: 'https://wa.me/393791672414',
   privacyUrl: '/privacy',
 }
 
