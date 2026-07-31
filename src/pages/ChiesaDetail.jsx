@@ -204,6 +204,16 @@ export default function ChiesaDetail() {
                         aria-hidden="true"
                         className="absolute -left-[7px] top-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gold-400"
                       />
+                      {ch.image && (
+                        <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 shadow-soft">
+                          <img
+                            src={ch.image}
+                            alt={ch.title}
+                            className="h-auto w-full max-h-[420px] object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
                       <h3 className="h-display text-2xl text-cream-50">{ch.title}</h3>
                       <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-cream-100/65">
                         {ch.body.map((p, j) => (

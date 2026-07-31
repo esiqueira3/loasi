@@ -512,6 +512,7 @@ export const churchContent = {
     chapters: [
       {
         title: 'L’inaugurazione',
+        image: '/images/Insieme.jpg',
         body: [
           'In breve tempo nacque la prima Chiesa Evangelica Pentecostale a Latina, ubicata in Via Armellini, oggi Via Carturan: era il mese di settembre del 1950 quando venne fatta l’inaugurazione.',
           'Il primo responsabile della neonata Chiesa fu proprio Adriano Stella, coadiuvato da altri servi di Dio, tutti provenienti dalla chiesa del Pastore Roberto Bracco, uno dei grandi esponenti dell’evangelismo italiano.',
