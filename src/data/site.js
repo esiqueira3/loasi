@@ -73,9 +73,9 @@ export const churches = [
     cover: '/images/home-3-610x458.jpg',
     hero: '/images/bg-about-terracina.jpg',
     gallery: [
-      { thumb: '/images/terracina/piccolo/p-about-1.jpg', full: '/images/terracina/grande/g-about-1.jpg' },
-      { thumb: '/images/terracina/piccolo/p-about-2.jpg', full: '/images/terracina/grande/g-about-2.jpg' },
-      { thumb: '/images/terracina/piccolo/p-about-3.jpg', full: '/images/terracina/grande/g-about-3.jpg' },
+      { thumb: '/images/terracina/grande/g-about-1.jpg', full: '/images/terracina/grande/g-about-1.jpg' },
+      { thumb: '/images/terracina/grande/g-about-2.jpg', full: '/images/terracina/grande/g-about-2.jpg' },
+      { thumb: '/images/terracina/grande/g-about-3.jpg', full: '/images/terracina/grande/g-about-3.jpg' },
     ],
   },
   {
@@ -93,9 +93,9 @@ export const churches = [
     cover: '/images/home-4-610x458.jpg',
     hero: '/images/bg-about-latina.jpg',
     gallery: [
-      { thumb: '/images/latina/piccolo/p-about-1.jpg', full: '/images/latina/grande/g-about-1.jpg' },
-      { thumb: '/images/latina/piccolo/p-about-2.jpg', full: '/images/latina/grande/g-about-2.jpg' },
-      { thumb: '/images/latina/piccolo/p-about-3.jpg', full: '/images/latina/grande/g-about-3.jpg' },
+      { thumb: '/images/latina/grande/g-about-1.jpg', full: '/images/latina/grande/g-about-1.jpg' },
+      { thumb: '/images/latina/grande/g-about-2.jpg', full: '/images/latina/grande/g-about-2.jpg' },
+      { thumb: '/images/latina/grande/g-about-3.jpg', full: '/images/latina/grande/g-about-3.jpg' },
     ],
   },
   {
@@ -656,7 +656,7 @@ export const missions = {
       'L’Associazione coglie l’occasione per ringraziare tutte le attività che hanno contribuito all’iniziativa, l’Associazione Calcio Città di Terracina e la Pallavolo Futura 92, che ci hanno ospitato nelle loro manifestazioni per promuovere l’iniziativa. Un grazie va anche alle chiese che ci hanno ospitato o che hanno comunque contribuito all’opera.',
     ],
     gallery: [1, 2, 3, 4, 5].map((n) => ({
-      thumb: `/images/argentina/piccolo/p-argentina${n}.jpg`,
+      thumb: `/images/argentina/grande/g-argentina${n}.jpg`,
       full: `/images/argentina/grande/g-argentina${n}.jpg`,
     })),
     ctaTitle: 'Aiuta i bambini — Missione Argentina',
@@ -677,7 +677,7 @@ export const missions = {
       'Ci impegnammo per un anno a sostenere il progetto e contribuimmo con circa € 10.000 per la realizzazione del villaggio dei bambini. Ringraziamo Dio per averci dato la possibilità di contribuire a questo progetto e per aver protetto Emanuela, che avrebbe dovuto trovarsi in una delle zone colpite dallo tsunami ma che, per grazia di Dio, il giorno prima cambiò programma rimanendo nell’entroterra della regione.',
     ],
     gallery: [1, 2, 3, 4, 5].map((n) => ({
-      thumb: `/images/cambogia/piccolo/p-cambogia${n}.jpg`,
+      thumb: `/images/cambogia/grande/g-cambogia${n}.jpg`,
       full: `/images/cambogia/grande/g-cambogia${n}.jpg`,
     })),
     ctaTitle: 'Aiuta i bambini — Missione Cambogia',

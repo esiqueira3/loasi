@@ -25,7 +25,7 @@ export default function GalleryGrid({ items = [], columns = 3, aspect = 'aspect-
               className={`group relative block w-full overflow-hidden rounded-2xl border border-white/10 ${aspect}`}
             >
               <img
-                src={item.thumb}
+                src={item.full || item.thumb || item.url || item.src}
                 alt={item.caption || ''}
                 loading="lazy"
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
