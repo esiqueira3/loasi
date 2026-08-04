@@ -189,6 +189,22 @@ export default function ChiesaDetail() {
           {/* --- Storia --- */}
           <section className="bg-ink-900 py-24 sm:py-32">
             <div className="container">
+              {(() => {
+                const topImage = content.image || content.chapters?.find((c) => c.image)?.image
+                return topImage ? (
+                  <Reveal from="up" className="mx-auto mb-12 max-w-3xl">
+                    <div className="overflow-hidden rounded-2xl border border-white/10 shadow-soft">
+                      <img
+                        src={topImage}
+                        alt="Storia della comunità"
+                        className="h-auto w-full max-h-[480px] object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  </Reveal>
+                ) : null
+              })()}
+
               <SectionHeading
                 eyebrow={`Dal ${base.since}`}
                 title="Storia della comunità"
@@ -197,32 +213,36 @@ export default function ChiesaDetail() {
               />
 
               <div className="mx-auto max-w-3xl space-y-14">
-                {content.chapters.map((ch, i) => (
-                  <Reveal key={ch.title} delay={i * 60} from="up">
-                    <article className="relative border-l border-white/10 pl-8">
-                      <span
-                        aria-hidden="true"
-                        className="absolute -left-[7px] top-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gold-400"
-                      />
-                      {ch.image && (
-                        <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 shadow-soft">
-                          <img
-                            src={ch.image}
-                            alt={ch.title}
-                            className="h-auto w-full max-h-[420px] object-cover"
-                            loading="lazy"
-                          />
+                {content.chapters.map((ch, i) => {
+                  const topImage = content.image || content.chapters?.find((c) => c.image)?.image
+                  const isTopImage = ch.image && ch.image === topImage
+                  return (
+                    <Reveal key={ch.title} delay={i * 60} from="up">
+                      <article className="relative border-l border-white/10 pl-8">
+                        <span
+                          aria-hidden="true"
+                          className="absolute -left-[7px] top-2 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gold-400"
+                        />
+                        {ch.image && !isTopImage && (
+                          <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 shadow-soft">
+                            <img
+                              src={ch.image}
+                              alt={ch.title}
+                              className="h-auto w-full max-h-[420px] object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                        )}
+                        <h3 className="h-display text-2xl text-cream-50">{ch.title}</h3>
+                        <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-cream-100/65">
+                          {ch.body.map((p, j) => (
+                            <p key={j}>{p}</p>
+                          ))}
                         </div>
-                      )}
-                      <h3 className="h-display text-2xl text-cream-50">{ch.title}</h3>
-                      <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-cream-100/65">
-                        {ch.body.map((p, j) => (
-                          <p key={j}>{p}</p>
-                        ))}
-                      </div>
-                    </article>
-                  </Reveal>
-                ))}
+                      </article>
+                    </Reveal>
+                  )
+                })}
               </div>
             </div>
           </section>
