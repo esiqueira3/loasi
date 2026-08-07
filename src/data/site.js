@@ -361,7 +361,7 @@ export const about = {
     {
       year: '2025',
       title: '25° Anniversario — Una Chiesa per tutti',
-      text: 'Si consolida la visione dell’Oasi, con la chiesa che diventa un "ospedale spirituale" che accoglie quanti sono stati maltrattati dalla vita, delusi dalla società o in cerca di uno scopo in Dio. La chiesa offre servizi di culto, studi biblici, gruppi di supporto ed eventi per tutte le età.',
+      text: 'Si consolida la visione della Chiesa l‘Oasi che ha come scopo celebrare costantemente il Signore Gesù e cercare la pienezza dello Spirito Santo con la manifestazione dei suoi doni. Inoltre si è unita alle chiese l’Oasi La chiesa di Gaeta.',
     },
   ],
   story: [
