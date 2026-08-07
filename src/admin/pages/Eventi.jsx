@@ -421,21 +421,57 @@ export default function Eventi() {
                 />
               </Field>
 
-              <Field label="Immagine di copertina (URL o Carica su Cloudflare)" hint="Foto dell'evento visibile sul sito e nella scheda">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <input
-                    type="text"
-                    className={inputClass}
-                    placeholder="https://... o /images/..."
-                    value={form.imagem_url}
-                    onChange={(e) => setForm({ ...form, imagem_url: e.target.value })}
-                  />
-                  <label className="flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-[12.5px] font-bold text-amber-900 transition-all hover:bg-amber-500/20 active:scale-95">
+              <Field label="Immagine di copertina">
+                {form.imagem_url ? (
+                  <div className="relative overflow-hidden rounded-2xl border border-hairline bg-surface-pearl p-3 shadow-xs">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-hairline bg-canvas-parchment">
+                      <img
+                        src={form.imagem_url}
+                        alt="Foto evento"
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                      <span className="text-[12px] font-medium text-ink-muted-48">Foto di copertina impostata</span>
+                      <div className="flex items-center gap-2">
+                        <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[12px] font-bold text-amber-900 transition-all hover:bg-amber-500/20 active:scale-95 shadow-xs">
+                          <Icon
+                            name={caricandoFoto ? 'progress_activity' : 'cloud_upload'}
+                            className={`text-[15px] ${caricandoFoto ? 'animate-spin' : ''}`}
+                          />
+                          {caricandoFoto ? 'Caricando...' : 'Sostituisci'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleUploadFoto}
+                            disabled={caricandoFoto}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (form.imagem_url) deleteImageFromStorage(form.imagem_url)
+                            setForm((f) => ({ ...f, imagem_url: '' }))
+                          }}
+                          title="Rimuovi foto"
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors"
+                        >
+                          <Icon name="delete" className="text-[15px]" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 py-3.5 px-4 text-[12.5px] font-bold text-amber-900 transition-all hover:bg-amber-500/20 active:scale-95 shadow-xs">
                     <Icon
                       name={caricandoFoto ? 'progress_activity' : 'cloud_upload'}
-                      className={`text-[17px] ${caricandoFoto ? 'animate-spin' : ''}`}
+                      className={`text-[18px] ${caricandoFoto ? 'animate-spin' : ''}`}
                     />
-                    {caricandoFoto ? 'Caricando...' : 'Carica su Cloudflare'}
+                    {caricandoFoto ? 'Caricando foto...' : 'Carica la foto'}
                     <input
                       type="file"
                       accept="image/*"
@@ -444,32 +480,8 @@ export default function Eventi() {
                       disabled={caricandoFoto}
                     />
                   </label>
-                </div>
+                )}
               </Field>
-
-              {form.imagem_url && (
-                <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-hairline bg-canvas-parchment shadow-xs">
-                  <img
-                    src={form.imagem_url}
-                    alt="Anteprima foto evento"
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (form.imagem_url) deleteImageFromStorage(form.imagem_url)
-                      setForm((f) => ({ ...f, imagem_url: '' }))
-                    }}
-                    title="Rimuovi foto"
-                    className="absolute right-2 top-2 rounded-full bg-ink-950/70 p-1.5 text-white backdrop-blur-md transition-all hover:bg-red-600"
-                  >
-                    <Icon name="close" className="text-[16px]" />
-                  </button>
-                </div>
-              )}
 
               <Field label="Link di iscrizione / approfondimento" hint="Link per WhatsApp o modulo d'iscrizione">
                 <input
