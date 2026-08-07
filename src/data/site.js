@@ -385,8 +385,7 @@ export const about = {
       title: 'Le Chiese Oasi camminano insieme',
       image: '/images/Insieme2.jpg',
       body: [
-        'Fin da quel momento la visione è stata quella di avere due chiese che camminassero insieme, condividendo i talenti e lavorando coese per creare un progetto di chiesa improntato alla crescita spirituale dei credenti e proiettato verso l’esterno. Da qui nasce il progetto di Chiese Cristiane Evangeliche L’Oasi.',
-        'In questa visione la chiesa è vista come un ospedale in grado di ricevere coloro che dalla vita sono stati maltrattati, che sono delusi da questa società, feriti interiormente, o semplicemente coloro che hanno capito che Dio esiste e ha un progetto, un proposito per ogni essere umano.',
+        'In questa visione la chiesa è vista come un luogo di incontro, una famiglia che si riunisce per crescere insieme, sviluppare e manifestare i talenti e anche i doni che lo Spirito Santo elargisce. Un luogo dove far emergere i ministeri che il Signore chiama al suo servizio. In quest’ottica tutti coloro che hanno il desiderio sincero di servire con umiltà e amalgamandosi con il resto della chiesa trovano una porta aperta.',
       ],
     },
     {
