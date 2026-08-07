@@ -494,7 +494,7 @@ export default function Chiese() {
                           className="flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 py-2 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95 shadow-xs"
                         >
                           <Icon name="group" className="text-[16px]" />
-                          Collaboratori & Liderança
+                          Collaboratori
                         </button>
                       </div>
                     </div>
