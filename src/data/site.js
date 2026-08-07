@@ -112,7 +112,11 @@ export const churches = [
     since: 2001,
     cover: '/images/chiesa-gaeta.jpg',
     hero: '/images/chiesa-gaeta.jpg',
-    gallery: [],
+    gallery: [
+      { thumb: '/images/gaeta/grande/g-about-1.jpg', full: '/images/gaeta/grande/g-about-1.jpg' },
+      { thumb: '/images/gaeta/grande/g-about-2.jpg', full: '/images/gaeta/grande/g-about-2.jpg' },
+      { thumb: '/images/gaeta/grande/g-about-3.jpg', full: '/images/gaeta/grande/g-about-3.jpg' },
+    ],
   },
 ]
 
