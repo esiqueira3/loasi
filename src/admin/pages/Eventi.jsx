@@ -39,6 +39,7 @@ export default function Eventi() {
   const confirm = useConfirm()
 
   const [righe, setRighe] = useState([])
+  const [chiese, setChiese] = useState([])
   const [loading, setLoading] = useState(true)
   const [cerca, setCerca] = useState('')
   const [vista, setVista] = useState(() => localStorage.getItem('loasi.eventi.vista') || 'griglia')
@@ -59,9 +60,16 @@ export default function Eventi() {
 
   async function carica() {
     setLoading(true)
-    const { data, error } = await supabase.from('eventos').select('*').order('data_evento', { ascending: true })
-    if (error) toast.error(`Errore nel caricamento: ${error.message}`)
-    setRighe(data || [])
+    const [resEventi, resChiese] = await Promise.all([
+      supabase.from('eventos').select('*').order('data_evento', { ascending: true }),
+      supabase.from('igrejas').select('*').order('cidade'),
+    ])
+
+    if (resEventi.error) toast.error(`Errore nel caricamento eventi: ${resEventi.error.message}`)
+    if (resChiese.error) toast.error(`Errore nel caricamento chiese: ${resChiese.error.message}`)
+
+    setRighe(resEventi.data || [])
+    setChiese(resChiese.data || [])
     setLoading(false)
   }
 
@@ -411,14 +419,26 @@ export default function Eventi() {
                 </Field>
               </div>
 
-              <Field label="Luogo / Comunità" hint="es. L'Oasi Latina, Terracina o Gaeta">
-                <input
-                  type="text"
+              <Field label="Luogo / Comunità">
+                <select
                   className={inputClass}
-                  placeholder="es. Chiesa L'Oasi Latina"
                   value={form.local}
                   onChange={(e) => setForm({ ...form, local: e.target.value })}
-                />
+                >
+                  <option value="">Seleziona una comunità / Luogo...</option>
+                  {form.local &&
+                    !chiese.some(
+                      (c) => (c.nome || `Chiesa L'Oasi - ${c.cidade}`) === form.local || c.cidade === form.local
+                    ) && <option value={form.local}>{form.local}</option>}
+                  {chiese.map((c) => {
+                    const nomeFormattato = c.nome || `Chiesa L'Oasi - ${c.cidade}`
+                    return (
+                      <option key={c.id} value={nomeFormattato}>
+                        {nomeFormattato} ({c.cidade})
+                      </option>
+                    )
+                  })}
+                </select>
               </Field>
 
               <Field label="Immagine di copertina">
