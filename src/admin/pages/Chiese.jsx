@@ -681,7 +681,7 @@ export default function Chiese() {
           onClose={() => setChiesaCollaboratori(null)}
           larghezza="max-w-3xl"
           titolo={`Collaboratori — ${chiesaCollaboratori.cidade}`}
-          sottotitolo="Gestisci i collaboratori e la leadership della comunità visualizzati sul sito pubblico"
+          sottotitolo="Gestione del personale della chiesa"
           icona="group"
           accent={AZZURRO}
         >
@@ -818,20 +818,55 @@ export default function Chiese() {
             <div className="grid gap-3 sm:grid-cols-3 items-start">
               <div className="sm:col-span-2">
                 <Field label="Foto del collaboratore">
-                  <div className="flex flex-col gap-2">
-                    <input
-                      type="text"
-                      value={formCollab.foto_url}
-                      onChange={(e) => setFormCollab((f) => ({ ...f, foto_url: e.target.value }))}
-                      placeholder="https://..."
-                      className={inputClass}
-                    />
-                    <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2.5 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95 shadow-xs">
+                  {formCollab.foto_url ? (
+                    <div className="flex items-center justify-between gap-3 rounded-2xl border border-hairline bg-surface-pearl p-3 shadow-xs">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <img
+                          src={formCollab.foto_url}
+                          alt={formCollab.nome || 'Collaboratore'}
+                          className="h-12 w-12 rounded-full border border-hairline object-cover shrink-0"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                        <div className="min-w-0">
+                          <span className="text-[12.5px] font-bold text-ink block">Foto caricata</span>
+                          <span className="text-[11px] font-medium text-ink-muted-48">Fai clic su «Sostituisci» per cambiarla</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-[12px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95 shadow-xs">
+                          <Icon
+                            name={caricandoFotoCollab ? 'progress_activity' : 'cloud_upload'}
+                            className={`text-[15px] ${caricandoFotoCollab ? 'animate-spin' : ''}`}
+                          />
+                          {caricandoFotoCollab ? 'Caricando...' : 'Sostituisci'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleUploadFotoCollab}
+                            disabled={caricandoFotoCollab}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setFormCollab((f) => ({ ...f, foto_url: '' }))}
+                          title="Rimuovi foto"
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors"
+                        >
+                          <Icon name="delete" className="text-[15px]" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 py-3 px-4 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95 shadow-xs">
                       <Icon
                         name={caricandoFotoCollab ? 'progress_activity' : 'cloud_upload'}
                         className={`text-[17px] ${caricandoFotoCollab ? 'animate-spin' : ''}`}
                       />
-                      {caricandoFotoCollab ? 'Caricando...' : 'Carica la foto'}
+                      {caricandoFotoCollab ? 'Caricando foto...' : 'Carica la foto'}
                       <input
                         type="file"
                         accept="image/*"
@@ -840,7 +875,7 @@ export default function Chiese() {
                         disabled={caricandoFotoCollab}
                       />
                     </label>
-                  </div>
+                  )}
                 </Field>
               </div>
 
@@ -854,23 +889,6 @@ export default function Chiese() {
                 />
               </Field>
             </div>
-
-            {formCollab.foto_url && (
-              <div className="flex items-center gap-3 rounded-xl border border-hairline bg-surface-pearl p-2.5">
-                <img
-                  src={formCollab.foto_url}
-                  alt={formCollab.nome}
-                  className="h-12 w-12 rounded-full object-cover border border-hairline"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                  }}
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Anteprima foto</div>
-                  <div className="truncate text-[12px] text-ink-muted-80">{formCollab.foto_url}</div>
-                </div>
-              </div>
-            )}
 
             <div className="mt-2 flex justify-end gap-2 border-t border-hairline pt-3">
               <BtnGhost type="button" onClick={() => setModaleFormCollab(false)}>
