@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { eliminaPerId } from '../lib/db'
+import { deleteImageFromStorage, uploadImageToStorage } from '../../lib/r2'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -40,6 +41,7 @@ const vuoto = {
   stato_civile: '',
   ruolo: '',
   data_battesimo: '',
+  foto_url: '',
   note: '',
   dipartimento_id: '',
   igreja_id: '',
@@ -87,6 +89,7 @@ export default function Membri() {
   const [inModifica, setInModifica] = useState(null)
   const [form, setForm] = useState(vuoto)
   const [salvando, setSalvando] = useState(false)
+  const [caricandoFoto, setCaricandoFoto] = useState(false)
 
   useEffect(() => {
     localStorage.setItem('loasi.membri.vista', vista)
@@ -105,7 +108,7 @@ export default function Membri() {
 
     const { data, error } = await supabase
       .from('membri')
-      .select('*, dipartimento:dipartimenti(id, nome, colore), chiesa:igrejas(id, cidade)')
+      .select('*, dipartimento:dipartimenti(id, nome, colore), chiesa:igrejas(id, nome, cidade)')
       .order('nome_completo')
 
     if (error) {
@@ -119,11 +122,26 @@ export default function Membri() {
 
     const [{ data: dip }, { data: ch }] = await Promise.all([
       supabase.from('dipartimenti').select('id, nome, colore').order('nome'),
-      supabase.from('igrejas').select('id, cidade').order('cidade'),
+      supabase.from('igrejas').select('id, nome, cidade').order('cidade'),
     ])
     setDipartimenti(dip || [])
     setChiese(ch || [])
     setLoading(false)
+  }
+
+  const handleUploadFoto = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCaricandoFoto(true)
+    try {
+      const url = await uploadImageToStorage(file, 'membri')
+      setForm((f) => ({ ...f, foto_url: url }))
+      toast.success('Foto del membro caricata su Cloudflare / Storage!')
+    } catch (err) {
+      toast.error(`Errore caricamento foto: ${err.message}`)
+    } finally {
+      setCaricandoFoto(false)
+    }
   }
 
   const apriNuovo = () => {
@@ -145,6 +163,7 @@ export default function Membri() {
       stato_civile: r.stato_civile || '',
       ruolo: r.ruolo || '',
       data_battesimo: r.data_battesimo || '',
+      foto_url: r.foto_url || '',
       note: r.note || '',
       dipartimento_id: r.dipartimento_id || '',
       igreja_id: r.igreja_id || '',
@@ -169,6 +188,7 @@ export default function Membri() {
       stato_civile: form.stato_civile || null,
       ruolo: form.ruolo.trim() || null,
       data_battesimo: form.data_battesimo || null,
+      foto_url: form.foto_url ? form.foto_url.trim() : null,
       note: form.note.trim() || null,
       dipartimento_id: form.dipartimento_id || null,
       igreja_id: form.igreja_id || null,
@@ -229,17 +249,23 @@ export default function Membri() {
   const totalePagine = Math.max(1, Math.ceil(filtrate.length / PER_PAGINA))
   const visibili = filtrate.slice((pagina - 1) * PER_PAGINA, pagina * PER_PAGINA)
 
-  const filtriAttivi = filtroFascia || filtroDipartimento || filtroStato
-
   const colonne = [
     {
       key: 'nome_completo',
       label: 'Nome',
       render: (r) => (
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-500/12 text-[11px] font-bold text-blue-700">
-            {iniziali(r.nome_completo)}
-          </span>
+          {r.foto_url ? (
+            <img
+              src={r.foto_url}
+              alt={r.nome_completo}
+              className="h-9 w-9 shrink-0 rounded-full border border-hairline object-cover"
+            />
+          ) : (
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-500/12 text-[11px] font-bold text-blue-700">
+              {iniziali(r.nome_completo)}
+            </span>
+          )}
           <div className="min-w-0">
             <div className="truncate font-bold text-ink">{r.nome_completo}</div>
             {r.ruolo && <div className="truncate text-[12px] text-ink-muted-48">{r.ruolo}</div>}
@@ -276,7 +302,7 @@ export default function Membri() {
           '—'
         ),
     },
-    { key: 'chiesa', label: 'Comunità', render: (r) => r.chiesa?.cidade || '—' },
+    { key: 'chiesa', label: 'Comunità', render: (r) => r.chiesa?.nome || r.chiesa?.cidade || '—' },
     { key: 'telefono', label: 'Contatto', render: (r) => r.telefono || r.email || '—' },
     {
       key: 'attivo',
@@ -300,87 +326,60 @@ export default function Membri() {
           )}
         </PageTitle>
 
-        {loading ? (
-          <Loading testo="Caricamento membri…" accent={BLU} />
-        ) : setupNeeded ? (
-          <SetupPanel tabelle={['membri']} script="supabase_gestionale.sql" />
+        {setupNeeded ? (
+          <SetupPanel modulo="Membri" onRicarica={carica} />
         ) : (
-          <>
+          <div className="space-y-6">
             <ControlBar
               valore={cerca}
               onCerca={setCerca}
-              placeholder="Cerca per nome, telefono, e-mail o ruolo…"
+              placeholder="Cerca per nome, telefono, email o ruolo…"
               vista={vista}
               onVista={setVista}
               conteggio={filtrate.length}
               etichettaConteggio={filtrate.length === 1 ? 'membro' : 'membri'}
               accent={BLU}
-            >
-              <button
-                type="button"
-                onClick={() => setFiltriAperti((v) => !v)}
-                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[12.5px] font-semibold transition-all ${
-                  filtriAttivi
-                    ? 'border-blue-300 bg-blue-50 text-blue-700'
-                    : 'border-hairline bg-surface-pearl text-ink-muted-80 hover:text-ink'
-                }`}
-              >
-                <Icon name="filter_alt" className="text-[17px]" />
-                Filtri
-              </button>
-            </ControlBar>
+              filtriAperti={filtriAperti}
+              onToggleFiltri={() => setFiltriAperti((f) => !f)}
+              filtriAttiviCount={Boolean(filtroFascia) + Boolean(filtroDipartimento) + Boolean(filtroStato)}
+            />
 
             {filtriAperti && (
-              <Panel className="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                <div className="mb-4 flex items-center justify-between">
-                  <h4 className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-ink">
-                    <Icon name="filter_alt" className="text-[16px]" style={{ color: BLU }} />
-                    Filtri
-                  </h4>
-                  {filtriAttivi && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFiltroFascia('')
-                        setFiltroDipartimento('')
-                        setFiltroStato('')
-                      }}
-                      className="text-[10px] font-black uppercase tracking-widest text-red-500 transition-colors hover:text-red-700"
-                    >
-                      Azzera
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-3">
+              <Panel title="Filtri di ricerca" accent={BLU}>
+                <div className="grid gap-4 sm:grid-cols-3">
                   <Field label="Fascia d'età">
                     <CustomSelect
                       value={filtroFascia}
                       onChange={setFiltroFascia}
                       accent={BLU}
-                      options={[{ value: '', label: 'Tutte' }, ...FASCE.map((f) => ({ value: f, label: f }))]}
+                      options={[
+                        { value: '', label: 'Tutte le fasce' },
+                        ...FASCE.map((f) => ({ value: f, label: f })),
+                      ]}
                     />
                   </Field>
+
                   <Field label="Dipartimento">
                     <CustomSelect
                       value={filtroDipartimento}
                       onChange={setFiltroDipartimento}
                       accent={BLU}
                       options={[
-                        { value: '', label: 'Tutti' },
+                        { value: '', label: 'Tutti i dipartimenti' },
                         ...dipartimenti.map((d) => ({ value: d.id, label: d.nome, color: d.colore })),
                       ]}
                     />
                   </Field>
-                  <Field label="Stato">
+
+                  <Field label="Stato del membro">
                     <CustomSelect
                       value={filtroStato}
                       onChange={setFiltroStato}
                       accent={BLU}
                       options={[
-                        { value: '', label: 'Tutti' },
-                        { value: 'attivi', label: 'Attivi' },
-                        { value: 'inattivi', label: 'Non attivi' },
+                        { value: '', label: 'Tutti gli stati' },
+                        { value: 'attivi', label: 'Solo attivi' },
+                        { value: 'inattivi', label: 'Solo inattivi' },
                       ]}
                     />
                   </Field>
@@ -388,24 +387,32 @@ export default function Membri() {
               </Panel>
             )}
 
-            {filtrate.length === 0 ? (
-              <Panel padding={false}>
+            {loading ? (
+              <Loading testo="Caricamento anagrafica in corso…" accent={BLU} />
+            ) : filtrate.length === 0 ? (
+              <Panel>
                 <EmptyState
                   icona="badge"
-                  titolo={cerca || filtriAttivi ? 'Nessun risultato' : 'Nessun membro registrato'}
-                  testo={
-                    cerca || filtriAttivi
-                      ? 'Prova a cambiare la ricerca o azzerare i filtri.'
-                      : 'Registra il primo membro per iniziare a costruire l’anagrafica della chiesa.'
+                  titolo={
+                    cerca || (filtroFascia || filtroDipartimento || filtroStato)
+                      ? 'Nessun membro corrisponde ai criteri'
+                      : 'Nessun membro registrato'
                   }
-                >
-                  {!cerca && !filtriAttivi && (
-                    <BtnPrimary onClick={apriNuovo}>
-                      <Icon name="add" className="text-[18px]" />
-                      Registra membro
-                    </BtnPrimary>
-                  )}
-                </EmptyState>
+                  sottotitolo={
+                    cerca || (filtroFascia || filtroDipartimento || filtroStato)
+                      ? 'Prova a modificare i filtri o la chiave di ricerca.'
+                      : 'Aggiungi il primo membro con il pulsante "Nuovo membro".'
+                  }
+                  azione={
+                    !cerca &&
+                    !(filtroFascia || filtroDipartimento || filtroStato) && (
+                      <BtnPrimary onClick={apriNuovo}>
+                        <Icon name="add" className="text-[18px]" />
+                        Registra membro
+                      </BtnPrimary>
+                    )
+                  }
+                />
               </Panel>
             ) : vista === 'lista' ? (
               <>
@@ -423,15 +430,22 @@ export default function Membri() {
                         className="group relative overflow-hidden rounded-2xl border border-hairline bg-surface-pearl p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                       >
                         <div className="flex items-start justify-between">
-                          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/12 text-[16px] font-bold text-blue-700">
-                            {iniziali(r.nome_completo)}
-                          </span>
+                          {r.foto_url ? (
+                            <img
+                              src={r.foto_url}
+                              alt={r.nome_completo}
+                              className="h-14 w-14 rounded-2xl border border-hairline object-cover"
+                            />
+                          ) : (
+                            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/12 text-[16px] font-bold text-blue-700">
+                              {iniziali(r.nome_completo)}
+                            </span>
+                          )}
                           <div className="flex items-center gap-1.5">
                             <button
                               type="button"
                               onClick={() => apriModifica(r)}
                               aria-label="Modifica"
-                              title="Modifica"
                               className="flex h-8 w-8 items-center justify-center rounded-lg border border-hairline text-ink-muted-80 transition-all hover:bg-canvas-parchment hover:text-ink active:scale-90"
                             >
                               <Icon name="edit" className="text-[16px]" />
@@ -440,7 +454,6 @@ export default function Membri() {
                               type="button"
                               onClick={() => elimina(r)}
                               aria-label="Elimina"
-                              title="Elimina"
                               className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/30 text-red-500 transition-all hover:bg-red-500/10 active:scale-90"
                             >
                               <Icon name="delete" className="text-[16px]" />
@@ -448,40 +461,52 @@ export default function Membri() {
                           </div>
                         </div>
 
-                        <h3 className="mt-4 truncate text-[16px] font-bold text-ink" title={r.nome_completo}>
-                          {r.nome_completo}
-                        </h3>
-                        <p className="mt-0.5 truncate text-[12.5px] text-ink-muted-48">
-                          {r.ruolo || r.fascia_eta || 'Membro'}
-                          {a != null && ` · ${a} anni`}
-                        </p>
+                        <div className="mt-4">
+                          <h3 className="truncate font-bold text-ink">{r.nome_completo}</h3>
+                          <p className="truncate text-[12.5px] font-semibold text-blue-700">
+                            {r.ruolo || 'Membro'}
+                          </p>
+                        </div>
 
-                        <div className="mt-4 space-y-2 border-t border-hairline pt-4 text-[12.5px] text-ink-muted-80">
+                        <div className="mt-4 space-y-1.5 border-t border-hairline pt-3 text-[12px] text-ink-muted-80">
+                          {r.chiesa && (
+                            <div className="flex items-center gap-2 truncate">
+                              <Icon name="church" className="text-[15px] text-ink-muted-48 shrink-0" />
+                              <span className="truncate">{r.chiesa.nome || r.chiesa.cidade}</span>
+                            </div>
+                          )}
                           {r.dipartimento && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 truncate">
                               <span
-                                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                                className="h-2 w-2 rounded-full shrink-0"
                                 style={{ backgroundColor: r.dipartimento.colore || BLU }}
                               />
                               <span className="truncate">{r.dipartimento.nome}</span>
                             </div>
                           )}
                           {r.telefono && (
-                            <div className="flex items-center gap-2">
-                              <Icon name="call" className="text-[15px] opacity-60" />
+                            <div className="flex items-center gap-2 truncate">
+                              <Icon name="call" className="text-[15px] text-ink-muted-48 shrink-0" />
                               <span className="truncate">{r.telefono}</span>
                             </div>
                           )}
-                          {r.chiesa?.cidade && (
-                            <div className="flex items-center gap-2">
-                              <Icon name="church" className="text-[15px] opacity-60" />
-                              <span className="truncate">{r.chiesa.cidade}</span>
+                          {r.email && (
+                            <div className="flex items-center gap-2 truncate">
+                              <Icon name="mail" className="text-[15px] text-ink-muted-48 shrink-0" />
+                              <span className="truncate">{r.email}</span>
                             </div>
                           )}
                         </div>
 
-                        <div className="mt-4">
-                          <StatusToggle attivo={r.attivo !== false} onToggle={() => alternaStato(r)} />
+                        <div className="mt-4 flex items-center justify-between border-t border-hairline pt-3 text-[11px] font-medium text-ink-muted-48">
+                          <span>
+                            {r.fascia_eta || 'Adulto'}
+                            {a != null ? ` · ${a} anni` : ''}
+                          </span>
+                          <StatusToggle
+                            attivo={r.attivo !== false}
+                            onToggle={() => alternaStato(r)}
+                          />
                         </div>
                       </article>
                     )
@@ -490,7 +515,7 @@ export default function Membri() {
                 <Pagination currentPage={pagina} totalPages={totalePagine} onPageChange={setPagina} />
               </>
             )}
-          </>
+          </div>
         )}
       </div>
 
@@ -561,7 +586,10 @@ export default function Membri() {
                     accent={BLU}
                     options={[
                       { value: '', label: 'Seleziona comunità…' },
-                      ...chiese.map((c) => ({ value: c.id, label: c.cidade })),
+                      ...chiese.map((c) => ({
+                        value: c.id,
+                        label: c.nome ? `${c.nome} (${c.cidade})` : `Chiesa L'Oasi - ${c.cidade}`,
+                      })),
                     ]}
                   />
                 </Field>
@@ -644,14 +672,68 @@ export default function Membri() {
                   />
                 </Field>
 
-                <Field label="URL Foto di profilo">
-                  <input
-                    type="text"
-                    value={form.foto_url}
-                    onChange={(e) => setForm((f) => ({ ...f, foto_url: e.target.value }))}
-                    placeholder="https://… o /images/…"
-                    className={inputClass}
-                  />
+                <Field label="Foto del membro">
+                  {form.foto_url ? (
+                    <div className="flex items-center justify-between gap-3 rounded-2xl border border-hairline bg-surface-pearl p-3 shadow-xs">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <img
+                          src={form.foto_url}
+                          alt={form.nome_completo || 'Membro'}
+                          className="h-12 w-12 rounded-full border border-hairline object-cover shrink-0"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                        <div className="min-w-0">
+                          <span className="text-[12.5px] font-bold text-ink block">Foto caricata</span>
+                          <span className="text-[11px] font-medium text-ink-muted-48">Fai clic su «Sostituisci» per cambiarla</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-[12px] font-bold text-blue-800 transition-all hover:bg-blue-500/20 active:scale-95 shadow-xs">
+                          <Icon
+                            name={caricandoFoto ? 'progress_activity' : 'cloud_upload'}
+                            className={`text-[15px] ${caricandoFoto ? 'animate-spin' : ''}`}
+                          />
+                          {caricandoFoto ? 'Caricando...' : 'Sostituisci'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleUploadFoto}
+                            disabled={caricandoFoto}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (form.foto_url) deleteImageFromStorage(form.foto_url)
+                            setForm((f) => ({ ...f, foto_url: '' }))
+                          }}
+                          title="Rimuovi foto"
+                          className="flex h-8 w-8 items-center justify-center rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors"
+                        >
+                          <Icon name="delete" className="text-[15px]" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 py-3 px-4 text-[12.5px] font-bold text-blue-800 transition-all hover:bg-blue-500/20 active:scale-95 shadow-xs">
+                      <Icon
+                        name={caricandoFoto ? 'progress_activity' : 'cloud_upload'}
+                        className={`text-[17px] ${caricandoFoto ? 'animate-spin' : ''}`}
+                      />
+                      {caricandoFoto ? 'Caricando foto...' : 'Carica la foto'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleUploadFoto}
+                        disabled={caricandoFoto}
+                      />
+                    </label>
+                  )}
                 </Field>
               </div>
 
