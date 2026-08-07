@@ -60,6 +60,7 @@ export default function Chiese() {
 
   // --- Stato gestione Collaboratori (Diretoria) ---
   const [chiesaCollaboratori, setChiesaCollaboratori] = useState(null)
+  const [modaleFormCollab, setModaleFormCollab] = useState(false)
   const [collaboratori, setCollaboratori] = useState([])
   const [loadingCollab, setLoadingCollab] = useState(false)
   const [salvandoCollab, setSalvandoCollab] = useState(false)
@@ -101,6 +102,7 @@ export default function Chiese() {
   // --- Funzioni Gestione Collaboratori ---
   const apriCollaboratori = async (chiesa) => {
     setChiesaCollaboratori(chiesa)
+    setModaleFormCollab(false)
     setFormCollab({ id: null, nome: '', cargo: '', foto_url: '', ordem: 0 })
     await caricaCollaboratori(chiesa.id)
   }
@@ -133,6 +135,11 @@ export default function Chiese() {
     }
   }
 
+  const apriNuovoCollab = () => {
+    setFormCollab({ id: null, nome: '', cargo: '', foto_url: '', ordem: collaboratori.length + 1 })
+    setModaleFormCollab(true)
+  }
+
   const apriModificaCollab = (c) => {
     setFormCollab({
       id: c.id,
@@ -141,6 +148,7 @@ export default function Chiese() {
       foto_url: c.foto_url || '',
       ordem: c.ordem ?? 0,
     })
+    setModaleFormCollab(true)
   }
 
   const azzeraFormCollab = () => {
@@ -150,7 +158,7 @@ export default function Chiese() {
   const salvaCollaboratore = async (e) => {
     e.preventDefault()
     if (!formCollab.nome.trim()) return toast.error('Indica il nome del collaboratore.')
-    if (!formCollab.cargo.trim()) return toast.error('Indica il ruolo/cargo.')
+    if (!formCollab.cargo.trim()) return toast.error('Indica la posizione.')
 
     setSalvandoCollab(true)
     const payload = {
@@ -172,6 +180,7 @@ export default function Chiese() {
     }
 
     toast.success(formCollab.id ? 'Collaboratore aggiornato.' : 'Collaboratore aggiunto!')
+    setModaleFormCollab(false)
     azzeraFormCollab()
     caricaCollaboratori(chiesaCollaboratori.id)
   }
@@ -666,8 +675,8 @@ export default function Chiese() {
         </Modal>
       )}
 
-      {/* --- Modal Gestione Collaboratori (Diretoria) --- */}
-      {chiesaCollaboratori && (
+      {/* --- Modal 1: Lista Collaboratori Registrati --- */}
+      {chiesaCollaboratori && !modaleFormCollab && (
         <Modal
           onClose={() => setChiesaCollaboratori(null)}
           larghezza="max-w-3xl"
@@ -677,199 +686,210 @@ export default function Chiese() {
           accent={AZZURRO}
         >
           <div className="flex flex-col gap-6">
-            {/* --- Modulo Inserimento / Modifica Collaboratore --- */}
-            <form onSubmit={salvaCollaboratore} className="rounded-2xl border border-hairline bg-surface-pearl p-4 shadow-xs">
-              <div className="mb-3 flex items-center justify-between border-b border-hairline pb-2">
-                <h4 className="text-[13px] font-bold uppercase tracking-wider text-ink flex items-center gap-2">
-                  <Icon name={formCollab.id ? 'edit' : 'add'} className="text-[17px] text-cyan-600" />
-                  {formCollab.id ? 'Modifica Collaboratore' : 'Nuovo Collaboratore'}
-                </h4>
-                {formCollab.id && (
-                  <button
-                    type="button"
-                    onClick={azzeraFormCollab}
-                    className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48 hover:text-ink"
-                  >
-                    Annulla modifica
-                  </button>
-                )}
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Nome e cognome" obbligatorio>
-                  <input
-                    type="text"
-                    required
-                    value={formCollab.nome}
-                    onChange={(e) => setFormCollab((f) => ({ ...f, nome: e.target.value }))}
-                    placeholder="Es.: Pr. Alessandro Siqueira"
-                    className={inputClass}
-                  />
-                </Field>
-
-                <Field label="Posizione" obbligatorio>
-                  <input
-                    type="text"
-                    required
-                    value={formCollab.cargo}
-                    onChange={(e) => setFormCollab((f) => ({ ...f, cargo: e.target.value }))}
-                    placeholder="Pastore"
-                    className={inputClass}
-                  />
-                </Field>
-              </div>
-
-              <div className="mt-3 grid gap-3 sm:grid-cols-3 items-start">
-                <div className="sm:col-span-2">
-                  <Field label="Foto del collaboratore">
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="text"
-                        value={formCollab.foto_url}
-                        onChange={(e) => setFormCollab((f) => ({ ...f, foto_url: e.target.value }))}
-                        placeholder="https://..."
-                        className={inputClass}
-                      />
-                      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2.5 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95">
-                        <Icon
-                          name={caricandoFotoCollab ? 'progress_activity' : 'cloud_upload'}
-                          className={`text-[17px] ${caricandoFotoCollab ? 'animate-spin' : ''}`}
-                        />
-                        {caricandoFotoCollab ? 'Caricando...' : 'Carica la foto'}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleUploadFotoCollab}
-                          disabled={caricandoFotoCollab}
-                        />
-                      </label>
-                    </div>
-                  </Field>
-                </div>
-
-                <Field label="Ordine visualizzazione">
-                  <input
-                    type="number"
-                    value={formCollab.ordem}
-                    onChange={(e) => setFormCollab((f) => ({ ...f, ordem: e.target.value }))}
-                    placeholder="0"
-                    className={inputClass}
-                  />
-                </Field>
-              </div>
-
-              {formCollab.foto_url && (
-                <div className="mt-3 flex items-center gap-3 rounded-xl border border-hairline bg-white p-2">
-                  <img
-                    src={formCollab.foto_url}
-                    alt={formCollab.nome}
-                    className="h-12 w-12 rounded-full object-cover border border-hairline"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Anteprima foto</div>
-                    <div className="truncate text-[12px] text-ink-muted-80">{formCollab.foto_url}</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-4 flex justify-end gap-2 border-t border-hairline pt-3">
-                {formCollab.id && (
-                  <BtnGhost type="button" onClick={azzeraFormCollab}>
-                    Nuovo collaboratore
-                  </BtnGhost>
-                )}
-                <button
-                  type="submit"
-                  disabled={salvandoCollab}
-                  style={{ backgroundColor: AZZURRO }}
-                  className="flex items-center gap-2 rounded-xl px-5 py-2 text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-50 shadow-sm"
-                >
-                  <Icon
-                    name={salvandoCollab ? 'progress_activity' : 'check'}
-                    className={`text-[16px] ${salvandoCollab ? 'animate-spin' : ''}`}
-                  />
-                  {formCollab.id ? 'Aggiorna collaboratore' : 'Salva collaboratore'}
-                </button>
-              </div>
-            </form>
-
-            {/* --- Lista Collaboratori Esistenti --- */}
-            <div>
-              <h4 className="mb-3 text-[13px] font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+            {/* Action Bar with Nuovo Button */}
+            <div className="flex items-center justify-between border-b border-hairline pb-3">
+              <h4 className="text-[13px] font-bold uppercase tracking-wider text-ink flex items-center gap-2">
                 <Icon name="people" className="text-[18px] text-cyan-600" />
                 Collaboratori registrati ({collaboratori.length})
               </h4>
-
-              {loadingCollab ? (
-                <Loading testo="Caricamento collaboratori in corso…" accent={AZZURRO} />
-              ) : collaboratori.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-hairline p-8 text-center text-ink-muted-48">
-                  <Icon name="person_off" className="mx-auto text-[32px] opacity-40 mb-2" />
-                  <p className="text-[13.5px] font-medium">Nessun collaboratore registrato per questa comunità.</p>
-                  <p className="text-[12px]">Compila il modulo in alto per aggiungere il primo collaboratore.</p>
-                </div>
-              ) : (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {collaboratori.map((c) => (
-                    <div
-                      key={c.id}
-                      className="flex items-center justify-between gap-3 rounded-2xl border border-hairline bg-surface-card p-3.5 shadow-xs transition-all hover:border-cyan-500/30"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        {c.foto_url ? (
-                          <img
-                            src={c.foto_url}
-                            alt={c.nome}
-                            className="h-12 w-12 shrink-0 rounded-full border border-hairline object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cyan-500/15 text-cyan-800 font-bold text-[16px]">
-                            {c.nome.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <div className="min-w-0">
-                          <h5 className="font-bold text-[14px] text-ink truncate">{c.nome}</h5>
-                          <p className="text-[12px] font-semibold text-cyan-700 truncate">{c.cargo}</p>
-                          {c.ordem !== undefined && (
-                            <span className="text-[10px] font-bold text-ink-muted-48">Ordine: {c.ordem}</span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => apriModificaCollab(c)}
-                          title="Modifica"
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-hairline text-ink-muted-80 hover:bg-canvas-parchment hover:text-ink transition-colors"
-                        >
-                          <Icon name="edit" className="text-[15px]" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => eliminaCollaboratore(c)}
-                          title="Elimina"
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors"
-                        >
-                          <Icon name="delete" className="text-[15px]" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <button
+                type="button"
+                onClick={apriNuovoCollab}
+                style={{ backgroundColor: AZZURRO }}
+                className="flex items-center gap-2 rounded-xl px-4 py-2 text-[12.5px] font-bold text-white transition-all hover:brightness-110 active:scale-95 shadow-sm"
+              >
+                <Icon name="add" className="text-[17px]" />
+                Nuovo
+              </button>
             </div>
 
-            <div className="flex justify-end border-t border-hairline pt-3">
+            {/* List of Registered Collaborators */}
+            {loadingCollab ? (
+              <Loading testo="Caricamento collaboratori in corso…" accent={AZZURRO} />
+            ) : collaboratori.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-hairline p-8 text-center text-ink-muted-48">
+                <Icon name="person_off" className="mx-auto text-[32px] opacity-40 mb-2" />
+                <p className="text-[13.5px] font-medium">Nessun collaboratore registrato per questa comunità.</p>
+                <button
+                  type="button"
+                  onClick={apriNuovoCollab}
+                  className="mt-4 inline-flex items-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95"
+                >
+                  <Icon name="add" className="text-[16px]" />
+                  Aggiungi collaboratore
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-3.5 sm:grid-cols-2">
+                {collaboratori.map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-hairline bg-surface-card p-4 shadow-xs transition-all hover:border-cyan-500/30 hover:shadow-sm"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      {c.foto_url ? (
+                        <img
+                          src={c.foto_url}
+                          alt={c.nome}
+                          className="h-12 w-12 shrink-0 rounded-full border border-hairline object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-cyan-500/15 text-cyan-800 font-bold text-[16px]">
+                          {c.nome.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <h5 className="font-bold text-[14.5px] text-ink truncate">{c.nome}</h5>
+                        <p className="text-[12.5px] font-semibold text-cyan-700 truncate">{c.cargo}</p>
+                        {c.ordem !== undefined && (
+                          <span className="text-[11px] font-medium text-ink-muted-48">Ordine: {c.ordem}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => apriModificaCollab(c)}
+                        title="Modifica"
+                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-hairline text-ink-muted-80 hover:bg-canvas-parchment hover:text-ink transition-colors"
+                      >
+                        <Icon name="edit" className="text-[15px]" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => eliminaCollaboratore(c)}
+                        title="Elimina"
+                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors"
+                      >
+                        <Icon name="delete" className="text-[15px]" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex justify-end border-t border-hairline pt-3 mt-2">
               <BtnGhost type="button" onClick={() => setChiesaCollaboratori(null)}>
                 Chiudi
               </BtnGhost>
             </div>
           </div>
+        </Modal>
+      )}
+
+      {/* --- Modal 2: Form Inserimento / Modifica Collaboratore --- */}
+      {chiesaCollaboratori && modaleFormCollab && (
+        <Modal
+          onClose={() => setModaleFormCollab(false)}
+          larghezza="max-w-2xl"
+          titolo={formCollab.id ? 'Modifica Collaboratore' : 'Nuovo Collaboratore'}
+          sottotitolo={`Comunità: ${chiesaCollaboratori.cidade}`}
+          icona="group"
+          accent={AZZURRO}
+        >
+          <form onSubmit={salvaCollaboratore} className="flex flex-col gap-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Nome e cognome" obbligatorio>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={formCollab.nome}
+                  onChange={(e) => setFormCollab((f) => ({ ...f, nome: e.target.value }))}
+                  placeholder="Es.: Pr. Alessandro Siqueira"
+                  className={inputClass}
+                />
+              </Field>
+
+              <Field label="Posizione" obbligatorio>
+                <input
+                  type="text"
+                  required
+                  value={formCollab.cargo}
+                  onChange={(e) => setFormCollab((f) => ({ ...f, cargo: e.target.value }))}
+                  placeholder="Pastore"
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3 items-start">
+              <div className="sm:col-span-2">
+                <Field label="Foto del collaboratore">
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="text"
+                      value={formCollab.foto_url}
+                      onChange={(e) => setFormCollab((f) => ({ ...f, foto_url: e.target.value }))}
+                      placeholder="https://..."
+                      className={inputClass}
+                    />
+                    <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2.5 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95 shadow-xs">
+                      <Icon
+                        name={caricandoFotoCollab ? 'progress_activity' : 'cloud_upload'}
+                        className={`text-[17px] ${caricandoFotoCollab ? 'animate-spin' : ''}`}
+                      />
+                      {caricandoFotoCollab ? 'Caricando...' : 'Carica la foto'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleUploadFotoCollab}
+                        disabled={caricandoFotoCollab}
+                      />
+                    </label>
+                  </div>
+                </Field>
+              </div>
+
+              <Field label="Ordine visualizzazione">
+                <input
+                  type="number"
+                  value={formCollab.ordem}
+                  onChange={(e) => setFormCollab((f) => ({ ...f, ordem: e.target.value }))}
+                  placeholder="0"
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+
+            {formCollab.foto_url && (
+              <div className="flex items-center gap-3 rounded-xl border border-hairline bg-surface-pearl p-2.5">
+                <img
+                  src={formCollab.foto_url}
+                  alt={formCollab.nome}
+                  className="h-12 w-12 rounded-full object-cover border border-hairline"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted-48">Anteprima foto</div>
+                  <div className="truncate text-[12px] text-ink-muted-80">{formCollab.foto_url}</div>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-2 flex justify-end gap-2 border-t border-hairline pt-3">
+              <BtnGhost type="button" onClick={() => setModaleFormCollab(false)}>
+                Annulla
+              </BtnGhost>
+              <button
+                type="submit"
+                disabled={salvandoCollab}
+                style={{ backgroundColor: AZZURRO }}
+                className="flex items-center gap-2 rounded-xl px-5 py-2 text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-50 shadow-sm"
+              >
+                <Icon
+                  name={salvandoCollab ? 'progress_activity' : 'check'}
+                  className={`text-[16px] ${salvandoCollab ? 'animate-spin' : ''}`}
+                />
+                {formCollab.id ? 'Aggiorna collaboratore' : 'Salva collaboratore'}
+              </button>
+            </div>
+          </form>
         </Modal>
       )}
     </AdminLayout>
