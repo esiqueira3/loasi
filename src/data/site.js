@@ -109,10 +109,10 @@ export const churches = [
     email: 'info.gaeta@chieseloasi.it',
     address: 'Lungomare Gaboto, Via Peschiera (Vico Orticello), 4 — 04024 Gaeta (LT)',
     mapsUrl: maps('Via Peschiera Vico Orticello 4, 04024 Gaeta LT'),
+    since: 2001,
     cover: '/images/chiesa-gaeta.jpg',
     hero: '/images/chiesa-gaeta.jpg',
     gallery: [],
-    inProgress: true,
   },
 ]
 
@@ -620,10 +620,37 @@ export const churchContent = {
 
   gaeta: {
     lead: [
-      'La comunità di Gaeta è la più giovane delle Chiese L’Oasi. La pagina dedicata è in fase di preparazione: nel frattempo puoi contattarci per conoscere gli orari dei culti e le attività della settimana.',
+      'La chiesa evangelica pentecostale di Gaeta è una comunità che ha radici profonde nel tessuto della società della città tirrenica.',
+      'Una comunità che ha avuto tra i suoi promotori il caro fratello Francesco Arciuli, panettiere molto conosciuto in Città, e che ha cominciato a camminare grazie alla collaborazione di denominazioni pentecostali presenti nel territorio fino all’anno 2001.',
     ],
-    chapters: [],
-    team: [],
+    chapters: [
+      {
+        title: 'Un nuovo percorso (2001)',
+        body: [
+          'In quell’anno la comunità di Gaeta decise di cominciare un percorso nuovo e per questo venne chiesto al Pastore Romano Rossi della Chiesa L’Oasi di Terracina di impegnarsi nel portare avanti anche la comunità di Gaeta.',
+          'Dopo aver pregato e chiesto la guida da parte dello Spirito Santo il Pastore Romano ha iniziato questa nuova avventura impegnandosi con abnegazione e sacrificio per portare avanti la chiesa di Gaeta, con l’aiuto dei responsabili della chiesa di Terracina, tra i quali annoveriamo Gianluca Palmacci instancabile con la sua chitarra.',
+        ],
+      },
+      {
+        title: 'Missionari e collaborazione',
+        body: [
+          'Molti sono stati i missionari che sono passati in questa comunità e tra questi ricordiamo l’impatto importante e significativo del Pastore Evaristo De Oliveira, il Pastore Davide Francisco Moreira, i coniugi Koffi e molti altri ancora.',
+          'Fino al 2025 la Chiesa di Gaeta ha vissuto in perfetta simbiosi con la chiesa Oasi di Terracina pur essendo due comunità autonome.',
+        ],
+      },
+      {
+        title: 'L’unione con le Chiese L’Oasi (2025)',
+        body: [
+          'Nel 2025 la Chiesa di Gaeta ha espresso la propria volontà di appartenere a pieno titolo alle Chiese L’Oasi della provincia di Latina, insieme a Latina e Terracina.',
+          'Dal 2025 quindi il responsabile legale della comunità è diventato il Pastore Stefano Alla, Pastore delle Chiese L’Oasi, avendo come guida spirituale l’inesauribile Pastore Romano Rossi.',
+          'Tutto questo dona alle diverse comunità la possibilità di arricchirsi vicendevolmente con le diverse esperienze fatte con il Signore nel corso degli anni. Siamo certi che nuove pagine importanti di storia si stanno aprendo anche nella città di Gaeta.',
+        ],
+      },
+    ],
+    team: [
+      { name: 'Stefano Alla', role: 'Pastore', photo: '/images/team-1-250x233.jpg' },
+      { name: 'Giovanna Smarrazzo', role: 'Referente', photo: '/images/team-5-250x233.jpg' },
+    ],
   },
 }
 
