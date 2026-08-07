@@ -713,16 +713,16 @@ export default function Chiese() {
                     required
                     value={formCollab.cargo}
                     onChange={(e) => setFormCollab((f) => ({ ...f, cargo: e.target.value }))}
-                    placeholder="Es.: Pastor Presidente"
+                    placeholder="Pastore"
                     className={inputClass}
                   />
                 </Field>
               </div>
 
-              <div className="mt-3 grid gap-3 sm:grid-cols-3 items-end">
+              <div className="mt-3 grid gap-3 sm:grid-cols-3 items-start">
                 <div className="sm:col-span-2">
-                  <Field label="Foto del collaboratore" hint="Immagine di profilo del collaboratore">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <Field label="Foto del collaboratore">
+                    <div className="flex flex-col gap-2">
                       <input
                         type="text"
                         value={formCollab.foto_url}
@@ -730,12 +730,12 @@ export default function Chiese() {
                         placeholder="https://..."
                         className={inputClass}
                       />
-                      <label className="flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2.5 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95">
+                      <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2.5 text-[12.5px] font-bold text-cyan-800 transition-all hover:bg-cyan-500/20 active:scale-95">
                         <Icon
                           name={caricandoFotoCollab ? 'progress_activity' : 'cloud_upload'}
                           className={`text-[17px] ${caricandoFotoCollab ? 'animate-spin' : ''}`}
                         />
-                        {caricandoFotoCollab ? 'Caricando...' : 'Carica su Cloudflare'}
+                        {caricandoFotoCollab ? 'Caricando...' : 'Carica la foto'}
                         <input
                           type="file"
                           accept="image/*"
