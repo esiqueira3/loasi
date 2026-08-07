@@ -11,6 +11,7 @@ import Icon from '../components/Icon'
 import Seo from '../components/Seo'
 
 import { supabase } from '../lib/supabase'
+import { useChurches } from '../hooks/useChurches'
 import { churchContent, churches, getChurch, pastorFamily, site } from '../data/site'
 
 /** Usa il valore del database solo se valorizzato, altrimenti quello statico. */
@@ -22,7 +23,12 @@ const pick = (dbValue, staticValue) => {
 
 export default function ChiesaDetail() {
   const { slug } = useParams()
-  const base = getChurch(slug)
+  const { churches: allChurches } = useChurches()
+
+  const base = useMemo(() => {
+    return allChurches.find((c) => c.slug === slug) || getChurch(slug)
+  }, [allChurches, slug])
+
   const content = churchContent[slug]
 
   const [row, setRow] = useState(null)
@@ -59,16 +65,18 @@ export default function ChiesaDetail() {
 
   const info = useMemo(() => {
     if (!base) return null
+    const phone = pick(row?.telefone, base.phone)
     return {
       ...base,
       address: pick(row?.endereco, base.address),
-      phone: pick(row?.telefone, base.phone),
+      phone,
+      phoneHref: phone ? `tel:${phone.replace(/\s+/g, '')}` : base.phoneHref,
       email: pick(row?.email, base.email),
       mapsUrl: pick(row?.link_maps, base.mapsUrl),
       cover: pick(row?.foto_capa_url, base.cover),
-      schedule: pick(row?.horarios_culto, null),
+      schedule: pick(row?.horarios_culto, base.schedule || null),
       referente: pick(row?.referente || row?.responsavel, base.referente),
-      name: pick(row?.nome, `${base.name} — ${base.city}`),
+      name: pick(row?.nome, base.name || `${base.city}`),
     }
   }, [base, row])
 
@@ -93,7 +101,7 @@ export default function ChiesaDetail() {
 
   const team = dbTeam.length ? dbTeam : content.team
   const gallery = dbPhotos.length ? dbPhotos : base.gallery
-  const others = churches.filter((c) => c.slug !== slug)
+  const others = allChurches.filter((c) => c.slug !== slug)
 
   return (
     <SiteLayout transparentNav>
@@ -117,8 +125,8 @@ export default function ChiesaDetail() {
           <Reveal from="up">
             <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { icon: 'person', label: 'Referente', value: base.referente },
-                { icon: 'call', label: 'Telefono', value: base.phone, href: base.phoneHref },
+                { icon: 'person', label: 'Referente', value: info.referente },
+                { icon: 'call', label: 'Telefono', value: info.phone, href: info.phoneHref },
                 { icon: 'mail', label: 'E-mail', value: info.email, href: `mailto:${info.email}` },
                 {
                   icon: 'location_on',

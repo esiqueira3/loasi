@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { churches, footerAbout, site, social } from '../data/site'
+import { useChurches } from '../hooks/useChurches'
 import Icon from './Icon'
 
 const socialLinks = [
@@ -11,6 +12,7 @@ const socialLinks = [
 
 export default function Footer() {
   const year = new Date().getFullYear()
+  const { churches: churchList } = useChurches()
 
   return (
     <footer className="relative overflow-hidden bg-ink-950 pt-24">
@@ -54,7 +56,7 @@ export default function Footer() {
           <div className="lg:col-span-5">
             <p className="text-[11px] font-bold uppercase tracking-widest2 text-gold-400">Contatti</p>
             <ul className="mt-6 space-y-6">
-              {churches.map((c) => (
+              {churchList.map((c) => (
                 <li key={c.slug} className="border-l border-white/10 pl-5">
                   <p className="font-headline text-lg text-cream-50">{c.city}</p>
                   <div className="mt-2 space-y-1.5 text-sm text-cream-100/60">

@@ -9,6 +9,7 @@ import Icon from '../components/Icon'
 import Seo from '../components/Seo'
 
 import { useSupabaseTable } from '../hooks/useSupabaseTable'
+import { useChurches } from '../hooks/useChurches'
 import {
   churches,
   fallbackEvents,
@@ -765,31 +766,7 @@ export default function Home() {
     order: { column: 'created_at', ascending: false },
   })
 
-  const { rows: dbChiese } = useSupabaseTable('igrejas', {
-    order: { column: 'cidade' },
-  })
-
-  const churchesList = useMemo(() => {
-    if (!dbChiese || !dbChiese.length) return churches
-
-    return dbChiese.map((row) => {
-      const base = churches.find((c) => c.slug === row.slug || c.city?.toLowerCase() === row.cidade?.toLowerCase()) || {}
-      return {
-        ...base,
-        slug: row.slug || base.slug,
-        city: row.cidade || base.city || '',
-        province: base.province || 'LT',
-        name: row.nome || base.name || "Chiesa Cristiana Evangelica L'Oasi",
-        referente: row.referente || row.responsavel || base.referente || '',
-        phone: row.telefone || base.phone || '',
-        phoneHref: row.telefone ? `tel:${row.telefone.replace(/\s+/g, '')}` : base.phoneHref || '',
-        email: row.email || base.email || '',
-        address: row.endereco || base.address || '',
-        mapsUrl: row.link_maps || base.mapsUrl || (row.endereco ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row.endereco)}` : '#'),
-        cover: row.foto_capa_url || base.cover || '/images/home-3-610x458.jpg',
-      }
-    })
-  }, [dbChiese])
+  const { churches: churchesList } = useChurches()
 
   const slides = useMemo(() => {
     if (!banners.length) return heroSlides
