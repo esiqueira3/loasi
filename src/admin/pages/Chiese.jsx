@@ -696,7 +696,7 @@ export default function Chiese() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="Nome completo" obbligatorio>
+                <Field label="Nome e cognome" obbligatorio>
                   <input
                     type="text"
                     required
@@ -707,7 +707,7 @@ export default function Chiese() {
                   />
                 </Field>
 
-                <Field label="Ruolo / Cargo" obbligatorio hint="Es.: Pastor Presidente, Tesoriere, Diacono">
+                <Field label="Posizione" obbligatorio>
                   <input
                     type="text"
                     required
@@ -721,7 +721,7 @@ export default function Chiese() {
 
               <div className="mt-3 grid gap-3 sm:grid-cols-3 items-end">
                 <div className="sm:col-span-2">
-                  <Field label="Foto del collaboratore (URL o Carica su Cloudflare)" hint="Immagine di profilo del collaboratore">
+                  <Field label="Foto del collaboratore" hint="Immagine di profilo del collaboratore">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                       <input
                         type="text"
