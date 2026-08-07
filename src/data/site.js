@@ -382,7 +382,7 @@ export const about = {
       ],
     },
     {
-      title: 'Due chiese che camminano insieme',
+      title: 'Le Chiese Oasi camminano insieme',
       image: '/images/Insieme2.jpg',
       body: [
         'Fin da quel momento la visione è stata quella di avere due chiese che camminassero insieme, condividendo i talenti e lavorando coese per creare un progetto di chiesa improntato alla crescita spirituale dei credenti e proiettato verso l’esterno. Da qui nasce il progetto di Chiese Cristiane Evangeliche L’Oasi.',
