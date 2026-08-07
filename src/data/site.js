@@ -183,8 +183,8 @@ export const joinBlock = {
   image: '/images/bg-image-1.jpg',
   title: 'Unisciti alla nostra vivace comunità di fede',
   paragraphs: [
-    "La chiesa de L'Oasi è composta da una comunità estremamente vivace, formata da persone di tutte le età e di tutti i ceti sociali. Siamo sempre lieti di accogliere nuovi membri.",
-    "Siamo una comunità dedicata alla grazia salvifica di Cristo, al pentimento costante e alla professione pubblica dell'opera di Cristo, nonché alla presenza e al rafforzamento dello Spirito Santo.",
+    'Le chiese l’Oasi sono comunità estremamente vivaci, formate da persone di tutte le età e ceti sociali.',
+    'Lo scopo della comunità è celebrare costantemente il Signore Gesù e cercare la pienezza dello Spirito Santo con la manifestazione dei suoi doni.',
   ],
   signature: '/images/signature-2-230x78.png',
 }
