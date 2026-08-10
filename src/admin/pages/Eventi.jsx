@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { eliminaPerId } from '../lib/db'
 import { deleteImageFromStorage, uploadImageToStorage } from '../../lib/r2'
+import { cleanupExpiredEvents } from '../../lib/cleanupEvents'
 import Icon from '../../components/Icon'
 import AdminLayout, { PageTitle } from '../components/AdminLayout'
 import { toast } from '../components/Toast'
@@ -60,6 +61,16 @@ export default function Eventi() {
 
   async function carica() {
     setLoading(true)
+    // Pulizia automatica preventiva degli eventi realizzati >15 giorni fa
+    try {
+      const { count } = await cleanupExpiredEvents()
+      if (count > 0) {
+        toast.success(`${count} evento/i passato/i (>15 gg) eliminato/i automaticamente con le foto!`)
+      }
+    } catch {
+      /* ignore */
+    }
+
     const [resEventi, resChiese] = await Promise.all([
       supabase.from('eventos').select('*').order('data_evento', { ascending: true }),
       supabase.from('igrejas').select('*').order('cidade'),
@@ -183,19 +194,39 @@ export default function Eventi() {
         titolo="Eventi & Agenda"
         sottotitolo="Gestisci gli eventi in evidenza pubblicati nella sezione Agenda della Home Page."
       >
-        <BtnPrimary onClick={apriNuova}>
-          <Icon name="add" className="text-[18px]" />
-          Nuovo evento
-        </BtnPrimary>
+        <div className="flex flex-wrap items-center gap-3">
+          <BtnGhost
+            onClick={async () => {
+              toast.info('Esecuzione pulizia eventi >15 giorni…')
+              const { count } = await cleanupExpiredEvents()
+              if (count > 0) {
+                toast.success(`${count} evento/i scaduto/i e relative foto rimosse da DB e Storage!`)
+                carica()
+              } else {
+                toast.success('Nessun evento scaduto (>15 gg) trovato.')
+              }
+            }}
+            title="Elimina subito gli eventi realizzati da più di 15 giorni e le loro foto da Cloudflare/Storage"
+          >
+            <Icon name="auto_delete" className="text-[18px] text-amber-500" />
+            Pulisci scaduti (&gt;15 gg)
+          </BtnGhost>
+          <BtnPrimary onClick={apriNuova}>
+            <Icon name="add" className="text-[18px]" />
+            Nuovo evento
+          </BtnPrimary>
+        </div>
       </PageTitle>
 
-      {/* Avviso: qui si modifica il sito pubblico */}
-      <div className="mb-6 flex items-start gap-3 rounded-2xl border border-cyan-500/25 bg-cyan-50 p-4">
-        <Icon name="public" className="mt-0.5 shrink-0 text-[20px] text-cyan-700" />
-        <p className="text-[13px] leading-relaxed text-cyan-900">
-          <strong className="font-bold">Attenzione:</strong> queste informazioni sono pubblicate sul sito. Ogni
-          modifica salvata qui è visibile subito ai visitatori nelle pagine delle comunità.
-        </p>
+      {/* Avviso: qui si modifica il sito pubblico e pulizia automatica */}
+      <div className="mb-6 flex flex-col gap-2 rounded-2xl border border-cyan-500/25 bg-cyan-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <Icon name="public" className="mt-0.5 shrink-0 text-[20px] text-cyan-700" />
+          <p className="text-[13px] leading-relaxed text-cyan-900">
+            <strong className="font-bold">Informazione:</strong> le modifiche effettuate qui compaiono subito sul sito.<br />
+            <span className="font-semibold text-cyan-900">⚡ Pulizia Automatica:</span> Gli eventi realizzati da oltre 15 giorni e le relative foto su Cloudflare / Supabase Storage vengono rimossi automaticamente.
+          </p>
+        </div>
       </div>
 
       <ControlBar

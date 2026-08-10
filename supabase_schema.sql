@@ -153,4 +153,18 @@ CREATE POLICY "Escrita autenticada em depoimentos" ON public.depoimentos FOR ALL
 ALTER TABLE public.eventos ADD COLUMN IF NOT EXISTS hora VARCHAR(50);
 ALTER TABLE public.eventos ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
+-- ========================================================
+-- FUNÇÃO DE DELEÇÃO AUTOMÁTICA DE EVENTOS PASSADOS (>15 DIAS)
+-- Nota: A exclusão simultânea das fotos no Cloudflare R2 / Storage
+-- é tratada automaticamente pela aplicação (cleanupEvents.js).
+-- ========================================================
+CREATE OR REPLACE FUNCTION public.deletar_eventos_expirados()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM public.eventos
+  WHERE data_evento < (NOW() - INTERVAL '15 days');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 NOTIFY pgrst, 'reload schema';
+

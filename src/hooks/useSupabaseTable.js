@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { cleanupExpiredEvents } from '../lib/cleanupEvents'
 
 /**
  * Legge una tabella pubblica di Supabase con fallback statico.
@@ -27,6 +28,11 @@ export function useSupabaseTable(table, { fallback = [], order, filters, limit }
 
     async function load() {
       try {
+        // Se la tabella è "eventos", esegui la pulizia automatica per eventi >15 giorni
+        if (table === 'eventos') {
+          await cleanupExpiredEvents()
+        }
+
         let query = supabase.from(table).select('*')
 
         const activeFilters = JSON.parse(filterKey)
