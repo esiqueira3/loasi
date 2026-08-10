@@ -314,7 +314,7 @@ export const fallbackEvents = [
 export const about = {
   hero: '/images/About-bg-about.jpg',
   title: 'Chi Siamo',
-  lead: 'Una chiesa che accoglie coloro che sono stati maltrattati dalla vita, che sono delusi da questa società, che sono feriti interiormente, o semplicemente coloro che capiscono che Dio esiste e ha uno scopo per la loro vita.',
+  lead: 'Un comunità, una famiglia che accoglie chiunque sente nel cuore il desiderio di cercare Dio, di conoscere il Signore e il suo progetto di vita per ciascuno di noi. Un luogo dove essere discepolati e preparati per la più grande avventura che sia mai esistita, in attesa del ritorno di Gesù.',
   intro: [
     'La missione delle chiese L’Oasi nasce dalla visione di Stefano Alla che, insieme alla moglie Simona, nasce e cresce spiritualmente nella Chiesa Cristiana Evangelica L’Oasi di Terracina, condotta dal Pastore Romano Rossi.',
     'Dopo anni di servizio Stefano fu nominato anziano della chiesa e, per meglio svolgere il suo servizio, decise di iscriversi alla Facoltà Pentecostale laureandosi in Teologia.',
