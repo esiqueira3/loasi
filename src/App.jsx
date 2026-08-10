@@ -68,6 +68,8 @@ const legacyRedirects = [
   ['/chiese', '/#indirizzi'],
   ['/politica-riservatezza', '/privacy'],
   ['/politica-riservatezza.html', '/privacy'],
+  ['/eventi', '/#eventi'],
+  ['/eventi.html', '/#eventi'],
 ]
 
 /* Rotte protette del gestionale. */

@@ -621,7 +621,7 @@ function Testimonials({ items }) {
 
 const MONTHS_IT = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
 
-function EventCard({ event, delay }) {
+function EventCard({ event, delay, onOpenLightbox }) {
   const date = event.data_evento ? new Date(event.data_evento) : null
   const valid = date && !Number.isNaN(date.getTime())
 
@@ -629,27 +629,53 @@ function EventCard({ event, delay }) {
     event.hora ||
     (valid ? date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : null)
 
+  const imgSrc = event.imagem_url || '/images/event-1-385x392.jpg'
+
   return (
     <Reveal delay={delay} from="up">
       <article className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] transition-all duration-500 hover:-translate-y-1.5 hover:border-gold-400/40">
-        <div className="relative aspect-[16/10] overflow-hidden">
+        <div
+          onClick={() => onOpenLightbox && onOpenLightbox(imgSrc, event.titulo)}
+          className="group/img relative aspect-[4/5] w-full cursor-pointer overflow-hidden bg-ink-950/80"
+          title="Clicca per vedere l'immagine completa"
+        >
+          {/* Sfondo sfocato per riempire il contenitore senza bande vuote */}
           <img
-            src={event.imagem_url || '/images/event-1-385x392.jpg'}
+            src={imgSrc}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-30 blur-xl"
+          />
+
+          {/* Locandina in formato verticale visibile al 100% */}
+          <img
+            src={imgSrc}
             alt={event.titulo}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform [transition-duration:1200ms] group-hover:scale-110"
+            className="relative z-10 h-full w-full object-contain transition-transform duration-500 group-hover/img:scale-[1.03]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 to-transparent" />
+
+          <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-ink-950/80 via-transparent to-transparent" />
+
+          {/* Data evento */}
           {valid && (
             <time
               dateTime={date.toISOString()}
-              className="absolute left-5 top-5 flex h-16 w-16 flex-col items-center justify-center rounded-2xl bg-gold-400 text-ink-950 shadow-glow"
+              className="absolute left-5 top-5 z-20 flex h-16 w-16 flex-col items-center justify-center rounded-2xl bg-gold-400 text-ink-950 shadow-glow"
             >
               <span className="text-[10px] font-black uppercase tracking-widest">{MONTHS_IT[date.getMonth()]}</span>
               <span className="font-headline text-2xl leading-none">{date.getDate()}</span>
               <span className="text-[9px] font-bold opacity-70">{date.getFullYear()}</span>
             </time>
           )}
+
+          {/* Indicatore di ingrandimento su hover */}
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 opacity-0 transition-opacity duration-300 group-hover/img:opacity-100">
+            <span className="inline-flex items-center gap-2 rounded-full bg-gold-400/90 px-4 py-2 text-xs font-bold text-ink-950 shadow-lg backdrop-blur-sm">
+              <Icon name="zoom_in" className="text-lg" />
+              Ingrandisci locandina
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-1 flex-col p-6">
@@ -690,6 +716,17 @@ function EventCard({ event, delay }) {
 }
 
 function Events({ items }) {
+  const [activeLightbox, setActiveLightbox] = useState(null)
+
+  useEffect(() => {
+    if (!activeLightbox) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setActiveLightbox(null)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [activeLightbox])
+
   return (
     <section id="eventi" className="scroll-mt-24 bg-ink-900 py-24 sm:py-32">
       <div className="container">
@@ -705,11 +742,58 @@ function Events({ items }) {
         ) : (
           <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((ev, i) => (
-              <EventCard key={ev.id || i} event={ev} delay={i * 100} />
+              <EventCard
+                key={ev.id || i}
+                event={ev}
+                delay={i * 100}
+                onOpenLightbox={(url, title) => setActiveLightbox({ url, title })}
+              />
             ))}
           </div>
         )}
       </div>
+
+      {/* Lightbox / Modal per vedere l'immagine dell'evento per intero */}
+      {activeLightbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 sm:p-6 backdrop-blur-md animate-fade-in"
+          onClick={() => setActiveLightbox(null)}
+        >
+          <div
+            className="relative flex max-h-[92vh] max-w-[92vw] flex-col overflow-hidden rounded-2xl border border-white/15 bg-ink-950/95 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setActiveLightbox(null)}
+              className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-cream-50 transition-all hover:bg-gold-400 hover:text-ink-950 hover:scale-110"
+              aria-label="Chiudi"
+              title="Chiudi"
+            >
+              <Icon name="close" className="text-[20px]" />
+            </button>
+
+            <div className="flex flex-1 items-center justify-center overflow-hidden p-3 sm:p-6">
+              <img
+                src={activeLightbox.url}
+                alt={activeLightbox.title || 'Locandina evento'}
+                className="max-h-[80vh] w-auto max-w-full rounded-xl object-contain shadow-glow"
+              />
+            </div>
+
+            {activeLightbox.title && (
+              <div className="flex items-center justify-between gap-4 border-t border-white/10 bg-ink-900/90 px-6 py-3">
+                <p className="font-headline text-base text-cream-50">{activeLightbox.title}</p>
+                <button
+                  onClick={() => setActiveLightbox(null)}
+                  className="text-[12px] font-bold uppercase tracking-wider text-gold-400 hover:text-gold-300"
+                >
+                  Chiudi
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   )
 }
